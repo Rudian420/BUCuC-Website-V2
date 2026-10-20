@@ -1,0 +1,1576 @@
+{
+    "years": [
+        {
+            "year": 2027,
+            "label": "Current Panel (2026-27)",
+            "panel_members": [
+                {
+                    "id": "avibadhan-das_2026",
+                    "name": "Avibadhan Das",
+                    "position": "President",
+                    "image": "images/Panel_26_27/Panel/Avibadhan_Das1.jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Panel"
+                },
+                {
+                    "id": "rudian-ahmed_2026",
+                    "name": "Rudian Ahmed",
+                    "position": "Vice President",
+                    "image": "images/Panel_26_27/Panel/rudian1.jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Panel"
+                },
+                {
+                    "id": "rubaba-nusheen_2026",
+                    "name": "Rubaba Nusheen",
+                    "position": "General Secretary",
+                    "image": "images/Panel_26_27/Panel/Rubu.jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Panel"
+                },
+                {
+                    "id": "khaled-bin-taher_2026",
+                    "name": "Khaled Bin Taher",
+                    "position": "Treasurer",
+                    "image": "images/Panel_26_27/Panel/Khaled_Bin_Taher1.jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Panel"
+                },
+                {
+                    "id": "sadman-safin-oasif_2026",
+                    "name": "Sadman Safin Oasif",
+                    "position": "Joint Secretary",
+                    "image": "images/Panel_26_27/Panel/SadmanSafinOasif.jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Panel"
+                }
+            ],
+            "secretaries": [
+                {
+                    "id": "arafat-haque-biswas_2026",
+                    "name": "Arafat Haque Biswas",
+                    "position": "Secretary of Marketing, IT, Archive & Photography",
+                    "image": "images/Panel_26_27/Secreteries/ArafatHaqueBiswas(SecretaryOfMIAP).jpeg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "zakaria-anwar_2026",
+                    "name": "Zakaria Anwar",
+                    "position": "Secretary of Marketing, IT, Archive & Photography",
+                    "image": "images/Panel_26_27/Secreteries/ZakariaAnwar(SecretaryOfMIAP).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "alena-halder_2026",
+                    "name": "Alena Halder",
+                    "position": "Secretary of Marketing, IT, Archive & Photography",
+                    "image": "images/Panel_26_27/Secreteries/AlenaHalder(SecretaryOfMIAP).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "alvi-ahmed_2026",
+                    "name": "Alvi Ahmed",
+                    "position": "Secretary of Marketing, IT, Archive & Photography",
+                    "image": "images/Panel_26_27/Secreteries/AlviAhmed(SecretaryOfMIAP).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "rehnuma-alam-khan_2026",
+                    "name": "Rehnuma Alam Khan",
+                    "position": "Secretary of Marketing, IT, Archive & Photography",
+                    "image": "images/Panel_26_27/Secreteries/RehnumaAlamKhan(SecretaryOfMIAP).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "dipanwita-barua_2026",
+                    "name": "Dipanwita Barua",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_26_27/Secreteries/DipanwitaBarua(SecretaryOfHumanResource).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sangeeta-dutta_2026",
+                    "name": "Sangeeta Dutta",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_26_27/Secreteries/SangeetaDutta(SecretaryOfHuman Resource).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mahadi-araf-siddike_2026",
+                    "name": "Mahadi Araf Siddike",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_26_27/Secreteries/MahadiArafSiddike(SrecretaryOfEventManagement&Logistics).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "samia-jahan_2026",
+                    "name": "Samia Jahan",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_26_27/Secreteries/SamiaJahan (SecretaryOfEvent Management&Logistics).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sateertho-a-abhishek_2026",
+                    "name": "Sateertho A. Abhishek",
+                    "position": "Event Management & Logistics",
+                    "image": "images/Panel_26_27/Secreteries/SateerthoA.Abhishek_ event.jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "anik-chandra-das_2026",
+                    "name": "Anik Chandra Das",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_26_27/Secreteries/AnikChandraDas(SecretaryOf Finance).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "effat-chowdhury-dilshad_2026",
+                    "name": "Effat Chowdhury Dilshad",
+                    "position": "Secretary of Administration",
+                    "image": "images/Panel_26_27/Secreteries/EffatChowdhury Dilshad(SecretayOfAdministration).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "farhan-ahmed_2026",
+                    "name": "Farhan Ahmed",
+                    "position": "Secretary of Administration",
+                    "image": "images/Panel_26_27/Secreteries/FarhanAhmed(SecretaryOfAdministration).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "meer-abrar-ahmad_2026",
+                    "name": "Meer Abrar Ahmad",
+                    "position": "Secretary of Administration",
+                    "image": "images/Panel_26_27/Secreteries/MeerAbrarAhmad(SecretaryOfAdministration).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "aritri-chowdhury_2026",
+                    "name": "Aritri Chowdhury",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_26_27/Secreteries/AritriChowdhury(SecretaryOf Creative).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "arpita-saha_2026",
+                    "name": "Arpita Saha",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_26_27/Secreteries/ArpitaSaha(Secretary OfCreative).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "amanat-abrar-mahmud_2026",
+                    "name": "Amanat Abrar Mahmud",
+                    "position": "Secretary of Public Relation & Editorial",
+                    "image": "images/Panel_26_27/Secreteries/AmanatAbrarMahmud(Secretary Of Public Relation & Editorial).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "muhtasin-mahfuj-apurbo_2026",
+                    "name": "Muhtasin Mahfuj Apurbo",
+                    "position": "Secretary of Public Relation & Editorial",
+                    "image": "images/Panel_26_27/Secreteries/MuhtasinMahfujApurbo(SecretaryOfPublic Relation&Editorial).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "abheri-rahman_2026",
+                    "name": "Abheri Rahman",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_26_27/Secreteries/AbheriRahman(SOP_music).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "abid-hasan_2026",
+                    "name": "Abid Hasan",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_26_27/Secreteries/AbidHasan(SOP_music).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "almas-ovi_2026",
+                    "name": "Almas Ovi",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_26_27/Secreteries/AlmasOvi(SOP_music).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "aritra-dey_2026",
+                    "name": "Aritra Dey",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_26_27/Secreteries/AritraDey(SOP_dance).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "arora-paul_2026",
+                    "name": "Arora Paul",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_26_27/Secreteries/AroraPaul(SOP_dance).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mansura-mubashira_2026",
+                    "name": "Mansura Mubashira",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_26_27/Secreteries/MansuraMubashira(SOP_dance).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mir-ornob_2026",
+                    "name": "Mir Ornob",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_26_27/Secreteries/MirOrnob(SOP_music).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "nishat-mahjabin_2026",
+                    "name": "Nishat Mahjabin",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_26_27/Secreteries/NishatMahjabin(SOP_music).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "partho-protim-halder_2026",
+                    "name": "Partho Protim Halder",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_26_27/Secreteries/ParthoProtimHalder(SOP_music).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "runtiva-irisha_2026",
+                    "name": "Runtiva Irisha",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_26_27/Secreteries/RuntivaIrisha(SOP_dance).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "saraf-saiara-nudar_2026",
+                    "name": "Saraf Saiara Nudar",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_26_27/Secreteries/SarafSaiaraNudar(SOP_dance).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "purnata-ghosh_2026",
+                    "name": "Purnata Ghosh",
+                    "position": "Secretary of Research & Development",
+                    "image": "images/Panel_26_27/Secreteries/Purnata Ghosh(SecretaryOfResearch&Development).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "ratul-protik-bordhon_2026",
+                    "name": "Ratul Protik Bordhon",
+                    "position": "Secretary of Research & Development",
+                    "image": "images/Panel_26_27/Secreteries/RatulProtikBordhon(SecretaryOfResearch&Development).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "saraf-tajrian-khan_2026",
+                    "name": "Saraf Tajrian Khan",
+                    "position": "Secretary of Research & Development",
+                    "image": "images/Panel_26_27/Secreteries/SarafTajrianKhan (SecretaryOf Research& Development).jpg",
+                    "facebook": "http://www.facebook.com/",
+                    "department": "Secretary"
+                }
+            ]
+        },
+        {
+            "year": 2026,
+            "label": "2025-26",
+            "panel_members": [
+                {
+                    "id": "aparup-chowdhury_2025",
+                    "name": "Aparup Chowdhury",
+                    "position": "President",
+                    "image": "images/Panel_24_25/Panel/aparup.jpg",
+                    "facebook": "https://www.facebook.com/aparup.chy.77",
+                    "department": "Panel"
+                },
+                {
+                    "id": "mamun-abdullah_2025",
+                    "name": "Mamun Abdullah",
+                    "position": "Vice President",
+                    "image": "images/Panel_24_25/Panel/mamun.jpg",
+                    "facebook": "https://www.facebook.com/aam099",
+                    "department": "Panel"
+                },
+                {
+                    "id": "nafisa-noor_2025",
+                    "name": "Nafisa Noor",
+                    "position": "General Secretary",
+                    "image": "images/Panel_24_25/Panel/nafisa.jpg",
+                    "facebook": "https://www.facebook.com/nafisa.noor.57685",
+                    "department": "Panel"
+                },
+                {
+                    "id": "towkeer-mohammad-zia_2025",
+                    "name": "Towkeer Mohammad Zia",
+                    "position": "Joint Secretary",
+                    "image": "images/Panel_24_25/Panel/zia.jpg",
+                    "facebook": "https://www.facebook.com/towkeer.mohammad.zia.2024",
+                    "department": "Panel"
+                }
+            ],
+            "secretaries": [
+                {
+                    "id": "rudian-ahmed_2025",
+                    "name": "Rudian Ahmed",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_24_25/Secreteries/rudian.jpg",
+                    "facebook": "https://www.facebook.com/rudian.borneel",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "md-sadman-safin-oasif_2025",
+                    "name": "MD Sadman Safin Oasif",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_24_25/Secreteries/MD_Sadman_Safin_Oasif.jpg",
+                    "facebook": "https://www.facebook.com/profile.php?id=100008597416622",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "kazi-tawsiat-binte-ehsan_2025",
+                    "name": "Kazi Tawsiat Binte Ehsan",
+                    "position": "Secretary of Admin",
+                    "image": "images/Panel_24_25/Secreteries/Kazi_Tawsiat_Binte_Ehsan.jpg",
+                    "facebook": "https://www.facebook.com/kazitawsiat.binteehsan",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "avibadhan-das_2025",
+                    "name": "Avibadhan Das",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_24_25/Secreteries/Avibadhan_Das.jpg",
+                    "facebook": "https://www.facebook.com/avibadhan.dasarno",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "andalib-mostafa-lalon_2025",
+                    "name": "Andalib Mostafa Lalon",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_24_25/Secreteries/Lalon.jpg",
+                    "facebook": "https://www.facebook.com/andalib.mostafa.1",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "rudra-mathew-gomes_2025",
+                    "name": "Rudra Mathew Gomes",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_24_25/Secreteries/Rudra_Mathew_Gomes.jpg",
+                    "facebook": "https://www.facebook.com/henry.ribeiro.33",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "syed-ariful-islam-aowan_2025",
+                    "name": "Syed Ariful Islam Aowan",
+                    "position": "Secretary of Performance (Music)",
+                    "image": "images/Panel_24_25/Secreteries/Syed_Ariful_Islam_Aowan.jpg",
+                    "facebook": "https://www.facebook.com/syedariful.aowan",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "rubaba-khijir-nusheen_2025",
+                    "name": "Rubaba Khijir Nusheen",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_24_25/Secreteries/Rubu.jpg",
+                    "facebook": "https://www.facebook.com/rubaba.nusheen",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "diana-halder-momo_2025",
+                    "name": "Diana Halder Momo",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_24_25/Secreteries/Dino.jpg",
+                    "facebook": "https://www.facebook.com/diana.momo.334",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "maria-kamal-katha_2025",
+                    "name": "Maria Kamal Katha",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_24_25/Secreteries/Katha.jpg",
+                    "facebook": "https://www.facebook.com/maria.kamal.katha",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "jubair-rahman_2025",
+                    "name": "Jubair Rahman",
+                    "position": "Secretary of Performance (Dance)",
+                    "image": "images/Panel_24_25/Secreteries/Jubair_Rahman.jpg",
+                    "facebook": "https://www.facebook.com/maria.kamal.katha",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "fabiha-bushra-ali_2025",
+                    "name": "Fabiha Bushra Ali",
+                    "position": "Secretary of Public Relations",
+                    "image": "images/Panel_24_25/Secreteries/Fabiha_Bushra_Ali.jpg",
+                    "facebook": "https://www.facebook.com/jubair.rahman.765511",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "khaled-bin-taher_2025",
+                    "name": "Khaled Bin Taher",
+                    "position": "Secretary of Public Relations",
+                    "image": "images/Panel_24_25/Secreteries/Khaled_Bin_Taher.jpg",
+                    "facebook": "https://www.facebook.com/Khaled.tahsin18",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "md-ahnaf-farhan_2025",
+                    "name": "Md Ahnaf Farhan",
+                    "position": "Secretary of Public Relations",
+                    "image": "images/Panel_24_25/Secreteries/Md_Ahnaf_Farhan.jpg",
+                    "facebook": "https://www.facebook.com/ahnaf.farhan.1",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "nafisa-islam_2025",
+                    "name": "Nafisa Islam",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_24_25/Secreteries/Nafisa_Islam.jpg",
+                    "facebook": "https://www.facebook.com/nafisaislamahona",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "shreya-sangbriti_2025",
+                    "name": "Shreya Sangbriti",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_24_25/Secreteries/Shreya_Sangbriti.jpg",
+                    "facebook": "https://web.facebook.com/shreyasangbriti#",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "showmik-safi_2025",
+                    "name": "Showmik Safi",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_24_25/Secreteries/Showmik_Safi.jpg",
+                    "facebook": "https://www.facebook.com/profile.php?id=100067106982577",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "tamejul-habib_2025",
+                    "name": "Tamejul Habib",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_24_25/Secreteries/Tamejul_habib.jpg",
+                    "facebook": "https://www.facebook.com/INCcharlie19",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "jareen-tasnim-bushra_2025",
+                    "name": "Jareen Tasnim Bushra",
+                    "position": "Secretary of Research & Development",
+                    "image": "images/Panel_24_25/Secreteries/Jareen_Tasnim_Bushra.jpg",
+                    "facebook": "https://www.facebook.com/t.bushra11",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "tasnimul-hasan_2025",
+                    "name": "Tasnimul Hasan",
+                    "position": "Secretary of Research & Development",
+                    "image": "images/Panel_24_25/Secreteries/Tasnimul_Hasan.jpg",
+                    "facebook": "https://www.facebook.com/tasnimul.hasan.2001.10",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "habib-hasan_2025",
+                    "name": "Habib Hasan",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_24_25/Secreteries/Habib_Hasan.jpg",
+                    "facebook": "https://www.facebook.com/habib.hasan.988373",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "reshad-ul-karim_2025",
+                    "name": "Reshad Ul Karim",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_24_25/Secreteries/reshad.jpg",
+                    "facebook": "https://www.facebook.com/INCcharlie19",
+                    "department": "Secretary"
+                }
+            ]
+        },
+        {
+            "year": 2024,
+            "label": "2023-25",
+            "panel_members": [
+                {
+                    "id": "nashib-siam_2023",
+                    "name": "Nashib Siam",
+                    "position": "President",
+                    "image": "images/Panel_23_24/Panels/Nashib Siam (President).jpg",
+                    "facebook": "https://www.facebook.com/mohmed.nashib.5",
+                    "department": "Panel"
+                },
+                {
+                    "id": "nawshaba-maniza-riddhi_2023",
+                    "name": "Nawshaba Maniza Riddhi",
+                    "position": "Vice President",
+                    "image": "images/Panel_23_24/Panels/Nawshaba Maniza Riddhi (VP).jpg",
+                    "facebook": "https://www.facebook.com/nawshaba.maniza.riddhi",
+                    "department": "Panel"
+                },
+                {
+                    "id": "musharrat-quazi_2023",
+                    "name": "Musharrat Quazi",
+                    "position": "General Secretary",
+                    "image": "images/Panel_23_24/Panels/Musharrat Quazi (GS).jpg",
+                    "facebook": "https://www.facebook.com/musharrat.quazi",
+                    "department": "Panel"
+                },
+                {
+                    "id": "tamima-diba_2023",
+                    "name": "Tamima Diba",
+                    "position": "Joint Secretary",
+                    "image": "images/Panel_23_24/Panels/Tamima Diba (Financial Secretary).jpg",
+                    "facebook": "https://www.facebook.com/tamima.diba.2024",
+                    "department": "Panel"
+                }
+            ],
+            "secretaries": [
+                {
+                    "id": "affan-adid_2023",
+                    "name": "Affan Adid",
+                    "position": "Secretary of Admin",
+                    "image": "images/Panel_23_24/Secreteries/Admin/Affan_Adid.jpg",
+                    "facebook": "https://www.facebook.com/mdaffan.adid/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "shadman-sakib_2023",
+                    "name": "Shadman Sakib",
+                    "position": "Secretary of Admin",
+                    "image": "images/Panel_23_24/Secreteries/Admin/Shadman Sakib (Admin).jpg",
+                    "facebook": "https://www.facebook.com/shadman.sakib.458315/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "khandoker-nabila-humayra_2023",
+                    "name": "Khandoker Nabila Humayra",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_23_24/Secreteries/Creative/Khandoker_Nabila_Humayra.jpg",
+                    "facebook": "https://www.facebook.com/nabilahumayraa",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "musfura-rahman_2023",
+                    "name": "Musfura Rahman",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_23_24/Secreteries/Creative/Musfura_Rahman.jpg",
+                    "facebook": "https://www.facebook.com/mushfarahman",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "tahreen-nubaha-rabbi_2023",
+                    "name": "Tahreen Nubaha Rabbi",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_23_24/Secreteries/Events/Tahreen_Nubaha_Rabbi.jpg",
+                    "facebook": "https://www.facebook.com/tahreen.nubaha",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mamun-abdullah_2023",
+                    "name": "Mamun Abdullah",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_23_24/Secreteries/Events/Mamun_Abdullah.jpg",
+                    "facebook": "https://www.facebook.com/aam099",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "towkeer-mohammad-zia_2023",
+                    "name": "Towkeer Mohammad Zia",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_23_24/Secreteries/Events/Towkeer_Mohammad_Zia.jpg",
+                    "facebook": "https://www.facebook.com/towkeer.mohammad.zia.2024",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "kaushik-datta_2023",
+                    "name": "Kaushik Datta",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_23_24/Secreteries/Finance/Kaushik_Datta.jpg",
+                    "facebook": "https://www.facebook.com/kaushikdatta01/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "ayam-dhar_2023",
+                    "name": "Ayam Dhar",
+                    "position": "Secretary of Marketing",
+                    "image": "images/Panel_23_24/Secreteries/Marketing/Ayam_Dhar.jpg",
+                    "facebook": "https://www.facebook.com/ayam.dhar",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "imam-ur-rashid_2023",
+                    "name": "Imam Ur Rashid",
+                    "position": "Secretary of Marketing",
+                    "image": "images/Panel_23_24/Secreteries/Marketing/Imam_Ur_Rashid.jpg",
+                    "facebook": "https://www.facebook.com/Imam.sayeed.101/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "qurratul-ayen-elma_2023",
+                    "name": "Qurratul Ayen Elma",
+                    "position": "Secretary of Marketing",
+                    "image": "images/Panel_23_24/Secreteries/Marketing/Qurratul_Ayen_Elma.jpg",
+                    "facebook": "https://www.facebook.com/ayen.elma.qurratul.29",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "bazle-chowdhury_2023",
+                    "name": "Bazle Chowdhury",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/6a2c9948-7284-4455-87ea-e78640578bc1.jpg",
+                    "facebook": "https://www.facebook.com/bazle.chowdhury",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "syed-nawshin-zahan-shemonti_2023",
+                    "name": "Syed Nawshin Zahan Shemonti",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/Performance.jpg",
+                    "facebook": "https://www.facebook.com/shemontimonti",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mitisha-tasnim-rahman_2023",
+                    "name": "Mitisha Tasnim Rahman",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/Mitisha_Tasnim_Rahman.jpeg",
+                    "facebook": "https://www.facebook.com/mitisha.rahman.9/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "poroma-das_2023",
+                    "name": "Poroma Das",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/e46329e0-5f2e-4921-8f9b-94326e0a79e3.jpeg",
+                    "facebook": "https://www.facebook.com/poroma.das.259613",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "taufiq-hassan_2023",
+                    "name": "Taufiq Hassan",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/Taufiq (Performance).jpg",
+                    "facebook": "https://www.facebook.com/Taufiqhassan6",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "priyata-mondal_2023",
+                    "name": "Priyata Mondal",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/Priyata_Mondal.jpg",
+                    "facebook": "https://www.facebook.com/mondalpriyatap2",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "aparup-chowdhury_2023",
+                    "name": "Aparup Chowdhury",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/Aparup Chy (Performance).jpg",
+                    "facebook": "https://www.facebook.com/aparup.chy.77",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "nafisa-noor_2023",
+                    "name": "Nafisa Noor",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/Nafisa Noor (Performance).jpg",
+                    "facebook": "https://www.facebook.com/nafisa.noor.57685",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "yeashfa-haque_2023",
+                    "name": "Yeashfa Haque",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_23_24/Secreteries/Performance/Yeashfa_Haque.jpeg",
+                    "facebook": "https://www.facebook.com/yeashfa.haque",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "zubaida-anhaa_2023",
+                    "name": "Zubaida Anhaa",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_23_24/Secreteries/PR/e335550a-5587-4fce-98ec-e8a348a349ed.jpg",
+                    "facebook": "https://www.facebook.com/zubaida.anhaa.2025",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "aniqa-ibnat-jisa_2023",
+                    "name": "Aniqa Ibnat Jisa",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_23_24/Secreteries/PR/Jisa (PR).jpg",
+                    "facebook": "https://www.facebook.com/callmejisa01",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "shahriar-sadid_2023",
+                    "name": "Shahriar Sadid ",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_23_24/Secreteries/RD/Sadid ( Rd).jpg",
+                    "facebook": "https://www.facebook.com/sadid.shahriar.mohammad",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "zaarin-tasneem_2023",
+                    "name": "Zaarin Tasneem",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_23_24/Secreteries/RD/Zaarin RD.jpg",
+                    "facebook": "https://www.facebook.com/zaarin.tasneem.2025",
+                    "department": "Secretary"
+                }
+            ]
+        },
+        {
+            "year": 2023,
+            "label": "2022-23",
+            "panel_members": [
+                {
+                    "id": "merazul-dihan_2022",
+                    "name": "Merazul Dihan",
+                    "position": "President",
+                    "image": "images/Panel_22_23/Panel/Merazul_Dihan.jpg",
+                    "facebook": "https://www.facebook.com/merazul.dihan.7",
+                    "department": "Panel"
+                },
+                {
+                    "id": "towsif-tazwar-zia_2022",
+                    "name": "Towsif Tazwar Zia",
+                    "position": "Vice President",
+                    "image": "images/Panel_22_23/Panel/Towsif_Tazwar_Zia.jpg",
+                    "facebook": "https://www.facebook.com/towsif",
+                    "department": "Panel"
+                },
+                {
+                    "id": "tawhid-mollah-orpon_2022",
+                    "name": "Tawhid Mollah Orpon",
+                    "position": "General Secretary",
+                    "image": "images/Panel_22_23/Panel/Tawhid_Mollah_Orpon.jpg",
+                    "facebook": "https://www.facebook.com/tawhid.m.orpon",
+                    "department": "Panel"
+                },
+                {
+                    "id": "shakira-mustahid_2022",
+                    "name": "Shakira Mustahid",
+                    "position": "Joint Secretary",
+                    "image": "images/Panel_22_23/Panel/Shakira_Mustahid.jpg",
+                    "facebook": "https://www.facebook.com/groups/86555568937/user/100011850409007",
+                    "department": "Panel"
+                }
+            ],
+            "secretaries": [
+                {
+                    "id": "muhaiminul-shuvo_2022",
+                    "name": "Muhaiminul Shuvo",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_22_23/Secreteries/Creative/Muhaiminul_Shuvo.jpg",
+                    "facebook": "https://www.facebook.com/SudiptoShuvo12/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "nisa-hai_2022",
+                    "name": "Nisa Hai",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_22_23/Secreteries/Creative/Nisa_Hai.jpg",
+                    "facebook": "https://www.facebook.com/nisa.hai.404",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "fahad-bin-habib_2022",
+                    "name": "Fahad Bin Habib",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_22_23/Secreteries/Events/489028088_4153227901564307_6545631968149006210_n.jpg",
+                    "facebook": "https://www.facebook.com/fahad1202",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mohammad-nashib_2022",
+                    "name": "Mohammad Nashib",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_22_23/Secreteries/Events/Mohammad_Nashib .jpg",
+                    "facebook": "https://www.facebook.com/mohmed.nashib.5",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "musharrat-quazi_2022",
+                    "name": "Musharrat Quazi",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_22_23/Secreteries/Hr/Musharrat_Quazi.jpg",
+                    "facebook": "https://www.facebook.com/musharrat.quazi",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "naziat-podmo_2022",
+                    "name": "Naziat Podmo",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_22_23/Secreteries/Hr/Naziat_Podmo.jpg",
+                    "facebook": "https://www.facebook.com/naziat.podmo",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mehjabeen-meem_2022",
+                    "name": "Mehjabeen Meem",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_22_23/Secreteries/Miap/Mehjabeen_Meem.jpg",
+                    "facebook": "https://www.facebook.com/mehjabeen.meem.3",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "omar-ibtesam_2022",
+                    "name": "Omar Ibtesam",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_22_23/Secreteries/Miap/Omar_Ibtesum.jpg",
+                    "facebook": "https://www.facebook.com/omar.ibtesam01/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "saadman-alvi_2022",
+                    "name": "Saadman Alvi",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_22_23/Secreteries/Miap/Saadman_Alvi.jpg",
+                    "facebook": "https://www.facebook.com/saadman.alvi/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "nawshaba-maniza-riddhi_2022",
+                    "name": "Nawshaba Maniza Riddhi",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_22_23/Secreteries/Performance/Kabery_Moniza_Riddhi .jpg",
+                    "facebook": "https://www.facebook.com/nawshaba.maniza.riddhi/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "zaima-oroni_2022",
+                    "name": "Zaima Oroni",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_22_23/Secreteries/Performance/693523ae-d6a7-4ecf-9019-7dbeffe40d5b.jpg",
+                    "facebook": "https://www.facebook.com/zaima.hossain.aroni/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "rifah-tasnia_2022",
+                    "name": "Rifah Tasnia",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_22_23/Secreteries/Performance/Rifah_Tasnia.jpg",
+                    "facebook": "https://www.facebook.com/rifah.tasnia.1804/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "tahiatun-nazi_2022",
+                    "name": "Tahiatun Nazi",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_22_23/Secreteries/Performance/Tahiatun_Nazi.jpg",
+                    "facebook": "https://www.facebook.com/tahiatun.nazi/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "performance-secretary_2022",
+                    "name": "Performance Secretary",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_22_23/Secreteries/Performance/486450617_1919606155485104_6809497294325923308_n.jpg",
+                    "facebook": "https://www.facebook.com/INCcharlie19",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "tamima-hossain-diba_2022",
+                    "name": "Tamima Hossain Diba",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_22_23/Secreteries/Performance/Tamima_Hossain_Diba.jpg",
+                    "facebook": "https://www.facebook.com/tamima.diba.2024",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "upama-adhikary_2022",
+                    "name": "Upama Adhikary",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_22_23/Secreteries/pr/Upama_Adhikary.jpg",
+                    "facebook": "https://www.facebook.com/sanjanaupo/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "swagata-oishi_2022",
+                    "name": "Swagata Oishi",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_22_23/Secreteries/pr/Swagata_oishi.jpg",
+                    "facebook": "https://www.facebook.com/swagata.oishi",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "minoor-karim_2022",
+                    "name": "Minoor Karim",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_22_23/Secreteries/pr/Minoor_karim.jpg",
+                    "facebook": "https://www.facebook.com/Minoor01",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "gm-apurbo_2022",
+                    "name": "GM Apurbo",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_22_23/Secreteries/Rd/GM_Apurbo.jpg",
+                    "facebook": "https://www.facebook.com/its.apurbo",
+                    "department": "Secretary"
+                }
+            ]
+        },
+        {
+            "year": 2022,
+            "label": "2021-22",
+            "panel_members": [
+                {
+                    "id": "jabir-al-ahad_2021",
+                    "name": "Jabir Al Ahad",
+                    "position": "President",
+                    "image": "images/Panel_21_22/Panel/Jabir_Al_Ahad.jpg",
+                    "facebook": "https://www.facebook.com/jabir.rafi.33",
+                    "department": "Panel"
+                },
+                {
+                    "id": "abd-quaiyum_2021",
+                    "name": "ABD Quaiyum",
+                    "position": "Vice President",
+                    "image": "images/Panel_21_22/Panel/ABD_Quaiyum.jpg",
+                    "facebook": "https://www.facebook.com/abdul.quaiyum.732",
+                    "department": "Panel"
+                },
+                {
+                    "id": "fahim-anjum-efty_2021",
+                    "name": "Fahim Anjum Efty",
+                    "position": "General Secretary",
+                    "image": "images/Panel_21_22/Panel/Fahim_Anjum_Efty.jpg",
+                    "facebook": "https://www.facebook.com/fahim.efty.5",
+                    "department": "Panel"
+                }
+            ],
+            "secretaries": [
+                {
+                    "id": "jawad-zarif_2021",
+                    "name": "Jawad Zarif",
+                    "position": "Secretary of Admin",
+                    "image": "images/Panel_21_22/Secreteries/admin/Jawad_Zarif.jpg",
+                    "facebook": "https://www.facebook.com/profile.php?id=100006775897782",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "muhib-hasan_2021",
+                    "name": "Muhib Hasan",
+                    "position": "Secretary of Admin",
+                    "image": "images/Panel_21_22/Secreteries/admin/Muhib_Hasan.jpg",
+                    "facebook": "https://www.facebook.com/muhibh22",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "abid-al-mamun_2021",
+                    "name": "Abid Al Mamun",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_21_22/Secreteries/creative/Abid_Al_Mamun.jpg",
+                    "facebook": "https://www.facebook.com/abidalmamun239",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "subah-basharrat_2021",
+                    "name": "Subah Basharrat",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_21_22/Secreteries/creative/Subah_Basharrat.jpg",
+                    "facebook": "https://www.facebook.com/subah.basharat",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "towsif-tazwar-zia_2021",
+                    "name": "Towsif Tazwar Zia",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_21_22/Secreteries/events/Towsif_Tazwar_Zia.jpg",
+                    "facebook": "https://www.facebook.com/towsif",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sazid-khan_2021",
+                    "name": "Sazid Khan",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_21_22/Secreteries/events/Sazid_Khan.jpg",
+                    "facebook": "https://www.facebook.com/sazid.khan.5855",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mahir-parbon_2021",
+                    "name": "Mahir Parbon",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_21_22/Secreteries/events/Mahir_Parbon.jpg",
+                    "facebook": "https://www.facebook.com/mahir.parban.3/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "raisul-islam_2021",
+                    "name": "Raisul Islam",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_21_22/Secreteries/fin/Raisul_Islam.jpg",
+                    "facebook": "https://www.facebook.com/raisul.islam.648228/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "merazul-dihan_2021",
+                    "name": "Merazul Dihan",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_21_22/Secreteries/fin/Merazul_Dihan.jpg",
+                    "facebook": "https://www.facebook.com/merazul.dihan.7",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "shakira-mustahid_2021",
+                    "name": "Shakira Mustahid",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_21_22/Secreteries/hr/Shakira_Mustahid.jpg",
+                    "facebook": "https://www.facebook.com/SNKMustahid",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "prateeti-diya_2021",
+                    "name": "Prateeti Diya",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_21_22/Secreteries/hr/Prateeti_Diya.jpg",
+                    "facebook": "https://www.facebook.com/prateeti.diya",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "raiyan-mahmud_2021",
+                    "name": "Raiyan Mahmud",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_21_22/Secreteries/miap/Raiyan_Mahmud.jpg",
+                    "facebook": "https://www.facebook.com/raiyan.ds/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "maruf-hasan_2021",
+                    "name": "Maruf Hasan",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_21_22/Secreteries/miap/Maruf_Hasan.jpg",
+                    "facebook": "https://www.facebook.com/maruf.hasan.388/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "zarin-tasnim-rafa_2021",
+                    "name": "Zarin Tasnim Rafa",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_21_22/Secreteries/perform/Zareen_Tasnim_Rafa.jpg",
+                    "facebook": "https://www.facebook.com/rafa300499",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "tawhid-mollah-orpon_2021",
+                    "name": "Tawhid Mollah Orpon",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_21_22/Secreteries/perform/Tawhid_Mollah_Orpon.jpg",
+                    "facebook": "https://www.facebook.com/tawhid.m.orpon",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "rini-chowdhury_2021",
+                    "name": "Rini Chowdhury",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_21_22/Secreteries/perform/Rini_Chowdhury.jpg",
+                    "facebook": "https://www.facebook.com/chowdhury.rini/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "naweed-kabir_2021",
+                    "name": "Naweed Kabir",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_21_22/Secreteries/perform/Naweed_Kabir.jpg",
+                    "facebook": "https://www.facebook.com/praisethebeast",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "naimul-huda-nafi_2021",
+                    "name": "Naimul Huda Nafi",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_21_22/Secreteries/perform/Naimul_Huda_Nafi.jpg",
+                    "facebook": "https://www.facebook.com/nafi.263.k/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "minhaj-dawn_2021",
+                    "name": "Minhaj Dawn",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_21_22/Secreteries/perform/Minhaj_Dawn.jpg",
+                    "facebook": "https://www.facebook.com/minhajdawn/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mashruma-khan_2021",
+                    "name": "Mashruma Khan",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_21_22/Secreteries/pr/Mashruma_Khan.jpg",
+                    "facebook": "https://www.facebook.com/mashruma.khan.3/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "arpita-addhay_2021",
+                    "name": "Arpita Addhay",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_21_22/Secreteries/pr/Arpita_Addhay.jpg",
+                    "facebook": "https://www.facebook.com/arpita.addhay/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "dipraw-rashid-lorka_2021",
+                    "name": "Dipraw Rashid Lorka",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_21_22/Secreteries/rd/Dipraw_Rashid_Lorka.jpg",
+                    "facebook": "https://www.facebook.com/mara.khaw.ektu/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "durjoy-dutta_2021",
+                    "name": "Durjoy Dutta",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_21_22/Secreteries/rd/Durjoy_Dutta.jpg",
+                    "facebook": "https://www.facebook.com/durjoy.datta.486/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "akshay-ghosh_2021",
+                    "name": "Akshay Ghosh",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_21_22/Secreteries/rd/Akshay_Ghosh.jpg",
+                    "facebook": "https://www.facebook.com/akshay23456789",
+                    "department": "Secretary"
+                }
+            ]
+        },
+        {
+            "year": 2021,
+            "label": "2020-21",
+            "panel_members": [
+                {
+                    "id": "toriqul-islam-dipro_2020",
+                    "name": "Toriqul Islam Dipro",
+                    "position": "President",
+                    "image": "images/Panel_20_21/Panel/Toriqul_Islam_Dipro.jpg",
+                    "facebook": "https://www.facebook.com/toriqul.islam.dipro",
+                    "department": "Panel"
+                },
+                {
+                    "id": "amal-chowdhury_2020",
+                    "name": "Amal Chowdhury",
+                    "position": "Vice President",
+                    "image": "images/Panel_20_21/Panel/Amal_Chowdhury.jpg",
+                    "facebook": "https://www.facebook.com/amal.chowdhury.79",
+                    "department": "Panel"
+                },
+                {
+                    "id": "injamul-islam-fahim_2020",
+                    "name": "Injamul Islam Fahim",
+                    "position": "General Secretary",
+                    "image": "images/Panel_20_21/Panel/Injamul_Islam_Fahim.jpg",
+                    "facebook": "https://www.facebook.com/injamul.fahim",
+                    "department": "Panel"
+                }
+            ],
+            "secretaries": [
+                {
+                    "id": "fahim-anjum-efty_2020",
+                    "name": "Fahim Anjum Efty",
+                    "position": "Secretary of Admin",
+                    "image": "images/Panel_20_21/Secreteries/admin/Fahim_Anjum_Efty.jpg",
+                    "facebook": "https://www.facebook.com/fahim.efty.5",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "swarojani-dhar_2020",
+                    "name": "Swarojani Dhar",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_20_21/Secreteries/creative/Swarojani_Dhar.jpg",
+                    "facebook": "https://www.facebook.com/swarojani.adree/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "raitah-binte-khosru_2020",
+                    "name": "Raitah Binte Khosru",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_20_21/Secreteries/creative/Raitah_Binte_Khosru.jpg",
+                    "facebook": "https://www.facebook.com/raitah.bintekhusru/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sneha-ehsani_2020",
+                    "name": "Sneha Ehsani",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_20_21/Secreteries/creative/Sneha_Ehsani.jpg",
+                    "facebook": "https://www.facebook.com/Ehsani.Sneha",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "nayema-tasnim-meem_2020",
+                    "name": "Nayema Tasnim Meem",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_20_21/Secreteries/creative/Nayema_Tasnim_Meem.jpg",
+                    "facebook": "https://www.facebook.com/nayematasneem.meem",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "prodip-chandra-das_2020",
+                    "name": "Prodip Chandra Das",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_20_21/Secreteries/event/Prodip_Chandra_Das.jpg",
+                    "facebook": "https://www.facebook.com/INCcharlie19",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "jabir-al-ahad_2020",
+                    "name": "Jabir Al Ahad",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_20_21/Secreteries/event/Jabir Al Ahad.jpg",
+                    "facebook": "https://www.facebook.com/jabir.rafi.33",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "md-abdul-quaiyum_2020",
+                    "name": "MD Abdul Quaiyum",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_20_21/Secreteries/fin/MD_Abdul_Quaiyum .jpg",
+                    "facebook": "https://www.facebook.com/abdul.quaiyum.732/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "fahim-hasan-mehedi_2020",
+                    "name": "Fahim Hasan Mehedi",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_20_21/Secreteries/fin/Fahim_Hasan_Mehedi.jpg",
+                    "facebook": "https://www.facebook.com/fahimhasan.mehedi.9",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "swadesh-mahbub_2020",
+                    "name": "Swadesh Mahbub",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_20_21/Secreteries/hr/Swadesh_Mahbub.jpg",
+                    "facebook": "https://www.facebook.com/swadeshmahbub12/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sadrina-saif_2020",
+                    "name": "Sadrina Saif",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_20_21/Secreteries/hr/Sadrina_Saif.jpg",
+                    "facebook": "https://www.facebook.com/sadrina.saif",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "md-hasnatul-amin_2020",
+                    "name": "MD Hasnatul Amin",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_20_21/Secreteries/miap/MD_Hasnatul_Amin.jpg",
+                    "facebook": "https://www.facebook.com/hasnatul.amin/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "ahsan-habib_2020",
+                    "name": "Ahsan Habib",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_20_21/Secreteries/miap/Ahsan_Habib.jpg",
+                    "facebook": "https://www.facebook.com/ahsan.h.anoy",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "rimon-dey_2020",
+                    "name": "Rimon Dey",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_20_21/Secreteries/performance/Rimon_Dey.jpg",
+                    "facebook": "https://www.facebook.com/rcd.rimon",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "al-adnan-hossain-fahim_2020",
+                    "name": "Al Adnan Hossain Fahim",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_20_21/Secreteries/performance/Al_Adnan_Hossain_Fahim.jpg",
+                    "facebook": "https://www.facebook.com/fahim.alladnan",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "manoshe-suzana_2020",
+                    "name": "Manoshe Suzana",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_20_21/Secreteries/performance/Manoshe_Suzana.jpg",
+                    "facebook": "https://www.facebook.com/manoshe.suzana.2025",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "adib-al-kabir_2020",
+                    "name": "Adib Al Kabir",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_20_21/Secreteries/performance/Adib_Al_Kabir.jpg",
+                    "facebook": "https://www.facebook.com/adib.kabir",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "afif-ibne-kadir-khan-turja_2020",
+                    "name": "Afif Ibne Kadir Khan Turja",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_20_21/Secreteries/performance/Afif_Ibne_Kadir_Khan_Turja.jpg",
+                    "facebook": "https://www.facebook.com/afifalamgir.lizel/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "anika-anjum-biva_2020",
+                    "name": "Anika Anjum Biva",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_20_21/Secreteries/pr/Anika_Anjum_Biva.jpg",
+                    "facebook": "https://www.facebook.com/groups/86555568937/user/100003007061137",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "km-asif-muznabeen_2020",
+                    "name": "KM Asif Muznabeen",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_20_21/Secreteries/pr/KM_Asif_Muznabeen.jpg",
+                    "facebook": "https://web.facebook.com/am.shafat/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "takrim-chowdhury_2020",
+                    "name": "Takrim Chowdhury",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_20_21/Secreteries/rd/Takrim_Chowdhury .jpg",
+                    "facebook": "https://web.facebook.com/takrim.chowdhury",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "mubtasim-bashar-mouno_2020",
+                    "name": "Mubtasim Bashar Mouno",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_20_21/Secreteries/rd/Mubtasim_Bashar_Mouno.jpg",
+                    "facebook": "https://web.facebook.com/prime.optimous",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sarwar-morshed_2020",
+                    "name": "Sarwar Morshed",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_20_21/Secreteries/rd/Sarwar_Morshed.jpg",
+                    "facebook": "https://web.facebook.com/saroar007",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "shashwata-das-antu_2020",
+                    "name": "Shashwata Das Antu",
+                    "position": "Secretary of Research and Development",
+                    "image": "images/Panel_20_21/Secreteries/rd/Shashwata_Das_Antu.jpg",
+                    "facebook": "https://web.facebook.com/shashwata.antu",
+                    "department": "Secretary"
+                }
+            ]
+        },
+        {
+            "year": 2020,
+            "label": "2019-20",
+            "panel_members": [
+                {
+                    "id": "shoaib-kamal_2019",
+                    "name": "Shoaib Kamal",
+                    "position": "President",
+                    "image": "images/Panel_19_20/Panel/Shoaib_Kamal.jpg",
+                    "facebook": "https://www.facebook.com/shoaib.sculpture",
+                    "department": "Panel"
+                },
+                {
+                    "id": "samara-mehruz_2019",
+                    "name": "Samara Mehruz",
+                    "position": "Vice President",
+                    "image": "images/Panel_19_20/Panel/Samara_Mehruz.jpg",
+                    "facebook": "https://www.facebook.com/meheruz.samara/",
+                    "department": "Panel"
+                },
+                {
+                    "id": "murtafa-mridha_2019",
+                    "name": "Murtafa Mridha",
+                    "position": "General Secretary",
+                    "image": "images/Panel_19_20/Panel/Murtafa_Mridha.jpg",
+                    "facebook": "https://www.facebook.com/murtafa.mridha",
+                    "department": "Panel"
+                }
+            ],
+            "secretaries": [
+                {
+                    "id": "shahriar-nasif_2019",
+                    "name": "Shahriar Nasif",
+                    "position": "Secretary of Admin",
+                    "image": "images/Panel_19_20/Secretaries/admin/Shahriar_Nasif.jpg",
+                    "facebook": "https://www.facebook.com/shahriar.tahsin.638733",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "iffat-binte-hakim_2019",
+                    "name": "Iffat Binte Hakim",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_19_20/Secretaries/creative/Iffat_Binte_Hakim.jpg",
+                    "facebook": "https://wwww.facebook.com/fabiha.hakim",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sadia-ishtiaque_2019",
+                    "name": "Sadia Ishtiaque",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_19_20/Secretaries/creative/Sadia_Ishtiaque.jpg",
+                    "facebook": "https://wwww.facebook.com/sadia.ishtiaque",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sayeda-lamia-tabassum_2019",
+                    "name": "Sayeda Lamia Tabassum",
+                    "position": "Secretary of Creative",
+                    "image": "images/Panel_19_20/Secretaries/creative/Sayeda_Lamia_Tabassum.jpg",
+                    "facebook": "https://www.facebook.com/tabassum.koel.1/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "nafiz-noor_2019",
+                    "name": "Nafiz Noor",
+                    "position": "Secretary of Event Management & Logistics",
+                    "image": "images/Panel_19_20/Secretaries/event/Nafiz_Noor.jpg",
+                    "facebook": "https://www.facebook.com/nafiz.noor",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "ishraq-avi_2019",
+                    "name": "Ishraq Avi",
+                    "position": "Secretary of Finance",
+                    "image": "images/Panel_19_20/Secretaries/fin/Ishraq_Avi.jpg",
+                    "facebook": "https://www.facebook.com/ishraq.avi.3",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "zuairya-ashger-khan-nuha_2019",
+                    "name": "Zuairya Ashger Khan Nuha",
+                    "position": "Secretary of Human Resource",
+                    "image": "images/Panel_19_20/Secretaries/hr/Zuairya_Ashger_Khan_Nuha.jpg",
+                    "facebook": "https://www.facebook.com/juaiuriya.khan.3/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sadman-sakib-ayon_2019",
+                    "name": "Sadman Sakib Ayon",
+                    "position": "Secretary of Marketing IT Archive & Photography",
+                    "image": "images/Panel_19_20/Secretaries/miap/Sadman_Sakib_Ayon.jpg",
+                    "facebook": "https://www.facebook.com/sadmanshakib.ayon",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "aninda-nahiyan_2019",
+                    "name": "Aninda Nahiyan",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_19_20/Secretaries/perfromance/Aninda_Nahiyan.jpg",
+                    "facebook": "#",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "deepita-chakrabortty_2019",
+                    "name": "Deepita Chakrabortty",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_19_20/Secretaries/perfromance/Deepita_Chakrabortty.jpg",
+                    "facebook": "https://www.facebook.com/triad.deepzz/",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "george-gourab_2019",
+                    "name": "George Gourab",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_19_20/Secretaries/perfromance/George_Gourab.jpg",
+                    "facebook": "https://www.facebook.com/edwardtroy.jordison",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "munirul-azam-zayed_2019",
+                    "name": "Munirul Azam Zayed",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_19_20/Secretaries/perfromance/Munirul_Azam_Zayed.jpg",
+                    "facebook": "https://www.facebook.com/Mazpagla",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "saib-sizan_2019",
+                    "name": "Saib Sizan",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_19_20/Secretaries/perfromance/Saib_Sizan.jpg",
+                    "facebook": "https://www.facebook.com/saib.sizan",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "sumit-dutta_2019",
+                    "name": "Sumit Dutta",
+                    "position": "Secretary of Performance",
+                    "image": "images/Panel_19_20/Secretaries/perfromance/Sumit_Dutta.jpg",
+                    "facebook": "https://www.facebook.com/sumitthedutta",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "modhumonty-das_2019",
+                    "name": "Modhumonty Das",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_19_20/Secretaries/pr/Modhumonty_Das.jpg",
+                    "facebook": "https://www.facebook.com/modhumonty.sreya",
+                    "department": "Secretary"
+                },
+                {
+                    "id": "pritam-chakraborty_2019",
+                    "name": "Pritam Chakraborty",
+                    "position": "Secretary of Public Relations & Editorial",
+                    "image": "images/Panel_19_20/Secretaries/pr/Pritam_Chakraborty.jpg",
+                    "facebook": "https://web.facebook.com/pritam.ark",
+                    "department": "Secretary"
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "total_years": 7,
+        "total_panel_members": 26,
+        "total_secretaries": 161,
+        "departments": [
+            "Panel",
+            "Admin",
+            "Creative",
+            "Events",
+            "Finance",
+            "HR",
+            "Marketing",
+            "MIAP",
+            "Performance",
+            "PR",
+            "RD"
+        ],
+        "last_updated": "2026-10-19",
+        "version": "1.0"
+    }
+}

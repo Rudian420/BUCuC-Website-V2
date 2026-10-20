@@ -1,0 +1,24 @@
+.DS_Store
+
+# Runtime logs and archives (contain applicant personal data)
+backend/logs/*.log
+backend/logs/*.jsonl
+.claude/settings.local.json
+
+# Exports / restores with personal data — keep them out of git
+*.csv
+*.xlsx
+restore.sql
+
+# Local tooling
+node_modules/
+
+# Local secrets
+backend/config/*.local.php
+backend/Database/config.local.php
+backend/logs/.schema_v*
+backend/logs/*.bak
+backend/config/recovery.token
+
+# Old database dumps (admin password hashes, personal data)
+bucuc.sql

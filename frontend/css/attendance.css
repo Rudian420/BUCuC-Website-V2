@@ -1,0 +1,48 @@
+/* Attendance admin pages (attendance*.php). Colours are palette variables with the original colours as fallbacks. */
+.wrapx { padding: 2rem 1rem 6rem; color: var(--ink, rgb(var(--c-fixed-ffffff, 255 255 255))); max-width: 1180px; margin: 0 auto; }
+.page-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.page-header .links { display: flex; gap: .5rem; flex-wrap: wrap; }
+.back-btn { text-decoration: none; color: inherit; padding: .5rem 1rem; border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.3); border-radius: 999px; display: inline-flex; align-items: center; gap: .4rem; }
+.tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.tabs a { padding: .55rem 1.1rem; border-radius: 999px; border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.2); color: inherit; text-decoration: none; font-weight: 600; font-size: .9rem; }
+.tabs a.on { background: linear-gradient(100deg, rgb(var(--c-accent2, 92 255 176)), rgb(var(--c-accent, 45 226 230)) 50%, rgb(var(--c-primary, 139 92 255))); color: rgb(var(--c-surface-0a0620, 10 6 32)); border-color: transparent; }
+.panel { background: rgb(var(--c-surface, 14 9 36) / 0.72); border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.14); border-radius: 18px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.panel.warn { border-color: rgb(var(--c-highlight, 255 207 125) / 0.6); }
+.form-control, .form-select { background: rgb(var(--c-fixed-000000, 0 0 0) / 0.25); border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.2); color: rgb(var(--c-fixed-ffffff, 255 255 255)); }
+.form-control:focus, .form-select:focus { background: rgb(var(--c-fixed-000000, 0 0 0) / 0.35); color: rgb(var(--c-fixed-ffffff, 255 255 255)); }
+.form-select option { color: rgb(var(--c-fixed-000000, 0 0 0)); }
+.form-label { color: var(--mute, rgb(var(--c-muted, 170 163 210))); font-size: .85rem; }
+.note { color: var(--mute, rgb(var(--c-muted, 170 163 210))); font-size: .85rem; }
+.pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+.pills label { display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .85rem; border-radius: 999px; border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.2); cursor: pointer; font-size: .9rem; }
+.pills input { accent-color: rgb(var(--c-accent2, 92 255 176)); }
+.picklist { max-height: 280px; overflow: auto; border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.12); border-radius: 12px; padding: .5rem; }
+.picklist label { display: flex; gap: .6rem; align-items: center; padding: .35rem .5rem; border-radius: 8px; font-size: .9rem; }
+.picklist label:hover { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.05); }
+.picklist small { color: var(--mute, rgb(var(--c-muted, 170 163 210))); margin-left: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.tbl th { text-align: left; font-weight: 600; color: var(--mute, rgb(var(--c-muted, 170 163 210))); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; padding: .5rem .6rem; border-bottom: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.12); }
+.tbl td { padding: .6rem; border-bottom: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.07); vertical-align: middle; }
+.tbl a { color: inherit; }
+.tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+.chip { display: inline-block; padding: .15rem .6rem; border-radius: 999px; font-size: .74rem; font-weight: 700; white-space: nowrap; }
+.chip.up { background: rgb(var(--c-accent, 45 226 230) / 0.15); color: rgb(var(--c-accent, 45 226 230)); }
+.chip.now { background: rgb(var(--c-accent2, 92 255 176) / 0.18); color: rgb(var(--c-accent2, 92 255 176)); }
+.chip.done { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); color: var(--mute, rgb(var(--c-muted, 170 163 210))); }
+.chip.qr { background: rgb(var(--c-primary, 139 92 255) / 0.22); color: rgb(var(--c-primary-c8b6ff, 200 182 255)); }
+.chip.present { background: rgb(var(--c-accent2, 92 255 176) / 0.16); color: rgb(var(--c-accent2, 92 255 176)); }
+.chip.late { background: rgb(var(--c-highlight, 255 207 125) / 0.16); color: rgb(var(--c-highlight, 255 207 125)); }
+.chip.excused { background: rgb(var(--c-accent, 45 226 230) / 0.15); color: rgb(var(--c-accent, 45 226 230)); }
+.chip.absent { background: rgb(var(--c-danger, 255 147 180) / 0.16); color: rgb(var(--c-danger, 255 147 180)); }
+.pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pct.low { color: rgb(var(--c-danger, 255 147 180)); }
+.pct.ok { color: rgb(var(--c-accent2, 92 255 176)); }
+.totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .75rem; }
+.totals div { border-radius: 14px; padding: .8rem 1rem; background: rgb(var(--c-fixed-000000, 0 0 0) / 0.22); border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); }
+.totals b { display: block; font-size: 1.6rem; line-height: 1.1; }
+.totals span { font-size: .8rem; color: var(--mute, rgb(var(--c-muted, 170 163 210))); }
+.scroll-x { overflow-x: auto; }
+@media (max-width: 700px) {
+    .panel { padding: 1rem; }
+    .tbl .hide-sm { display: none; }
+}

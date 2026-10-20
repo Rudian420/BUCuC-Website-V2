@@ -1,0 +1,6 @@
+# Old links and QR codes point at past_events.html; serve them through past_events.php
+# (adds uploaded events and honours a site lockdown).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^past_events\.html$ past_events.php [L,QSA]
+</IfModule>
