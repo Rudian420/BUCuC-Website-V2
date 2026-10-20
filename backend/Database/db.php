@@ -13,7 +13,7 @@ if (PHP_SAPI !== 'cli' && !headers_sent()) {
     header('Referrer-Policy: strict-origin-when-cross-origin');
 }
 ini_set('log_errors', '1');
-ini_set('error_log', __DIR__ . '/../logs/php_errors.log');
+ini_set('error_log', defined('PHP_ERROR_LOG') ? PHP_ERROR_LOG : __DIR__ . '/../logs/php_errors.log');   // the test runner logs elsewhere
 error_reporting(E_ALL);
 
 /** Plain "Site temporarily unavailable" page (or JSON for API calls); the details only go to the log. */

@@ -7,6 +7,17 @@ Last updated: 19 Oct 2026 (after the audit fixes)
 
 ---
 
+## P. Production readiness (phases)
+
+### [x] P1. Tests in the repo
+Done 20 Oct 2026: the browser suites live in `tests/` (instruction.md §18). Run `cd tests && npm install` once, then `node tests/run.js` before every upload: it uses its own throwaway database and made-up data, never the real one.
+- **Do:** commit and push the new `tests/` folder (its `runtime/` and `node_modules/` are git-ignored).
+- **Test:** `node tests/run.js` ends with "15/15 suites passed".
+
+### [ ] P2–P8. Caching and speed, images, backups and monitoring, privacy, security headers, SEO, analytics and accessibility
+One phase at a time; each ends with the full test run and a report.
+
+
 ## A. Go live (do these first, in this order)
 
 ### [ ] A1. Commit the work to git

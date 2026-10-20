@@ -241,6 +241,27 @@ CREATE TABLE IF NOT EXISTS `tenure_people` (
   KEY `idx_people_tenure` (`tenure_id`, `grp`, `sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Every non-notice e-mail sent (password e-mails, congratulations): daily limits per account. Also created by mailer_ensure().
+CREATE TABLE IF NOT EXISTS `mail_log` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `account_key` VARCHAR(20) NOT NULL,
+  `kind` VARCHAR(20) NOT NULL,
+  `recipient` VARCHAR(255) NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_mail_account` (`account_key`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Apply form submissions per IP (rate limit). Also created by signup_handler.php.
+CREATE TABLE IF NOT EXISTS `signup_attempts` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `ip` VARCHAR(45) NOT NULL,
+  `saved` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_signup_ip` (`ip`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Sponsor banners (2026-10-20, Super Admin only). Also created by ads_ensure() in backend/includes/ads.php.
 CREATE TABLE IF NOT EXISTS `ad_spots` (
   `spot` VARCHAR(20) NOT NULL,

@@ -22,3 +22,7 @@ backend/config/recovery.token
 
 # Old database dumps (admin password hashes, personal data)
 bucuc.sql
+
+# Test runner: throwaway database, logs, downloads, installed packages
+tests/runtime/
+tests/node_modules/

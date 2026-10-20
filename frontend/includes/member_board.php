@@ -90,8 +90,10 @@ function board_import_sheet(PDO $conn)
     }
     $find = $conn->prepare("SELECT id, email, gsuite_email FROM members WHERE university_id = ?");
     $upd = $conn->prepare("UPDATE members SET position = ?, email = ?, gsuite_email = ? WHERE id = ?");
-    $ins = $conn->prepare("INSERT INTO members (full_name, university_id, email, gsuite_email, department, phone, semester, gender, position, application_status, status)
-                           VALUES (?, ?, ?, ?, '', '', '', '', ?, 'accepted', 'active')");
+    // (the live table's old application_status / status columns have defaults and nothing reads them;
+    //  schema.sql doesn't have them, so they are not written here)
+    $ins = $conn->prepare("INSERT INTO members (full_name, university_id, email, gsuite_email, department, phone, semester, gender, position)
+                           VALUES (?, ?, ?, ?, '', '', '', '', ?)");
     $added = $updated = $skipped = 0;
     $valid = fn($e) => filter_var($e, FILTER_VALIDATE_EMAIL) ? $e : null;
     while (($r = fgetcsv($fh)) !== false) {

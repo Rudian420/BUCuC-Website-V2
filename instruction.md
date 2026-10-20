@@ -72,6 +72,13 @@ This document describes the BRAC University Cultural Club (BUCuC) website precis
 │   ├── scripts/handover_reminders.php    CLI / cron: send the handover reminder when it is due
 │   ├── scripts/colorize_css.py           turns plain colours in the CSS into palette variables (re-run after adding CSS)
 │   └── vendor/                           Composer dependencies (committed)
+├── tests/                            browser test suites and their runner (§18): node tests/run.js
+│   ├── run.js                        starts a throwaway database + site, runs the suites, prints a summary
+│   ├── config.js                     paths, ports, tool locations (XAMPP_DIR, CHROME_PATH)
+│   ├── test_prepend.php              test settings: test database, e-mail to a file, fake Google / YouTube
+│   ├── e2e/*.js                      the 15 suites            seed/seed.php  made-up test data
+│   ├── fixtures/                     fake Google Sheet / Apps Script / YouTube, test images and videos
+│   └── runtime/                      (git-ignored) the test database, logs, sessions, downloads
 └── frontend/
     ├── index.php                         public one-page site
     ├── past_events.php                   public Past Events page: every event from the database inside past_events.html, lockdown-aware
@@ -906,3 +913,25 @@ Older commits contain the database password (`backend/Database/config.php`), the
 6. Check: `git log --all -p | grep -c "OLD-DB-PASSWORD"` must print `0`.
 7. `git push --force --mirror`. Everyone else must re-clone (old clones still contain the secrets). On GitHub, also ask support to clear cached views if the repository was ever public.
 (BFG Repo-Cleaner works too: `bfg --replace-text replacements.txt` then `bfg --delete-files '*.log'`.)
+
+## 18. Testing
+
+All features are covered by browser test suites in `tests/` (about 700 checks). They run against a **throwaway copy**: their own database server, their own made-up data, e-mail written to a file, and fake Google / YouTube services. They never touch the live database, XAMPP's own MySQL (port 3306), real e-mail or the real Google Sheets.
+
+**Run them**
+```
+cd tests && npm install          (first time only: installs puppeteer-core)
+node tests/run.js                every suite (about 15 minutes)
+node tests/run.js roles events   only some
+node tests/run.js --list         what each suite covers
+```
+The summary shows each suite as ✓ / ✗ with its checks; failing checks are printed, and full output is in `tests/runtime/logs/<suite>.txt`. Exit code 0 = everything passed. Run them before every upload to the live site.
+
+**What the runner does**
+- Starts MariaDB from XAMPP (`E:/xampp`, change with `XAMPP_DIR`) on port **3307** with its data folder in `tests/runtime/db` (created on the first run). If anything else is using 3307 it stops instead of touching it, and it checks that the server answering is its own (`@@datadir`).
+- Starts the site with `php -S 127.0.0.1:8099` and `tests/test_prepend.php` (database `bucuc_test`, `AUTH_MAIL_CAPTURE` so mail is written to `tests/runtime/auth_mail_capture.jsonl`, Google Sheets on a closed port, the member sheet / Apps Script / YouTube oEmbed faked by `tests/fixtures` on 127.0.0.1:8098). Ports 8098 / 8099 must be free.
+- Before each suite: a fresh `bucuc_test` from `backend/Database/schema.sql` (so the fresh-install schema is tested too) + `tests/seed/seed.php` (375 made-up applicants with example.com / example.edu addresses, the Apply switch, dashboard numbers) + five test admins (`super@test.local` / `superpass123`, `admin@test.local` / `adminpass123` (HR), `panel@test.local` / `panelpass123`, `miap@test.local` / `miappass123`, `sec@test.local` / `secpass1234`).
+- After each suite: `backend/Api/members.json` is put back and every file the suite uploaded under `frontend/images` / `frontend/video` is removed. At the end the servers are stopped.
+- Chrome: `C:/Program Files/Google/Chrome/Application/chrome.exe` (change with `CHROME_PATH`).
+
+**Writing a new check**: add it to the suite of that feature (or a new `tests/e2e/<name>.js` plus a line in `SUITES` in `tests/run.js`). Use `tests/config.js` for paths (`T.BASE`, `T.MYSQL`, `T.DB_NAME`, `T.RUNTIME`…), print `PASS  …` / `FAIL  …` lines and end with `N/M passed`. Never put a real password or real personal data in `tests/`.
