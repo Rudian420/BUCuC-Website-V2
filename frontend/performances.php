@@ -39,12 +39,15 @@ $hasUndated = (bool) array_filter($videos, fn($v) => gallery_when($v) === '');
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#06040f">
     <meta name="description" content="Music videos, flash mobs and show highlights by BRAC University Cultural Club (BUCuC).">
-    <title>Performances - BRAC University Cultural Club</title>
+    <title>Performances | BUCuC</title>
     <link rel="preconnect" href="https://i.ytimg.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="css/aurora.css?v=<?= filemtime(__DIR__ . '/css/aurora.css') ?>">
     <link rel="stylesheet" href="css/gallery.css?v=<?= filemtime(__DIR__ . '/css/gallery.css') ?>">
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <style>
         .pg-wrap { position: relative; z-index: 2; max-width: 1180px; margin: 0 auto; padding: 28px 16px 64px; }
         .pg-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }

@@ -30,13 +30,13 @@ const PERMISSIONS = [
     'upload_hero'     => ['label' => 'Upload hero video',              'help' => 'Replace the homepage video'],
     'send_notices'    => ['label' => 'Send email notices',             'help' => 'E-mail all members, a group (GB / ASB / Secretary Panel) or picked members'],
     'manage_gallery'  => ['label' => 'Manage the performance gallery', 'help' => 'Add, edit, hide, reorder and delete YouTube videos on the public Performances page'],
-    'handover_contacts' => ['label' => 'See handover contacts',      'help' => 'Read and edit the Contacts section of the handover notes (sponsors, vendors, venues, phone numbers)'],
+    'handover_contacts' => ['label' => 'See handover contacts',      'help' => 'Read and edit the Contacts section of the handover notes (sponsors, vendors, venues, phone numbers). Only for roles that can open the notes'],
     'take_attendance' => ['label' => 'Take attendance',                'help' => 'Create attendance sessions, mark members, run QR check-in, and see attendance reports (also the percentages on the member pages)'],
 ];
 
 const ROLE_DEFAULTS = [
     'panel_admin'     => ['final_approve', 'view_members', 'promote_gb_asb', 'promote_sp', 'upload_carousel', 'upload_panel', 'upload_events', 'upload_hero', 'send_notices', 'manage_gallery', 'take_attendance', 'handover_contacts'],
-    'hr_admin'        => ['final_approve', 'view_members', 'promote_gb_asb', 'upload_carousel', 'upload_panel', 'upload_events', 'upload_hero', 'send_notices', 'manage_gallery', 'take_attendance', 'handover_contacts'],
+    'hr_admin'        => ['final_approve', 'view_members', 'promote_gb_asb', 'upload_carousel', 'upload_panel', 'upload_events', 'upload_hero', 'send_notices', 'manage_gallery', 'take_attendance'],
     'miap_admin'      => ['upload_carousel', 'upload_panel', 'upload_events', 'upload_hero', 'manage_gallery'],
     'secretary_admin' => [],
 ];
@@ -134,6 +134,15 @@ function permissions_for_admin(PDO $pdo, $adminId, $role)
         }
     }
     return array_keys($perms);
+}
+
+/** Roles that may open the Handover Notes. Fixed by role: no permission tick can give them to anyone else. */
+const HANDOVER_ROLES = ['super_admin', 'panel_admin'];
+
+/** May the signed-in admin open the Handover Notes (pages, menu link, dashboard card, reminder e-mail, log entries)? */
+function can_handover()
+{
+    return in_array(role_normalize($_SESSION['admin_role'] ?? null), HANDOVER_ROLES, true);
 }
 
 /** Does the signed-in admin have this permission or fixed power? */

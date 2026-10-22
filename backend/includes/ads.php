@@ -64,12 +64,7 @@ function ads_require_super($json = false)
 
 function ads_not_found()
 {
-    while (ob_get_level() > 0) ob_end_clean();
-    http_response_code(404);
-    header('Content-Type: text/html; charset=iso-8859-1');
-    $uri = htmlspecialchars(strtok($_SERVER['REQUEST_URI'] ?? '/', '?'), ENT_QUOTES);
-    echo "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>404 Not Found</title>\n</head><body>\n<h1>Not Found</h1>\n<p>The requested URL $uri was not found on this server.</p>\n</body></html>\n";
-    exit();
+    site_not_found();   // the site's normal 404 page, same as any missing URL
 }
 
 /** The image rules for the crop tool on the ads page (same shape as media_rules_js()). */
@@ -122,6 +117,100 @@ function ads_is_bot()
 
 /* ------------------------------------------------------------------ public side */
 
+defined('AD_QUEUE_FILE') || define('AD_QUEUE_FILE', __DIR__ . '/../cache/ad_views_queue.json');
+
+/** Queues an ad view into a fast file buffer instead of immediately blocking on a database write */
+function ad_views_queue($adId, $day = null, $count = 1)
+{
+    if (empty($adId) || ads_is_bot() || !empty($_SESSION['admin'])) return;
+    $day = $day ?: ads_today();
+    $dir = dirname(AD_QUEUE_FILE);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+        @file_put_contents($dir . '/.htaccess', "Order Deny,Allow\nDeny from all\n");
+    }
+
+    $fp = @fopen(AD_QUEUE_FILE, 'c+');
+    if (!$fp) return;
+
+    if (flock($fp, LOCK_EX)) {
+        $size = filesize(AD_QUEUE_FILE);
+        $data = [];
+        if ($size > 0) {
+            $raw = fread($fp, $size);
+            $data = json_decode($raw, true) ?: [];
+        }
+        $key = $adId . '|' . $day;
+        $data[$key] = ($data[$key] ?? 0) + (int) $count;
+
+        // If batch reaches threshold (10 views), flush immediately to DB
+        $total = array_sum($data);
+        if ($total >= 10) {
+            ftruncate($fp, 0);
+            rewind($fp);
+            flock($fp, LOCK_UN);
+            fclose($fp);
+            ad_views_write_batch($data);
+            return;
+        }
+
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, json_encode($data));
+        fflush($fp);
+        flock($fp, LOCK_UN);
+    }
+    fclose($fp);
+}
+
+/** Flushes any buffered ad views to the database in a single transaction */
+function ad_views_flush()
+{
+    if (!is_file(AD_QUEUE_FILE)) return;
+    $fp = @fopen(AD_QUEUE_FILE, 'c+');
+    if (!$fp) return;
+    $data = [];
+    if (flock($fp, LOCK_EX)) {
+        $size = filesize(AD_QUEUE_FILE);
+        if ($size > 0) {
+            $raw = fread($fp, $size);
+            $data = json_decode($raw, true) ?: [];
+            ftruncate($fp, 0);
+            rewind($fp);
+        }
+        flock($fp, LOCK_UN);
+    }
+    fclose($fp);
+
+    if (!empty($data)) {
+        ad_views_write_batch($data);
+    }
+}
+
+/** Writes accumulated ad views in a single database transaction */
+function ad_views_write_batch(array $batch)
+{
+    if (empty($batch)) return;
+    try {
+        $pdo = db();
+        ads_ensure($pdo);
+        $st = $pdo->prepare("INSERT INTO ad_stats (ad_id, day, views) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + VALUES(views)");
+        $pdo->beginTransaction();
+        foreach ($batch as $key => $views) {
+            [$adId, $day] = explode('|', $key, 2);
+            $st->execute([(int) $adId, $day, (int) $views]);
+        }
+        $pdo->commit();
+    } catch (\Throwable $e) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('ad_views_write_batch: ' . $e->getMessage());
+    }
+}
+
+register_shutdown_function('ad_views_flush');
+
 /**
  * The banner for one spot, or '' when the spot is off or has no live ad (nothing at all is printed,
  * so no gap). Several live ads in one spot rotate at random on each page load. Counts one view.
@@ -141,7 +230,8 @@ function ad_slot($spot)
         $ad = $live[random_int(0, count($live) - 1)];
         // a view = this page load, by a real visitor (not a bot, not an admin previewing the site)
         if (!ads_is_bot() && empty($_SESSION['admin'])) {
-            $pdo->prepare("INSERT INTO ad_stats (ad_id, day, views) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE views = views + 1")->execute([$ad['id'], ads_today()]);
+            ad_views_queue($ad['id']);
+            $_SESSION['ad_view_' . $ad['id']] = time();
         }
     } catch (\Throwable $e) {
         error_log('ad_slot: ' . $e->getMessage());
@@ -150,12 +240,23 @@ function ad_slot($spot)
     [$w, $h] = AD_SPOTS[$spot]['desktop'];
     [$mw, $mh] = AD_SPOTS[$spot]['mobile'];
     $h_ = fn($v) => htmlspecialchars((string) $v, ENT_QUOTES);
-    $mobile = $ad['image_mobile'] ? '<source media="(max-width: 600px)" srcset="' . $h_($ad['image_mobile']) . '" width="' . $mw . '" height="' . $mh . '">' : '';
+    $sources = '';
+    if ($ad['image_mobile']) {
+        $mobWebp = media_webp_url($ad['image_mobile']);
+        if ($mobWebp !== $ad['image_mobile']) {
+            $sources .= '<source media="(max-width: 600px)" type="image/webp" srcset="' . $h_($mobWebp) . '">';
+        }
+        $sources .= '<source media="(max-width: 600px)" srcset="' . $h_($ad['image_mobile']) . '" width="' . $mw . '" height="' . $mh . '">';
+    }
+    $deskWebp = media_webp_url($ad['image']);
+    if ($deskWebp !== $ad['image']) {
+        $sources .= '<source type="image/webp" srcset="' . $h_($deskWebp) . '">';
+    }
     // Neutral names (sp-band, go.php, images/sponsors/): ad blockers hide anything called "ad-slot", "ad.php" or "/ads/"
-    return '<aside class="sp-band sp-' . $h_($spot) . '" aria-label="Sponsor">'
+    return '<aside class="sp-band sp-' . $h_($spot) . '" data-sp-id="' . (int) $ad['id'] . '" aria-label="Sponsor">'
         . '<a href="go.php?id=' . (int) $ad['id'] . '" target="_blank" rel="sponsored noopener" title="' . $h_($ad['advertiser']) . '">'
         . '<span class="sp-tag">Sponsored</span>'
-        . '<picture>' . $mobile . '<img src="' . $h_($ad['image']) . '" width="' . $w . '" height="' . $h . '" alt="' . $h_($ad['advertiser']) . '" loading="lazy" decoding="async"></picture>'
+        . '<picture>' . $sources . '<img src="' . $h_($ad['image']) . '" width="' . $w . '" height="' . $h . '" alt="' . $h_($ad['advertiser']) . '" loading="lazy" decoding="async"></picture>'
         . '</a></aside>';
 }
 
@@ -183,6 +284,7 @@ function ad_click(PDO $pdo, $id)
 /** Views, clicks per ad between two dates (inclusive): [ad_id => ['views', 'clicks']] */
 function ads_totals(PDO $pdo, $from, $to)
 {
+    ad_views_flush();
     $st = $pdo->prepare("SELECT ad_id, SUM(views) v, SUM(clicks) c FROM ad_stats WHERE day BETWEEN ? AND ? GROUP BY ad_id");
     $st->execute([$from, $to]);
     $out = [];

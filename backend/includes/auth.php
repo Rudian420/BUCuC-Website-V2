@@ -19,11 +19,27 @@ require_once __DIR__ . '/../Database/db.php';
 require_once __DIR__ . '/site.php';
 require_once __DIR__ . '/roles.php';
 require_once __DIR__ . '/palette.php';
+require_once __DIR__ . '/admin_menu.php';
 
 // Every HTML page gets the saved site palette (Admin → Site Colours), except pages that define
 // NO_SITE_PALETTE (the Site Colours page itself always shows the original colours).
 if (PHP_SAPI !== 'cli' && !defined('NO_SITE_PALETTE')) {
     ob_start('palette_inject');
+}
+// Every HTML page also gets js/ui.js: submit buttons show a spinner and can't be pressed twice.
+if (PHP_SAPI !== 'cli') {
+    ob_start('ui_inject');
+}
+
+/** Output-buffer callback: adds js/ui.js to HTML pages (before </head>, deferred). */
+function ui_inject($html)
+{
+    if (stripos($html, '</head>') === false || stripos($html, 'js/ui.js') !== false) return $html;
+    foreach (headers_list() as $h) {
+        if (stripos($h, 'content-type:') === 0 && stripos($h, 'text/html') === false) return $html;
+    }
+    $src = auth_frontend_url('js/ui.js') . '?v=' . @filemtime(__DIR__ . '/../../frontend/js/ui.js');
+    return preg_replace('/<\/head>/i', '<script src="' . $src . '" defer></script>' . "\n</head>", $html, 1);
 }
 
 const AUTH_IDLE_TIMEOUT    = 30 * 60;   // seconds of inactivity before an admin is signed out
@@ -135,6 +151,7 @@ function require_admin(array $opts = [])
 {
     $json = !empty($opts['json']);
     auth_start_session();
+    site_send_never_cache_headers();
 
     if (empty($_SESSION['admin']) || empty($_SESSION['admin_id'])) {
         auth_deny($json, 401, 'Your session has ended. Please log in again.', auth_frontend_url('admin-login.php'));
@@ -210,7 +227,7 @@ function csrf_check()
 
 /**
  * Adds a hidden csrf_token field to every <form method="post">, a <meta name="csrf-token">
- * tag, and the lockdown notice (when one is scheduled), so pages need no per-page edits.
+ * tag, the lockdown notice (when one is scheduled) and the admin Menu bar, so pages need no per-page edits.
  */
 function csrf_autoinject()
 {
@@ -222,9 +239,11 @@ function csrf_autoinject()
     $token = htmlspecialchars(csrf_token(), ENT_QUOTES);
     $banner = lockdown_banner_html();
     ob_start(function ($html) use ($token, $banner) {
-        if ($banner !== '') {
-            $html = preg_replace_callback('/<body\b[^>]*>/i', function ($m) use ($banner) {
-                return $m[0] . $banner;
+        // the admin "Menu" bar on every admin page (backend/includes/admin_menu.php); pages opt out with NO_ADMIN_MENU
+        $menu = defined('NO_ADMIN_MENU') || stripos($html, '<body') === false ? '' : admin_menu_html();
+        if ($banner !== '' || $menu !== '') {
+            $html = preg_replace_callback('/<body\b[^>]*>/i', function ($m) use ($banner, $menu) {
+                return $m[0] . $banner . $menu;
             }, $html, 1);
         }
         $html = preg_replace(
@@ -232,7 +251,10 @@ function csrf_autoinject()
             '$1<input type="hidden" name="csrf_token" value="' . $token . '">',
             $html
         );
-        return preg_replace('/<\/head>/i', '    <meta name="csrf-token" content="' . $token . '">' . "\n</head>", $html, 1);
+        // admin-ui.css: the Menu bar and phone-sized buttons on every admin page
+        $css = htmlspecialchars(auth_frontend_url('css/admin-ui.css') . '?v=' . @filemtime(__DIR__ . '/../../frontend/css/admin-ui.css'), ENT_QUOTES);
+        return preg_replace('/<\/head>/i', '    <meta name="csrf-token" content="' . $token . '">' . "\n"
+            . '    <link rel="stylesheet" href="' . $css . '">' . "\n</head>", $html, 1);
     });
 }
 

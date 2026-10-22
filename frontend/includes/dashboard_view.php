@@ -1,4 +1,5 @@
 <?php
+define('NO_ADMIN_MENU', true);   // this page has its own sidebar with the same links
 /**
  * Shared dashboard markup for admin_dashboard.php and super_admin_dashboard.php.
  * Expects: $isSuper (bool), $dashboardData (from getDashboardStats()).
@@ -11,7 +12,7 @@ $pendingCount = $dashboardData['pending_applications'];
 require_once __DIR__ . '/../../backend/includes/handover.php';
 $handoverDoc = null;
 $handoverEmpty = [];
-try {
+if (can_handover()) try {
     $handoverDoc = handover_current_doc(db());
     if ($handoverDoc) $handoverEmpty = handover_empty_sections(db(), $handoverDoc);
 } catch (\Throwable $e) {
@@ -32,15 +33,18 @@ register_shutdown_function(function () {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $isSuper ? 'Super Admin Dashboard' : 'Admin Dashboard' ?> - BRAC University Cultural Club</title>
+    <title><?= $isSuper ? 'Super Admin Dashboard' : 'Dashboard' ?> | BUCuC Admin</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-icons.css" rel="stylesheet">
     <link href="css/templatemo-festava-live.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/all.min.css" />
+    <script src="js/chart.umd.min.js"></script>
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
     <style>
         .handover-card { display: flex; gap: 1rem; align-items: center; margin: 0 0 1.5rem; padding: 1rem 1.25rem; border-radius: 18px; text-decoration: none; color: inherit;
@@ -56,85 +60,34 @@ register_shutdown_function(function () {
 <body class="au au-admin">
     <script src="js/aurora-sky.js"></script>
     <!-- Mobile Toggle Button -->
-    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Open menu">
-        <i class="fas fa-bars"></i>
+    <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+        <i class="fas fa-bars" aria-hidden="true"></i>
     </button>
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar" aria-label="Admin menu">
         <div class="sidebar-header">
             <div class="sidebar-logo">
-                <img src="images/logo.png" alt="BUCuC Logo">
+                <picture><source srcset="images/logo.webp" type="image/webp"><img src="images/logo.png" alt="BUCuC Logo"></picture>
                 <h3>BUCuC</h3>
             </div>
             <p class="sidebar-subtitle"><?= htmlspecialchars(role_label($_SESSION['admin_role'] ?? null)) ?></p>
         </div>
 
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Dashboard</div>
-                <a href="<?= $isSuper ? 'super_admin_dashboard.php' : 'admin_dashboard.php' ?>" class="nav-item active">Overview</a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Management</div>
-                <?php if (can('view_members')): ?>
-                    <a href="member_types.php" class="nav-item">Members</a>
-                <?php endif; ?>
-                <a href="pending_applications.php" class="nav-item">
-                    Applications
-                    <?php if ($pendingCount > 0): ?>
-                        <span class="badge bg-warning ms-2"><?= $pendingCount ?></span>
-                    <?php endif; ?>
-                </a>
-                <a href="shortlisted_members.php" class="nav-item">Shortlisted Members</a>
-                <?php if (can('view_members')): ?>
-                    <a href="approved_members.php" class="nav-item">Approved Members</a>
-                <?php endif; ?>
-                <?php if (can_any(['upload_carousel', 'upload_panel', 'upload_events', 'upload_hero'])): ?>
-                    <a href="media.php" class="nav-item">Website Media</a>
-                <?php endif; ?>
-                <?php if (can('take_attendance')): ?>
-                    <a href="attendance.php" class="nav-item">Attendance</a>
-                <?php endif; ?>
-                <a href="handover.php" class="nav-item">Handover Notes</a>
-                <?php if (auth_is_super()): /* sponsor banners exist only for the Super Admin */ ?>
-                    <a href="sponsors.php" class="nav-item">Sponsor Banners</a>
-                <?php endif; ?>
-                <?php if (can('manage_gallery')): ?>
-                    <a href="video_gallery.php" class="nav-item">Performance Gallery</a>
-                <?php endif; ?>
-                <?php if (can('manage_site')): ?>
-                    <a href="dashboard_updates.php" class="nav-item">Dashboard Updates</a>
-                <?php endif; ?>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Settings</div>
-                <?php if (can('manage_site')): ?>
-                    <a href="admin-signup-control.php" class="nav-item">Signup Control</a>
-                <?php endif; ?>
-                <?php if (can('home_stats')): ?>
-                    <a href="home_stats.php" class="nav-item">Homepage Stats</a>
-                <?php endif; ?>
-                <?php if (can('theme')): ?>
-                    <a href="theme.php" class="nav-item">Site Colours</a>
-                <?php endif; ?>
-                <?php if (can('send_notices')): ?>
-                    <a href="notices.php" class="nav-item">Email Notices</a>
-                <?php endif; ?>
-                <a href="profile.php" class="nav-item">My Profile</a>
-                <?php if (can('admin_management')): ?>
-                    <a href="admin_management.php" class="nav-item">Admin Management</a>
-                <?php endif; ?>
-                <a href="activity_log.php" class="nav-item">Activity Log</a>
-                <?php if (can('lockdown')): ?>
-                    <a href="lockdown.php" class="nav-item">Site Lockdown</a>
-                <?php endif; ?>
-                <a href="logout.php" class="nav-item">Logout</a>
-            </div>
+        <nav class="sidebar-nav" aria-label="Sections">
+            <?php foreach (admin_menu_sections() as $title => $items): /* same list as the Menu bar on other admin pages */ ?>
+                <div class="nav-section">
+                    <div class="nav-section-title"><?= htmlspecialchars($title) ?></div>
+                    <?php foreach ($items as [$label, $page]): ?>
+                        <a href="<?= htmlspecialchars($page) ?>" class="nav-item<?= $page === auth_dashboard_page() ? ' active" aria-current="page' : '' ?>">
+                            <?= htmlspecialchars($label) ?>
+                            <?php if ($page === 'pending_applications.php' && $pendingCount > 0): ?><span class="badge bg-warning ms-2"><?= $pendingCount ?></span><?php endif; ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
         </nav>
-    </div>
+    </nav>
 
     <!-- Main Content -->
     <div class="main-content">

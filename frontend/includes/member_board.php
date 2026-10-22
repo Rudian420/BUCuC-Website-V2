@@ -135,7 +135,7 @@ if (($_POST['action'] ?? '') === 'import_sheet') {
         log_activity('members_imported', "From the Google member sheet: $added added, $updated levels updated, $skipped skipped", null, null, 'Member list');
         header('Location: ' . $selfPage . '?success=' . urlencode("Imported from the Google sheet: $added new members, $updated levels updated" . ($skipped ? ", $skipped rows skipped" : '') . '.'));
     } catch (\Throwable $e) {
-        header('Location: ' . $selfPage . '?error=' . urlencode($e->getMessage()));
+        header('Location: ' . $selfPage . '?error=' . urlencode(friendly_error($e, 'Importing the member sheet')));
     }
     exit;
 }
@@ -212,14 +212,17 @@ foreach ($conn->query("SELECT position, COUNT(*) n FROM members GROUP BY positio
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $board ?> Members - BUCuC</title>
+    <title><?= $board ?> Members | BUCuC Admin</title>
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="stylesheet" href="css/all.min.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <style>
         /* Main Container Styling */
         .applications-container {
@@ -520,7 +523,7 @@ foreach ($conn->query("SELECT position, COUNT(*) n FROM members GROUP BY positio
             transform: translateX(-5px);
         }
         /* Attendance line under each name (admins with take_attendance) */
-        .att-line { display: inline-block; margin-top: 2px; font-size: .78rem; text-decoration: none; color: var(--mute, rgb(var(--c-muted, 170 163 210))); }
+        .att-line { display: inline-flex; align-items: center; min-height: 24px; margin-top: 2px; font-size: .78rem; text-decoration: none; color: var(--mute, rgb(var(--c-muted, 170 163 210))); }
         .att-line:hover { text-decoration: underline; }
         .att-ok { color: rgb(var(--c-accent2, 92 255 176)); font-weight: 600; }
         .att-low { color: rgb(var(--c-danger, 255 147 180)); font-weight: 700; }
@@ -612,7 +615,7 @@ foreach ($conn->query("SELECT position, COUNT(*) n FROM members GROUP BY positio
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/admin-toast.js"></script>
 
     <script>
@@ -795,7 +798,6 @@ foreach ($conn->query("SELECT position, COUNT(*) n FROM members GROUP BY positio
                 document.getElementById('membersTableContainer').style.display = 'block';
             })
             .catch(err => {
-                console.error('Error loading data:', err);
                 document.getElementById('loadingState').style.display = 'none';
                 document.getElementById('emptyTitle').textContent = 'Could not load the member sheet';
                 document.getElementById('emptyText').textContent = 'Check your connection and that the Google Sheet is still published as CSV.';

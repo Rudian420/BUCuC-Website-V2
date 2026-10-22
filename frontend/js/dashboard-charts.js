@@ -130,9 +130,40 @@
         });
     }
 
-    document.getElementById('sidebarToggle').addEventListener('click', function () {
-        document.getElementById('sidebar').classList.toggle('open');
-    });
+    // Phone menu: the button opens/closes the sidebar; a tapped link, Escape or a tap outside closes it.
+    // While closed on a phone the sidebar is inert (not reachable with Tab); while open, Tab stays inside it.
+    (function () {
+        const btn = document.getElementById('sidebarToggle'), bar = document.getElementById('sidebar');
+        if (!btn || !bar) return;
+        const phone = () => getComputedStyle(btn).display !== 'none';
+        const icon = btn.querySelector('i');
+        function set(open, refocus) {
+            bar.classList.toggle('open', open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+            if (icon) icon.className = open ? 'fas fa-xmark' : 'fas fa-bars';
+            bar.inert = phone() && !open;
+            if (open) { const first = bar.querySelector('a'); if (first) first.focus(); }
+            else if (refocus) btn.focus();
+        }
+        set(false);
+        btn.addEventListener('click', () => set(!bar.classList.contains('open'), true));
+        bar.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { if (phone()) set(false); }));
+        document.addEventListener('click', e => {
+            if (bar.classList.contains('open') && !bar.contains(e.target) && !btn.contains(e.target)) set(false);
+        });
+        document.addEventListener('keydown', e => {
+            if (!bar.classList.contains('open')) return;
+            if (e.key === 'Escape') { set(false, true); return; }
+            if (e.key === 'Tab') {
+                const f = [btn, ...bar.querySelectorAll('a')];
+                const i = f.indexOf(document.activeElement);
+                if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+                else if (!e.shiftKey && (i === f.length - 1 || i === -1)) { e.preventDefault(); f[0].focus(); }
+            }
+        });
+        window.addEventListener('resize', () => { bar.inert = phone() && !bar.classList.contains('open'); });
+    })();
 
     if (window.Chart) {
         initMemberGrowthChart();

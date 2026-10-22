@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ->execute([date('Y-m-d H:i:s', $ts), $notice, $public !== '' ? $public : null, $myId]);
             $conn->commit();
             log_activity('lockdown_scheduled', ($now ? 'Locked immediately' : 'Starts ' . date('j M Y, g:i a', $ts)) . ' — ' . $notice, null, null, 'Whole website');
+            site_cache_clear();
             header('Location: lockdown.php?success=' . urlencode($now ? 'The public website is now offline. The admin panel keeps working.' : 'Lockdown scheduled for ' . date('D j M Y, g:i a', $ts) . '. Every admin will see the notice.'));
             exit();
         }
@@ -41,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->prepare("UPDATE site_lockdown SET status = ?, ended_at = NOW(), ended_by = ? WHERE id = ?")
             ->execute([$wasActive ? 'lifted' : 'cancelled', $myId, $current['id']]);
         log_activity($wasActive ? 'lockdown_lifted' : 'lockdown_cancelled', $wasActive ? 'Website reopened' : 'Scheduled lockdown called off', null, null, 'Whole website');
+        site_cache_clear();
         header('Location: lockdown.php?success=' . urlencode($wasActive ? 'Lockdown lifted. The public website is online again.' : 'The scheduled lockdown was cancelled.'));
         exit();
     }
@@ -55,9 +57,9 @@ $defaultStart = date('Y-m-d\TH:i', time() + 3600);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Lockdown - BUCuC</title>
+    <title>Site Lockdown | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
     <style>
         .wrapx { padding: 2rem 1rem; color: var(--ink, rgb(var(--c-fixed-ffffff, 255 255 255))); max-width: 900px; }
@@ -74,7 +76,10 @@ $defaultStart = date('Y-m-d\TH:i', time() + 3600);
         .hist td, .hist th { padding: .5rem; border-bottom: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); vertical-align: top; }
         .hist th { color: var(--mute, rgb(var(--c-muted, 170 163 210))); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 

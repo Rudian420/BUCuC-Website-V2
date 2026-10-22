@@ -15,6 +15,7 @@
 body {
   background: linear-gradient(135deg, rgb(var(--c-paperText-0f0f23, 15 15 35)) 0%, rgb(var(--c-paperText-1a1a2e, 26 26 46)) 50%, rgb(var(--c-paperText-16213e, 22 33 62)) 100%);
   background-image: url("../images/123.jpg");
+  background-image: image-set(url("../images/123.webp") type("image/webp"), url("../images/123.jpg") type("image/jpeg"));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

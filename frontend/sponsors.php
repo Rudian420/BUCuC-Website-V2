@@ -23,11 +23,19 @@ function sponsor_store(array $file, $base, $ext)
     $name = $base . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(3)) . '.' . $ext;
     if (!move_uploaded_file($file['tmp_name'], $abs . $name)) throw new RuntimeException('Could not save the uploaded image.');
     @chmod($abs . $name, 0644);
+    if (in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'webp'], true)) {
+        media_optimize_and_webp($abs . $name);
+    }
     return SPONSOR_DIR . $name;
 }
 function sponsor_unlink($rel)
 {
-    if ($rel && strpos($rel, SPONSOR_DIR) === 0 && is_file(__DIR__ . '/' . $rel)) @unlink(__DIR__ . '/' . $rel);
+    if ($rel && strpos($rel, SPONSOR_DIR) === 0) {
+        $abs = __DIR__ . '/' . $rel;
+        if (is_file($abs)) @unlink($abs);
+        $w = preg_replace('/\.(jpe?g|png)$/i', '.webp', $abs);
+        if ($w !== $abs && is_file($w)) @unlink($w);
+    }
 }
 function ad_by_id(PDO $pdo, $id)
 {
@@ -36,6 +44,7 @@ function ad_by_id(PDO $pdo, $id)
     return $st->fetch() ?: null;
 }
 $back = function ($tab, $msg, $anchor = '') {
+    site_cache_clear();
     header('Location: sponsors.php?tab=' . $tab . '&success=' . urlencode($msg) . $anchor);
     exit();
 };
@@ -162,15 +171,16 @@ $totals = $tab === 'stats' ? ads_totals($conn, $from, $to) : [];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Sponsor banners - BUCuC</title>
+    <title>Sponsor Banners | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/attendance.css?v=<?= filemtime(__DIR__ . '/css/attendance.css') ?>">
     <link rel="stylesheet" href="vendor/cropperjs/cropper.min.css">
     <link rel="stylesheet" href="css/image-crop.css?v=<?= filemtime(__DIR__ . '/css/image-crop.css') ?>">
     <style>
         .ad-row { display: flex; gap: 1rem; align-items: center; padding: .8rem 0; border-bottom: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); flex-wrap: wrap; }
-        .ad-row img { width: 220px; max-width: 100%; border-radius: 8px; background: rgb(var(--c-fixed-000000, 0 0 0) / 0.3); }
+        .ad-row picture { display: block; }
+        .ad-row img, .ad-row picture img { width: 220px; max-width: 100%; border-radius: 8px; background: rgb(var(--c-fixed-000000, 0 0 0) / 0.3); }
         .ad-row .grow { flex: 1; min-width: 200px; }
         .ad-row .acts { display: flex; gap: .35rem; flex-wrap: wrap; }
         .ad-row .acts form { margin: 0; }
@@ -186,7 +196,10 @@ $totals = $tab === 'stats' ? ads_totals($conn, $from, $to) : [];
         .switch input:checked + span::after { transform: translateX(22px); }
         .switch input:focus-visible + span { outline: 2px solid rgb(var(--c-fixed-ffffff, 255 255 255)); outline-offset: 2px; }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 
@@ -226,12 +239,12 @@ $totals = $tab === 'stats' ? ads_totals($conn, $from, $to) : [];
                             <div class="col-md-6 mb-3"><label class="form-label">Banner (desktop), <?= $sp['desktop'][0] ?> × <?= $sp['desktop'][1] ?> px or smaller<?= $editing ? ' · blank = keep' : '' ?></label>
                                 <input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/webp" <?= $editing ? '' : 'required' ?> data-rule="ad_<?= $formSpot ?>_desktop">
                                 <div class="check-msg"></div>
-                                <?php if ($editing): ?><img src="<?= $h($editing['image']) ?>" alt="Current banner" class="mt-2" style="max-width:100%;border-radius:8px"><?php endif; ?>
+                                <?php if ($editing): ?><picture><source srcset="<?= $h(media_webp_url($editing['image'])) ?>" type="image/webp"><img src="<?= $h($editing['image']) ?>" alt="Current banner" class="mt-2" style="max-width:100%;border-radius:8px"></picture><?php endif; ?>
                             </div>
                             <div class="col-md-6 mb-3"><label class="form-label">Phone image (optional), <?= $sp['mobile'][0] ?> × <?= $sp['mobile'][1] ?> px or smaller; without it phones get the banner</label>
                                 <input type="file" name="image_mobile" class="form-control" accept="image/jpeg,image/png,image/webp" data-rule="ad_<?= $formSpot ?>_mobile">
                                 <div class="check-msg"></div>
-                                <?php if ($editing && $editing['image_mobile']): ?><img src="<?= $h($editing['image_mobile']) ?>" alt="Current phone image" class="mt-2" style="max-width:60%;border-radius:8px">
+                                <?php if ($editing && $editing['image_mobile']): ?><picture><source srcset="<?= $h(media_webp_url($editing['image_mobile'])) ?>" type="image/webp"><img src="<?= $h($editing['image_mobile']) ?>" alt="Current phone image" class="mt-2" style="max-width:60%;border-radius:8px"></picture>
                                     <label class="form-check-label d-block mt-1"><input type="checkbox" class="form-check-input me-2" name="remove_mobile" value="1">Remove the phone image</label><?php endif; ?>
                             </div>
                         </div>
@@ -249,7 +262,7 @@ $totals = $tab === 'stats' ? ads_totals($conn, $from, $to) : [];
                 <?php if (!$ads): ?><p class="note m-0">No ads yet.</p><?php endif; ?>
                 <?php foreach ($ads as $ad): [$sc, $sl] = ad_status($ad); ?>
                     <div class="ad-row" id="ad<?= (int) $ad['id'] ?>">
-                        <img src="<?= $h($ad['image']) ?>" alt="" loading="lazy">
+                        <picture><source srcset="<?= $h(media_webp_url($ad['image'])) ?>" type="image/webp"><img src="<?= $h($ad['image']) ?>" alt="" loading="lazy"></picture>
                         <div class="grow"><b><?= $h($ad['advertiser']) ?></b> <span class="chip <?= $sc ?>"><?= $h($sl) ?></span><br>
                             <small class="note"><?= $h(AD_SPOTS[$ad['spot']]['label'] ?? $ad['spot']) ?> · <?= date('j M Y', strtotime($ad['starts_on'])) ?> – <?= date('j M Y', strtotime($ad['ends_on'])) ?><?= $ad['image_mobile'] ? ' · phone image' : '' ?><?= empty($spots[$ad['spot']]) ? ' · <span style="color:rgb(var(--c-highlight, 255 207 125))">spot is off</span>' : '' ?></small><br>
                             <small class="note"><?= $h($ad['link']) ?></small></div>

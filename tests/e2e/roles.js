@@ -166,7 +166,7 @@ const dec = u => decodeURIComponent(u.replace(/\+/g, ' '));
         ok('super revokes them', (await gate('sec', 'set_venue.php')).includes('permission'));
         r = await post(P.panel, 'admin_management.php', { action: 'save_permissions', admin_id: id('admin@test.local'), 'perms[]': ['view_members', 'promote_gb_asb'] });
         ok('panel can untick HR defaults (final approval off)', (await gate('hr', 'set_venue.php')).includes('permission'));
-        await post(P.panel, 'admin_management.php', { action: 'save_permissions', admin_id: id('admin@test.local'), 'perms[]': ['final_approve', 'view_members', 'promote_gb_asb', 'upload_carousel', 'upload_panel', 'upload_events', 'upload_hero', 'send_notices', 'manage_gallery', 'take_attendance', 'handover_contacts'] });
+        await post(P.panel, 'admin_management.php', { action: 'save_permissions', admin_id: id('admin@test.local'), 'perms[]': ['final_approve', 'view_members', 'promote_gb_asb', 'upload_carousel', 'upload_panel', 'upload_events', 'upload_hero', 'send_notices', 'manage_gallery', 'take_attendance'] });
         ok('…and restore them (no overrides left)', +sql(`SELECT COUNT(*) FROM admin_permissions WHERE admin_id=${id('admin@test.local')}`) === 0);
         r = await post(P.panel, 'admin_management.php', { action: 'save_permissions', admin_id: id('panel@test.local'), 'perms[]': [] });
         ok('Panel Admin permissions are not toggleable', alertText(r.text).includes("can't change permissions"));

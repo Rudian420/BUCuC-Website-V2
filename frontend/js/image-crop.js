@@ -105,6 +105,15 @@
     document.addEventListener('keydown', e => {
         if (modal.hidden) return;
         if (e.key === 'Escape') { e.preventDefault(); cancelCrop(); }
+        if (e.key === 'Tab') {
+            // keep keyboard focus inside the crop window while it is open
+            const f = [...modal.querySelectorAll('button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')].filter(x => x.offsetParent !== null);
+            if (!f.length) return;
+            const first = f[0], last = f[f.length - 1];
+            if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+            else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
     });
 
     function cancelCrop() {

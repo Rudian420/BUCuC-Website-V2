@@ -16,6 +16,7 @@ $dup = [];   // same video already in the gallery (save needs confirming)
 
 function back($msg, $anchor = '')
 {
+    site_cache_clear();
     header('Location: video_gallery.php?success=' . urlencode($msg) . $anchor);
     exit();
 }
@@ -174,9 +175,9 @@ $h = fn($s) => htmlspecialchars((string) $s, ENT_QUOTES);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performance Gallery - BUCuC</title>
+    <title>Performance Gallery | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/gallery.css?v=<?= filemtime(__DIR__ . '/css/gallery.css') ?>">
     <style>
         .wrapx { padding: 2rem 1rem; color: var(--ink, rgb(var(--c-fixed-ffffff, 255 255 255))); max-width: 1180px; margin: 0 auto; }
@@ -224,7 +225,10 @@ $h = fn($s) => htmlspecialchars((string) $s, ENT_QUOTES);
             .handle { display: none; }   /* phones: use the position numbers */
         }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 

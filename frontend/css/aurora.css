@@ -3,7 +3,7 @@
    Load AFTER the page's other stylesheets, together with js/aurora-sky.js
    (placed right after <body>). Public pages add css/site.css on top.
    ========================================================================= */
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap");
+@import url("fonts.css");
 
 :root {
     --void: rgb(var(--c-bg, 6 4 15));

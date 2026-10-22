@@ -29,6 +29,9 @@ function store_upload(array $file, $dir, $baseName, $ext)
     if (!move_uploaded_file($file['tmp_name'], $abs . $name)) throw new RuntimeException('Could not save the uploaded file.');
     @chmod($abs . $name, 0644);
     $freshUploads[] = $abs . $name;
+    if (in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'webp'], true)) {
+        media_optimize_and_webp($abs . $name);
+    }
     return $dir . $name;
 }
 
@@ -47,6 +50,7 @@ function tenure_by_id(PDO $conn, $id)
 
 function done($query, $msg)
 {
+    site_cache_clear();
     // keep a #section jump after the query string, or the message would be lost
     [$query, $hash] = array_pad(explode('#', $query, 2), 2, '');
     header('Location: media.php?' . $query . '&success=' . urlencode($msg) . ($hash !== '' ? '#' . $hash : ''));
@@ -285,7 +289,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } catch (\Throwable $e) {
         if ($conn->inTransaction()) $conn->rollBack();
-        foreach ($freshUploads as $f) @unlink($f);   // nothing in the database points at them
+        foreach ($freshUploads as $f) {
+            @unlink($f);   // nothing in the database points at them
+            $w = preg_replace('/\.(jpe?g|png)$/i', '.webp', $f);
+            if ($w !== $f && is_file($w)) @unlink($w);
+        }
         error_log('media.php: ' . $e->getMessage());
         $error = $e instanceof PDOException ? 'Saving failed because of a database problem. Nothing was changed; please try again.' : $e->getMessage();
     }
@@ -335,9 +343,9 @@ $positions = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Media - BUCuC</title>
+    <title>Website Media | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
     <style>
         .wrapx { padding: 2rem 1rem; color: var(--ink, rgb(var(--c-fixed-ffffff, 255 255 255))); }
@@ -371,13 +379,17 @@ $positions = [
         .cur-badge { display: inline-block; padding: .2rem .7rem; border-radius: 999px; background: rgb(var(--c-accent2, 92 255 176) / 0.16); color: rgb(var(--c-accent2, 92 255 176)); font-size: .78rem; font-weight: 700; margin-left: .5rem; vertical-align: middle; }
         .ev-row { display: flex; gap: 1rem; align-items: center; padding: .7rem 0; border-bottom: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); }
         .ev-row.editing { background: rgb(var(--c-accent, 45 226 230) / 0.08); border-radius: 10px; }
-        .ev-row img { width: 120px; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; flex: none; }
+        .ev-row picture { flex: none; display: block; width: 120px; }
+        .ev-row img, .ev-row picture img { width: 120px; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; flex: none; display: block; }
         .ev-row .grow { flex: 1; min-width: 0; }
         .note { color: var(--mute, rgb(var(--c-muted, 170 163 210))); font-size: .85rem; }
         video.preview { width: 100%; max-width: 560px; aspect-ratio: 16 / 9; background: rgb(var(--c-fixed-000000, 0 0 0)); border-radius: 14px; }
-        @media (max-width: 600px) { .ev-row { flex-wrap: wrap; } .ev-row img { width: 100%; } }
+        @media (max-width: 600px) { .ev-row { flex-wrap: wrap; } .ev-row img, .ev-row picture, .ev-row picture img { width: 100%; } }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="vendor/cropperjs/cropper.min.css">
     <link rel="stylesheet" href="css/image-crop.css?v=<?= filemtime(__DIR__ . '/css/image-crop.css') ?>">
     <link rel="stylesheet" href="css/aurora.css">
@@ -502,7 +514,10 @@ $positions = [
                         <div class="grid">
                             <?php foreach ($people as $p): ?>
                                 <div class="tile<?= $editing && $editing['id'] === $p['id'] ? ' editing' : '' ?>">
-                                    <img src="<?= htmlspecialchars(mediaUrl($p['image'])) ?>" alt="" style="aspect-ratio:<?= $grp === 'panel' ? '4/5' : '250/330' ?>" loading="lazy" onerror="this.onerror=null;this.src='images/placeholder.svg'">
+                                    <picture>
+                                        <source srcset="<?= htmlspecialchars(mediaUrl(media_webp_url($p['image']))) ?>" type="image/webp">
+                                        <img src="<?= htmlspecialchars(mediaUrl($p['image'])) ?>" alt="" style="aspect-ratio:<?= $grp === 'panel' ? '4/5' : '250/330' ?>" loading="lazy" onerror="this.onerror=null;this.src='images/placeholder.svg'">
+                                    </picture>
                                     <div class="meta"><b><?= htmlspecialchars($p['name']) ?></b><small><?= htmlspecialchars($p['position']) ?></small></div>
                                     <div class="acts">
                                         <a href="media.php?tab=tenures&t=<?= (int) $selected['id'] ?>&edit=<?= (int) $p['id'] ?>#<?= $grp ?>" class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></a>
@@ -537,7 +552,7 @@ $positions = [
                         <div class="col-md-6 mb-3"><label class="form-label">Photo<?= $evEditing ? ' (blank = keep the current one)' : '' ?></label>
                             <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp" <?= $evEditing ? '' : 'required' ?> data-rule="events">
                             <div class="check-msg"></div>
-                            <?php if ($evEditing): ?><div class="d-flex gap-2 align-items-center mt-2"><img src="<?= htmlspecialchars(mediaUrl($evEditing['image'])) ?>" alt="Current photo" style="width:120px;aspect-ratio:3/2;object-fit:cover;border-radius:8px" onerror="this.onerror=null;this.src='images/placeholder.svg'"><small class="note">Current photo</small></div><?php endif; ?>
+                            <?php if ($evEditing): ?><div class="d-flex gap-2 align-items-center mt-2"><picture><source srcset="<?= htmlspecialchars(mediaUrl(media_webp_url($evEditing['image']))) ?>" type="image/webp"><img src="<?= htmlspecialchars(mediaUrl($evEditing['image'])) ?>" alt="Current photo" style="width:120px;aspect-ratio:3/2;object-fit:cover;border-radius:8px" onerror="this.onerror=null;this.src='images/placeholder.svg'"></picture><small class="note">Current photo</small></div><?php endif; ?>
                         </div>
                         <div class="col-md-6 mb-3"><label class="form-label">Description (optional; blank line = new paragraph)</label><textarea name="description" class="form-control" rows="7"><?= htmlspecialchars($evOld('description')) ?></textarea></div>
                         <div class="col-md-6 mb-3"><label class="form-label">Highlights (optional; one per line)</label><textarea name="highlights" class="form-control" rows="7"><?= htmlspecialchars($evOld('highlights')) ?></textarea></div>
@@ -552,7 +567,10 @@ $positions = [
                 <p class="note">All events, newest first, including the older ones that used to be written into the page. Removing an older event keeps its original photo file (some are used elsewhere on the site); photos uploaded here are deleted with their event.</p>
                 <?php foreach ($events as $ev): ?>
                     <div class="ev-row<?= $evEditing && (int) $evEditing['id'] === (int) $ev['id'] ? ' editing' : '' ?>" id="e<?= (int) $ev['id'] ?>">
-                        <img src="<?= htmlspecialchars(mediaUrl($ev['image'])) ?>" alt="" loading="lazy" onerror="this.onerror=null;this.src='images/placeholder.svg'">
+                        <picture>
+                            <source srcset="<?= htmlspecialchars(mediaUrl(media_webp_url($ev['image']))) ?>" type="image/webp">
+                            <img src="<?= htmlspecialchars(mediaUrl($ev['image'])) ?>" alt="" loading="lazy" onerror="this.onerror=null;this.src='images/placeholder.svg'">
+                        </picture>
                         <div class="grow"><b><?= htmlspecialchars($ev['title']) ?></b><br><small class="note"><?= date('j F Y', strtotime($ev['event_date'])) ?><?= $ev['place'] ? ' · ' . htmlspecialchars($ev['place']) : '' ?></small></div>
                         <a href="past_events.php#<?= htmlspecialchars(event_anchor($ev)) ?>" target="_blank" class="btn btn-sm btn-secondary" title="View on the Past Events page" aria-label="View <?= htmlspecialchars($ev['title']) ?>"><i class="fas fa-external-link-alt"></i></a>
                         <a href="media.php?tab=events&edit=<?= (int) $ev['id'] ?>#eventForm" class="btn btn-sm btn-outline-light" title="Edit" aria-label="Edit <?= htmlspecialchars($ev['title']) ?>"><i class="fas fa-pen"></i></a>
@@ -563,6 +581,7 @@ $positions = [
                         </form>
                     </div>
                 <?php endforeach; ?>
+                <?php if (!$events): ?><p class="note mb-0">No past events yet. Add the first one with the form above; it appears on the Past Events page and the homepage.</p><?php endif; ?>
             </div>
 
         <?php elseif ($tab === 'hero'): ?>

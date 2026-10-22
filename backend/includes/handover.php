@@ -315,7 +315,8 @@ function handover_send_due_reminders(PDO $pdo)
         if (handover_empty($have[$key]['content'] ?? '')) $empty[] = $def['title'];
     }
     $sent = 0;
-    $admins = $pdo->query("SELECT email, username, role FROM adminpanel WHERE status = 'active' AND role IS NOT NULL")->fetchAll();
+    // only the roles that can open the notes get the reminder (HANDOVER_ROLES in roles.php)
+    $admins = $pdo->query("SELECT email, username, role FROM adminpanel WHERE status = 'active' AND role IN ('" . implode("', '", HANDOVER_ROLES) . "')")->fetchAll();
     $link = rtrim(APP_URL, '/') . '/frontend/handover.php';
     foreach ($admins as $a) {
         $roleKey = 'role:' . role_normalize($a['role']);

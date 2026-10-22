@@ -184,8 +184,7 @@ try {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    error_log("handle_application.php error: " . $e->getMessage());
-    redirectWith($redirect_to, 'error', 'Server error: ' . $e->getMessage());
+    redirectWith($redirect_to, 'error', friendly_error($e, 'Updating the application'));
 }
 
 /**

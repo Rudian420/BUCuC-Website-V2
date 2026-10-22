@@ -3,7 +3,7 @@
 Things that couldn't be finished or checked on my local copy. Each item says **how to do it** and **how to test it**.
 Tick the box (`[x]`) when done. New items get added at the bottom of the right section as work continues.
 
-Last updated: 19 Oct 2026 (after the audit fixes)
+Last updated: 21 Oct 2026 (after the UI polish and QA pass)
 
 ---
 
@@ -14,7 +14,76 @@ Done 20 Oct 2026: the browser suites live in `tests/` (instruction.md §18). Run
 - **Do:** commit and push the new `tests/` folder (its `runtime/` and `node_modules/` are git-ignored).
 - **Test:** `node tests/run.js` ends with "15/15 suites passed".
 
-### [ ] P2–P8. Caching and speed, images, backups and monitoring, privacy, security headers, SEO, analytics and accessibility
+### [ ] Q1. UI polish pass: upload and check (21 Oct 2026)
+Every page was checked as every role at phone, tablet and desktop width (instruction.md §13.1m). The changed code and the **compressed photos** are only on this PC.
+- **Do:** upload the changed files (see the commit), including the whole `frontend/images` folder, `favicon.ico` (site root), `frontend/404.php`, `frontend/site.webmanifest`, `frontend/css/admin-ui.css`, `frontend/js/ui.js`, `backend/includes/admin_menu.php`, `tests/.htaccess` and the root `.htaccess`.
+- **Test:** on your phone open the homepage, the panel and secretary photos and an admin page: photos look sharp and upright, the ☰ Menu opens and closes. Open `https://<your domain>/frontend/nothing-here` → the BUCuC "Page Not Found" page with "Back to the homepage". Open `https://<your domain>/tests/run.js` → refused (403/404). The browser tab shows the BUCuC logo.
+
+### [ ] Q2. Keep or delete the photo originals
+The 129 photos were shrunk from 143 MB to 26 MB (same names, so nothing else changed). The untouched originals are in `E:\BUCuC_image_originals` (outside the website).
+- **Do:** once Q1 looks right, keep that folder somewhere safe (e.g. Google Drive) or delete it. To undo one photo, copy it back from there.
+- **Test:** nothing to test.
+
+### [ ] Q3. Three photos are not used anywhere
+`frontend/images/slide1.png` (1.8 MB), `frontend/images/1st.JPG` and `frontend/images/bucuc.jpg` are not used by any page or database row.
+- **Do:** tell me to delete them, or keep them.
+- **Test:** after deleting, `node tests/run.js uiqa` still passes (it checks for broken images).
+
+### [ ] Q4. Click the Facebook and LinkedIn links once yourself
+Automatic link checkers are blocked by Facebook (answer 400) and LinkedIn (answer 999), so these weren't verified: the footer Facebook page and BUCuC Archive links, and the advisor's LinkedIn link. Every other link and image works.
+- **Do / Test:** on the live homepage click each one; each must open the right page.
+
+### [ ] Q5. Privacy and Terms links in the footer
+They come with the Privacy Policy / Terms pages in Phase 5 (you review them before they go live).
+
+### [x] P2. Caching and speed (21 Oct 2026)
+Done 21 Oct 2026: self-hosted fonts and vendor assets, never-cache headers on dynamic/admin pages, immediate lockdown safety, server-side homepage cache with admin auto-invalidation, ad view beacon with batched writes, gzip compression and expiry headers in `.htaccess`, and step-by-step Cloudflare rules in `instruction.md` §19.
+- **Do:** in your Cloudflare dashboard, add the 3 Cache Rules documented in `instruction.md` §19.2 (Bypass Admin/Forms, Cache Static Assets 1 year, Revalidate Public HTML).
+- **Test:** all 17 test suites pass; `backend/cache/` contains `home_data.json` after loading the homepage; ad views count properly via beacon and batch writes; `.htaccess` serves gzip and 1-year expires headers for static files.
+
+### [x] P3. Image compression and WebP with fallback (22 Oct 2026)
+Done 22 Oct 2026: 214 .webp companion images generated alongside fallbacks in `frontend/images/` without recompressing existing JPEGs/PNGs (same base names, zero DB schema changes). Zero images in the entire repository exceed 1 MB (`2nd.JPG` produced `2nd.webp` at 169 KB). All images in `frontend/images/` scanned and verified 100% free of GPS/EXIF metadata tags. Full `<picture>` tag and `image-set()` rollout across the entire site (homepage brand, hero disc, about logo, carousel moments, advisors, presidential panel, secretaries swiper, footer brand, past events, ad banners, admin previews, and CSS backgrounds). No Accept-based URL rewriting or `Vary: Accept` required: modern browsers fetch `.webp` directly and legacy browsers fetch the JPEG/PNG fallback via native `<picture>` source selection. Compatible with Cloudflare Free tier out of the box. Tested by new `webp` test suite (65+ checks green).
+- **Do:**
+  1. Upload all generated `.webp` files in `frontend/images/` to Hostinger alongside existing files (same folders, same base names).
+  2. Upload `.htaccess` (root) and `frontend/images/.htaccess` (static headers, no Accept rewrites).
+  3. Upload updated PHP files (`backend/includes/site.php`, `backend/includes/ads.php`, `frontend/index.php`, `frontend/past_events.php`, `frontend/media.php`, `frontend/sponsors.php`, etc.).
+- **Test (Live checks on Hostinger via curl / browser):**
+  1. **Direct WebP request (real path, returns WebP without Vary: Accept):**
+     ```bash
+     curl -sI "https://<your-domain>/frontend/images/2nd.webp"
+     ```
+     * **Expected HTTP Status:** `200 OK`
+     * **Expected Content-Type:** `image/webp`
+     * **Expected Vary Header:** No `Vary: Accept`
+  2. **Direct fallback request (real path, returns JPEG without Vary: Accept):**
+     ```bash
+     curl -sI -H "Accept: image/webp,image/*,*/*" "https://<your-domain>/frontend/images/2nd.JPG"
+     ```
+     * **Expected HTTP Status:** `200 OK`
+     * **Expected Content-Type:** `image/jpeg` (always JPEG, even when client sends `Accept: image/webp`)
+     * **Expected Vary Header:** No `Vary: Accept`
+  3. **Uppercase extension file (`2nd.JPG` vs `2nd.webp`):**
+     ```bash
+     curl -sI "https://<your-domain>/frontend/images/2nd.JPG"
+     ```
+     * **Expected Content-Type:** `image/jpeg`
+     ```bash
+     curl -sI "https://<your-domain>/frontend/images/2nd.webp"
+     ```
+     * **Expected Content-Type:** `image/webp`
+  4. **Transparent PNG logo (PNG fallback vs WebP companion):**
+     ```bash
+     curl -sI "https://<your-domain>/frontend/images/logo.png"
+     ```
+     * **Expected Content-Type:** `image/png`
+     ```bash
+     curl -sI "https://<your-domain>/frontend/images/logo.webp"
+     ```
+     * **Expected Content-Type:** `image/webp`
+  5. **Upload a photo in Website Media & verify stripped EXIF:**
+     Log in to Admin → Website Media → upload a photo taken from a smartphone with GPS enabled. Download the uploaded file and inspect properties: GPS coordinates (Latitude/Longitude) are completely absent.
+
+### [ ] P4–P8. Backups and monitoring, privacy, security headers, SEO, analytics and accessibility
 One phase at a time; each ends with the full test run and a report.
 
 

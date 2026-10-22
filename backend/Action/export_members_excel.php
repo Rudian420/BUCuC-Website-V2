@@ -133,6 +133,6 @@ try {
     error_log("Excel export completed: " . count($members) . " {$list['label']} records exported by " . ($_SESSION['admin_name'] ?? 'Admin'));
 } catch (\Throwable $e) {
     error_log("Excel export error: " . $e->getMessage());
-    header("Location: ../../frontend/{$list['page']}?error=" . urlencode('Failed to export data: ' . $e->getMessage()));
+    header("Location: ../../frontend/{$list['page']}?error=" . urlencode(friendly_error($e, 'Making the Excel file')));
     exit();
 }

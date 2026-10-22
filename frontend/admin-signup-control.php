@@ -48,10 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup_status'])) {
         $statusText = $newStatus ? 'enabled' : 'disabled';
         $message = "Signup status successfully updated to: " . strtoupper($statusText);
         log_activity('signup_toggled', 'Applications ' . strtoupper($statusText));
+        site_cache_clear();
         $messageType = 'success';
 
     } catch (Exception $e) {
-        $message = "Error updating signup status: " . $e->getMessage();
+        $message = friendly_error($e, 'Changing the Apply switch');
         $messageType = 'error';
     }
 }
@@ -82,12 +83,15 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Signup Control | BRAC University Cultural Club</title>
+    <title>Signup Control | BUCuC Admin</title>
 
     <!-- Bootstrap CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-icons.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
 
     <style>
         body {

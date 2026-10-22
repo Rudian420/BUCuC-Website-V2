@@ -5,6 +5,19 @@
  */
 
 require_once __DIR__ . '/../Database/db.php';
+require_once __DIR__ . '/cache.php';
+
+/**
+ * Send HTTP headers instructing browsers, CDNs, and proxies never to cache this response.
+ * Used on all admin pages, forms, login/reset flows, and during a lockdown.
+ */
+function site_send_never_cache_headers()
+{
+    if (headers_sent()) return;
+    header('Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+}
 
 /** One PDO connection per request. */
 function db()
@@ -216,6 +229,7 @@ function form_secret()
  */
 function form_token($form)
 {
+    site_send_never_cache_headers();
     $t = time();
     return $t . '.' . hash_hmac('sha256', $form . '|' . $t, form_secret());
 }
@@ -276,6 +290,7 @@ function site_guard_public($json = false)
     }
     http_response_code(503);
     header('Retry-After: 3600');
+    site_send_never_cache_headers();
     if ($json) {
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'The website is temporarily closed.']);
@@ -297,8 +312,11 @@ function lockdown_render_page($lockdown)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Temporarily closed - BRAC University Cultural Club</title>
-    <link rel="icon" type="image/png" href="<?= $base ?>images/logopng.png">
+    <title>Temporarily Closed | BUCuC</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= $base ?>images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= $base ?>images/favicon-16.png">
+    <link rel="apple-touch-icon" href="<?= $base ?>images/apple-touch-icon.png">
+    <link rel="manifest" href="<?= $base ?>site.webmanifest">
     <link rel="stylesheet" href="<?= $base ?>css/aurora.css">
     <style>
         .lock-wrap { position: relative; z-index: 2; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
@@ -314,7 +332,7 @@ function lockdown_render_page($lockdown)
     <script src="<?= $base ?>js/aurora-sky.js"></script>
     <main class="lock-wrap">
         <div class="lock-card">
-            <img src="<?= $base ?>images/logopng.png" alt="BUCuC logo">
+            <picture><source srcset="<?= $base ?>images/logopng.webp" type="image/webp"><img src="<?= $base ?>images/logopng.png" alt="BUCuC logo"></picture>
             <h1 class="au-gradient-text">Down for maintenance</h1>
             <p><?= nl2br(htmlspecialchars($msg)) ?></p>
             <p>We'll be back soon. — BRAC University Cultural Club</p>
@@ -323,6 +341,73 @@ function lockdown_render_page($lockdown)
     </main>
 </body>
 </html><?php
+}
+
+/**
+ * A message for the person on the page when something failed. Database and PHP errors are written
+ * to the error log and replaced with a plain explanation (they can contain table names or SQL);
+ * the site's own exceptions already carry a message meant for people and are shown as they are.
+ * $what says what failed, e.g. 'Saving the venue' or 'Loading the list'.
+ */
+function friendly_error(\Throwable $e, $what)
+{
+    error_log($what . ': ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    if ($e instanceof \PDOException || $e instanceof \Error) {
+        return "$what failed because of a server problem. Please try again in a minute; if it keeps happening, tell whoever looks after the website (details are in the error log).";
+    }
+    return $e->getMessage();
+}
+
+/**
+ * The site's 404 page (Aurora style, link back home), then exit. Used for missing pages
+ * (.htaccess ErrorDocument → 404.php) and for pages that must look like they don't exist
+ * (recover.php without a token, sponsor pages for anyone but the Super Admin), so all three look the same.
+ * Absolute /frontend/ paths: the page can be shown at any URL depth.
+ */
+function site_not_found()
+{
+    while (ob_get_level() > 0) ob_end_clean();
+    http_response_code(404);
+    header('Content-Type: text/html; charset=utf-8');
+    header('Cache-Control: no-store');
+    $base = '/frontend/';
+    ?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Page Not Found | BUCuC</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= $base ?>images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= $base ?>images/favicon-16.png">
+    <link rel="apple-touch-icon" href="<?= $base ?>images/apple-touch-icon.png">
+    <link rel="manifest" href="<?= $base ?>site.webmanifest">
+    <link rel="stylesheet" href="<?= $base ?>css/aurora.css">
+    <style>
+        .lock-wrap { position: relative; z-index: 2; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+        .lock-card { max-width: 520px; width: 100%; box-sizing: border-box; text-align: center; padding: 40px 28px; border-radius: 26px; background: rgb(var(--c-surface, 14 9 36) / 0.82); border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.14); overflow-wrap: anywhere; }
+        @media (max-width: 420px) { .lock-card { padding: 32px 20px; } }
+        .lock-card img { width: 84px; height: 84px; object-fit: contain; background: rgb(var(--c-fixed-ffffff, 255 255 255)); border-radius: 20px; padding: 8px; }
+        .lock-card .code { margin: 18px 0 0; font: 800 clamp(44px, 12vw, 72px)/1 'Bricolage Grotesque', sans-serif; }
+        .lock-card h1 { margin: 8px 0 10px; font-size: clamp(24px, 6vw, 34px); }
+        .lock-card p { color: var(--mute, rgb(var(--c-muted, 170 163 210))); line-height: 1.6; margin: 0 0 22px; }
+        .lock-card .au-btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 22px; }
+    </style>
+</head>
+<body class="au au-site">
+    <script src="<?= $base ?>js/aurora-sky.js"></script>
+    <main class="lock-wrap">
+        <div class="lock-card">
+            <picture><source srcset="<?= $base ?>images/logopng.webp" type="image/webp"><img src="<?= $base ?>images/logopng.png" alt="BUCuC logo"></picture>
+            <p class="code au-gradient-text" aria-hidden="true">404</p>
+            <h1>Page Not Found</h1>
+            <p>This page doesn't exist or has moved. Check the address, or start again from the homepage.</p>
+            <a class="au-btn" href="<?= $base ?>index.php">Back to the homepage</a>
+        </div>
+    </main>
+</body>
+</html><?php
+    exit();
 }
 
 /** Fixed notice with a live countdown, shown on every admin page while a lockdown is scheduled or running. */
@@ -508,6 +593,124 @@ function media_check_image(array $file, $ruleKey)
     }
     return [true, '', MEDIA_IMAGE_TYPES[$info[2]]];
 }
+
+/**
+ * Automatically optimizes an uploaded image, corrects EXIF orientation,
+ * preserves PNG transparency, and creates a companion .webp file with the same base name.
+ */
+function media_optimize_and_webp($absPath)
+{
+    if (!is_file($absPath)) return false;
+    $info = @getimagesize($absPath);
+    if (!$info) return false;
+
+    $mime = $info['mime'] ?? '';
+    $ext = strtolower(pathinfo($absPath, PATHINFO_EXTENSION));
+    $im = null;
+    if ($mime === 'image/jpeg' || in_array($ext, ['jpg', 'jpeg'])) {
+        $im = @imagecreatefromjpeg($absPath);
+    } elseif ($mime === 'image/png' || $ext === 'png') {
+        $im = @imagecreatefrompng($absPath);
+    } elseif ($mime === 'image/webp' || $ext === 'webp') {
+        $im = @imagecreatefromwebp($absPath);
+    }
+    if (!$im) return false;
+
+    // Apply EXIF orientation
+    if (function_exists('exif_read_data') && ($mime === 'image/jpeg' || in_array($ext, ['jpg', 'jpeg']))) {
+        $exif = @exif_read_data($absPath);
+        if (!empty($exif['Orientation'])) {
+            switch ($exif['Orientation']) {
+                case 3:
+                    $im = imagerotate($im, 180, 0);
+                    break;
+                case 6:
+                    $im = imagerotate($im, -90, 0);
+                    break;
+                case 8:
+                    $im = imagerotate($im, 90, 0);
+                    break;
+            }
+        }
+    }
+
+    // Scale down if dimensions are larger than 1920px max dimension
+    $w = imagesx($im);
+    $h = imagesy($im);
+    if ($w > 1920 || $h > 1920) {
+        $scale = min(1920 / $w, 1920 / $h);
+        $scaled = imagescale($im, (int) round($w * $scale), (int) round($h * $scale));
+        if ($scaled) {
+            imagedestroy($im);
+            $im = $scaled;
+        }
+    }
+
+    $isPng = ($mime === 'image/png' || $ext === 'png');
+
+    // Preserve PNG transparency
+    imagealphablending($im, false);
+    imagesavealpha($im, true);
+
+    // Save optimized fallback
+    if ($isPng) {
+        imagepng($im, $absPath, 9);
+    } elseif ($ext === 'webp') {
+        imagewebp($im, $absPath, 82);
+    } else {
+        imagejpeg($im, $absPath, 82);
+        if (filesize($absPath) > 1048576) {
+            imagejpeg($im, $absPath, 75);
+        }
+    }
+
+    // Create the WebP version with the same base name
+    $webpPath = preg_replace('/\.(jpe?g|png)$/i', '.webp', $absPath);
+    if ($webpPath !== $absPath) {
+        imagewebp($im, $webpPath, $isPng ? 85 : 82);
+        @chmod($webpPath, 0644);
+        if (filesize($webpPath) > 1048576) {
+            imagewebp($im, $webpPath, 75);
+        }
+    }
+
+    imagedestroy($im);
+    return true;
+}
+
+/**
+ * Returns the companion WebP URL for an image path or URL.
+ * Preserves query strings (e.g. ?v=...).
+ * If the image is SVG or already WebP, returns the original.
+ */
+function media_webp_url($url)
+{
+    if (!is_string($url) || $url === '') return $url;
+    $parts = explode('?', $url, 2);
+    $path = $parts[0];
+    $query = isset($parts[1]) ? '?' . $parts[1] : '';
+    if (preg_match('/\.(jpe?g|png)$/i', $path)) {
+        $webpPath = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
+        return $webpPath . $query;
+    }
+    return $url;
+}
+
+/**
+ * Renders a <picture> element with WebP <source> and fallback <img>.
+ * Preserves all attributes on the <img> (class, id, alt, loading, data-*, onerror, style).
+ */
+function picture_img($src, $alt = '', $attrs = '', $webpSrc = null)
+{
+    $h = fn($v) => htmlspecialchars((string) $v, ENT_QUOTES);
+    if (!is_string($src) || $src === '') return '';
+    $webp = $webpSrc ?: media_webp_url($src);
+    if ($webp === $src || preg_match('/^(https?:)?\/\//i', $src) || preg_match('/\.svg(\?.*)?$/i', $src)) {
+        return '<img src="' . $h($src) . '" alt="' . $h($alt) . '"' . ($attrs ? ' ' . $attrs : '') . '>';
+    }
+    return '<picture><source srcset="' . $h($webp) . '" type="image/webp"><img src="' . $h($src) . '" alt="' . $h($alt) . '"' . ($attrs ? ' ' . $attrs : '') . '></picture>';
+}
+
 
 /**
  * Reads duration, size and video codec from an MP4 file without ffmpeg.
@@ -763,7 +966,10 @@ function media_delete_file($rel)
     foreach (['images', 'video'] as $root) {
         $base = realpath($front . '/' . $root);
         if ($path && $base && strpos($path, $base . DIRECTORY_SEPARATOR) === 0 && is_file($path)) {
-            return @unlink($path);
+            $ok = @unlink($path);
+            $webp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
+            if ($webp !== $path && is_file($webp)) @unlink($webp);
+            return $ok;
         }
     }
     return false;
@@ -778,7 +984,11 @@ function secretaries_from_folder($folder)
 {
     $dir = __DIR__ . '/../../frontend/' . $folder;
     $people = [];
+    $seen = [];
     foreach (glob($dir . '*.{jpg,jpeg,png,webp,JPG,JPEG,PNG}', GLOB_BRACE) ?: [] as $file) {
+        $base = pathinfo($file, PATHINFO_FILENAME);
+        if (isset($seen[$base])) continue;
+        $seen[$base] = true;
         $parsed = parsePanel26SecretaryFilename(basename($file));
         $people[] = ['name' => $parsed['name'], 'position' => $parsed['department'], 'image' => $folder . basename($file), 'facebook' => ''];
     }

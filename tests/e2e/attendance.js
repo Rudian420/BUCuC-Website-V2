@@ -161,7 +161,7 @@ async function checkIn(page, sess, studentId, token) {
         ok('open / end logged', sql("SELECT COUNT(*) FROM admin_activity_log WHERE action IN ('attendance_checkin_opened','attendance_checkin_closed')") === '2');
 
         // ---------------------------------------------------------------- 3. after the end: reason required
-        sql(`UPDATE attendance_sessions SET session_date = '${today}' - INTERVAL 1 DAY WHERE id IN (${s1}, ${s2})`);
+        sql(`UPDATE attendance_sessions SET session_date = '${today}' - INTERVAL 2 DAY WHERE id IN (${s1}, ${s2})`);
         await S.goto(BASE + `attendance_session.php?id=${s1}`);
         ok('ended session asks for a reason', !!(await S.$('input[name=reason]')));
         await markRow(S, '21100005', 'excused');

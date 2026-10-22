@@ -507,6 +507,7 @@ strong {
 -----------------------------------------*/
 .about-section {
   background-image: url('../images/edward-unsplash-blur.jpg');
+  background-image: image-set(url('../images/edward-unsplash-blur.webp') type('image/webp'), url('../images/edward-unsplash-blur.jpg') type('image/jpeg'));
   background-color: rgb(var(--c-highlight-704010, 112 64 16));
   background-repeat: no-repeat;
   background-size: cover;
@@ -552,6 +553,7 @@ strong {
 -----------------------------------------*/
 .ticket-section {
   background-image: url('../images/nicholas-green-unsplash-blur.jpg');
+  background-image: image-set(url('../images/nicholas-green-unsplash-blur.webp') type('image/webp'), url('../images/nicholas-green-unsplash-blur.jpg') type('image/jpeg'));
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
@@ -647,6 +649,7 @@ strong {
 -----------------------------------------*/
 .schedule-section {
   background-image: url('../images/nainoa-shizuru-unsplash-blur.jpg');
+  background-image: image-set(url('../images/nainoa-shizuru-unsplash-blur.webp') type('image/webp'), url('../images/nainoa-shizuru-unsplash-blur.jpg') type('image/jpeg'));
   background-color: rgb(var(--c-fixed-242424, 36 36 36));
   background-repeat: no-repeat;
   background-position: center;

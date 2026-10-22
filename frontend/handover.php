@@ -7,6 +7,10 @@
  */
 require_once '../backend/includes/auth.php';
 require_admin(['csrf_redirect' => 'handover.php']);
+if (!can_handover()) {
+    // Handover Notes are for the Super Admin and the Panel Admin only (HANDOVER_ROLES in roles.php)
+    auth_deny(false, 403, "You don't have access to the Handover Notes.", auth_frontend_url(auth_dashboard_page()) . '?error=' . urlencode("You don't have access to the Handover Notes."));
+}
 require_once '../backend/includes/handover.php';
 
 $conn = db();
@@ -36,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $doc) {
             $sections = handover_sections($conn, $doc['id']);
             $cur = $sections[$key] ?? null;
             if (!handover_can_edit($doc, $key)) {
-                $error = handover_editable($doc) ? "You can't edit this section." : 'These notes are read-only: the next tenure is already current. The Super Admin can unlock them.';
+                $error = handover_editable($doc) ? "You can't edit this section." : (auth_is_super() ? 'These notes are read-only: the next tenure is already current. Unlock them first.' : 'These notes are read-only: the next tenure is already current.');
             } elseif ((int) ($_POST['base'] ?? 0) !== (int) ($cur['version'] ?? 0)) {
                 $error = 'Someone else saved this section while you were editing it. Your text is still below: compare it with the saved version (History), then save again.';
             } else {
@@ -78,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $doc) {
                 $back('Older version restored. The version it replaced is kept in the history too.', '#' . str_replace(':', '-', $key));
             }
         } elseif ($action === 'lock' || $action === 'unlock') {
-            if (!auth_is_super()) $error = 'Only the Super Admin can unlock old handover notes.';
+            if (!auth_is_super()) $error = "You can't unlock old handover notes.";
             elseif ($doc['is_current']) $error = "The current tenure's notes are always editable.";
             else {
                 $conn->prepare("UPDATE handover_docs SET unlocked = ? WHERE id = ?")->execute([$action === 'unlock' ? 1 : 0, $doc['id']]);
@@ -88,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $doc) {
         } elseif ($action === 'set_end') {
             $end = (string) ($_POST['ends_on'] ?? '');
             $d = DateTime::createFromFormat('Y-m-d', $end);
-            if (!$canDates) $error = 'Only the Super Admin or the Panel Admin can set the end date.';
+            if (!$canDates) $error = "You can't set the end date.";
             elseif (!$doc['is_current']) $error = 'The end date is set on the current tenure.';
             elseif ($end !== '' && (!$d || $d->format('Y-m-d') !== $end)) $error = 'Enter a valid date.';
             else {
@@ -147,9 +151,9 @@ function render_view($key, $content, $doc, $h)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handover Notes - BUCuC</title>
+    <title>Handover Notes | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/attendance.css?v=<?= filemtime(__DIR__ . '/css/attendance.css') ?>">
     <style>
         .chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
@@ -181,10 +185,13 @@ function render_view($key, $content, $doc, $h)
         .result mark { background: rgb(var(--c-highlight, 255 207 125) / 0.35); color: inherit; padding: 0 2px; border-radius: 3px; }
         .emptylist { border-radius: 12px; padding: .7rem .9rem; background: rgb(var(--c-highlight, 255 207 125) / 0.1); border: 1px solid rgb(var(--c-highlight, 255 207 125) / 0.35); font-size: .9rem; }
         .toc { display: flex; flex-wrap: wrap; gap: .35rem .8rem; font-size: .85rem; }
-        .toc a { color: inherit; }
+        .toc a { color: inherit; display: inline-flex; align-items: center; min-height: 32px; }
         .toc a.empty { color: var(--mute, rgb(var(--c-muted, 170 163 210))); }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 
@@ -229,7 +236,7 @@ function render_view($key, $content, $doc, $h)
                         <h3 class="m-0"><?= $h($label($doc)) ?></h3>
                         <div class="mt-1">
                             <?php if ($doc['is_current']): ?><span class="chip now">Current tenure · editable</span>
-                            <?php elseif ($doc['unlocked']): ?><span class="chip late">Unlocked by the Super Admin · editable</span>
+                            <?php elseif ($doc['unlocked']): ?><span class="chip late">Unlocked · editable</span>
                             <?php else: ?><span class="chip done"><i class="fas fa-lock me-1"></i>Read-only (a newer tenure is current)</span><?php endif; ?>
                             <?php if (!$doc['tenure_id']): ?><span class="chip done">Tenure removed; notes kept</span><?php endif; ?>
                         </div>

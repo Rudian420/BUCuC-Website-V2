@@ -166,6 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $before = permissions_for_admin($conn, $target['id'], $target['role']);
             $wanted = array_values(array_intersect(array_keys(PERMISSIONS), (array) ($_POST['perms'] ?? [])));
+            // handover contacts mean nothing for roles that can't open the Handover Notes: never store them
+            if (!in_array($target['role'], HANDOVER_ROLES, true)) $wanted = array_values(array_diff($wanted, ['handover_contacts']));
             $defaults = ROLE_DEFAULTS[$target['role']] ?? [];
             $conn->beginTransaction();
             $conn->prepare("DELETE FROM admin_permissions WHERE admin_id = ?")->execute([$target['id']]);
@@ -212,9 +214,9 @@ $roleTone = ['super_admin' => 'r1', 'panel_admin' => 'r2', 'hr_admin' => 'r3', '
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Management - BUCuC</title>
+    <title>Admin Management | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
     <style>
         .management-container { padding: 2rem 1rem; color: var(--ink, rgb(var(--c-fixed-ffffff, 255 255 255))); }
@@ -257,7 +259,10 @@ $roleTone = ['super_admin' => 'r1', 'panel_admin' => 'r2', 'hr_admin' => 'r3', '
             .admin-table td { display: block; border: 0; padding: .2rem 0; }
         }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 
@@ -287,6 +292,7 @@ $roleTone = ['super_admin' => 'r1', 'panel_admin' => 'r2', 'hr_admin' => 'r3', '
                     <input type="hidden" name="admin_id" value="<?= (int) $permTarget['id'] ?>">
                     <div class="perm-grid">
                         <?php foreach (PERMISSIONS as $key => $p): ?>
+                            <?php if ($key === 'handover_contacts' && !in_array($permTarget['role'], HANDOVER_ROLES, true)) continue;   /* no Handover Notes for this role */ ?>
                             <label class="perm-item">
                                 <input type="checkbox" name="perms[]" value="<?= $key ?>" <?= in_array($key, $permTarget['perms'], true) ? 'checked' : '' ?>>
                                 <span><b><?= htmlspecialchars($p['label']) ?></b>

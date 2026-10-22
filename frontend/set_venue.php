@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log('set_venue: ' . $e->getMessage());
         $error_message = 'Saving failed because of a database problem. Please try again.';
     } catch (Exception $e) {
-        $error_message = $e->getMessage();
+        $error_message = friendly_error($e, 'Saving the venue');
     }
 }
 // After an error the form keeps what was typed
@@ -80,7 +80,7 @@ try {
 } catch (Exception $e) {
     $venues = [];
     $latestVenue = null;
-    $fetch_error = "Error fetching venue data: " . $e->getMessage();
+    $fetch_error = friendly_error($e, 'Loading the venues');
 }
 ?>
 
@@ -90,7 +90,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Venue - BRAC University Cultural Club</title>
+    <title>Set Venue | BUCuC Admin</title>
 
     <!-- Bootstrap CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -98,10 +98,13 @@ try {
     <link href="css/templatemo-festava-live.css" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
 
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <style>
         .venue-container {
             min-height: 100vh;
@@ -479,7 +482,6 @@ try {
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
                         showNotification('An error occurred while deleting the venue.', 'error');
                     });
             }

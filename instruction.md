@@ -54,6 +54,7 @@ This document describes the BRAC University Cultural Club (BUCuC) website precis
 │   ├── includes/
 │   │   ├── auth.php                      sessions, require_admin(), CSRF, login throttle, reset tokens, log_activity()
 │   │   ├── roles.php                     5 roles, permissions, can() / require_can(), who may manage whom
+│   │   ├── admin_menu.php                the one list of admin pages: dashboard sidebar + the Menu bar on every admin page
 │   │   ├── site.php                      db(), schema self-check, settings, lockdown, past events, upload rules, MP4 reader
 │   │   ├── palette.php                   site colour palette: generator, contrast checks, save / history, page injection
 │   │   ├── palette_map.json              every colour variable: role + offset from the role colour (made by colorize_css.py)
@@ -69,6 +70,8 @@ This document describes the BRAC University Cultural Club (BUCuC) website precis
 │   │   └── dashboard_stats.php           getDashboardStats(PDO)
 │   ├── logs/                             php_errors.log, email.log, google_sheets.log, auth_email.log, cleared_*.log (archives); all git-ignored
 │   ├── scripts/create_admin.php          CLI: create/reset an admin account (any role)
+│   ├── scripts/compress_images.php       CLI: shrink the photos in frontend/images in place (originals to a backup folder)
+│   ├── scripts/make_favicons.php         CLI: favicon.ico + the PNG icons from images/logopng.png
 │   ├── scripts/handover_reminders.php    CLI / cron: send the handover reminder when it is due
 │   ├── scripts/colorize_css.py           turns plain colours in the CSS into palette variables (re-run after adding CSS)
 │   └── vendor/                           Composer dependencies (committed)
@@ -76,7 +79,8 @@ This document describes the BRAC University Cultural Club (BUCuC) website precis
 │   ├── run.js                        starts a throwaway database + site, runs the suites, prints a summary
 │   ├── config.js                     paths, ports, tool locations (XAMPP_DIR, CHROME_PATH)
 │   ├── test_prepend.php              test settings: test database, e-mail to a file, fake Google / YouTube
-│   ├── e2e/*.js                      the 15 suites            seed/seed.php  made-up test data
+│   ├── e2e/*.js                      the 16 suites            seed/seed.php  made-up test data
+│   ├── .htaccess                     blocks the folder from the web
 │   ├── fixtures/                     fake Google Sheet / Apps Script / YouTube, test images and videos
 │   └── runtime/                      (git-ignored) the test database, logs, sessions, downloads
 └── frontend/
@@ -92,7 +96,7 @@ This document describes the BRAC University Cultural Club (BUCuC) website precis
     ├── attendance_member.php             one member's attendance (overall, per semester, every session)
     ├── attendance_export.php             Excel: one session, or the members report
     ├── checkin.php                       members' QR self check-in (no login)
-    ├── handover.php                      Handover Notes (every admin): tenure documents, edit / history / restore, search
+    ├── handover.php                      Handover Notes (Super Admin and Panel Admin only): tenure documents, edit / history / restore, search
     ├── handover_print.php                a tenure's handover document as a print page (browser → Save as PDF)
     ├── sponsors.php / sponsors_export.php  sponsor banners and the per-ad Excel report (Super Admin; 404 for everyone else)
     ├── go.php                            sponsor banner click: counts it, then redirects to the advertiser
@@ -115,11 +119,13 @@ This document describes the BRAC University Cultural Club (BUCuC) website precis
     ├── sb_members.php / asb_panel.php / gb_members.php   thin wrappers → includes/member_board.php
     ├── includes/dashboard_view.php, includes/member_board.php
     ├── AdminCss/Dashboard.css, AdminCss/admin.css        older admin styles (recoloured by aurora.css)
-    ├── css/  aurora.css (theme for every page), site.css (homepage), gallery.css (video cards), image-crop.css,
+    ├── 404.php                           the "Page Not Found" page (ErrorDocument in the root .htaccess); site_not_found() in site.php
+    ├── site.webmanifest                  Android home-screen icon + name (favicon.ico itself is in the site root)
+    ├── css/  aurora.css (theme for every page), site.css (homepage), gallery.css (video cards), image-crop.css, admin-ui.css (Menu bar + phone sizes, every admin page),
     │         bootstrap.min.css (5.2.2), bootstrap-icons.css, templatemo-festava-live.css (admin pages only)
-    ├── js/   aurora-sky.js (sky on every page), site.js (homepage), dashboard-charts.js, admin-toast.js (pop-up messages), image-crop.js (crop and resize before upload),
+    ├── js/   aurora-sky.js (sky on every page), ui.js (every page: busy buttons, slide-out menus), site.js (homepage), dashboard-charts.js, admin-toast.js (pop-up messages), image-crop.js (crop and resize before upload),
     │         jquery.min.js (2.2.3), bootstrap.min.js (5.2.2), click-scroll.js
-    ├── images/  logo.png, logopng.png, placeholder.png/.svg, slides, Advisor/, Panel_19_20 … Panel_26_27/, tenures/, events/ (uploads)
+    ├── images/  logo.png, logopng.png, favicon-16/32.png, apple-touch-icon.png, icon-192/512.png, placeholder.png/.svg, slides, Advisor/, Panel_19_20 … Panel_26_27/, tenures/, events/ (uploads)
     └── video/   bucuc1.mp4 + bucuc1.webm (original hero video), hero-*.mp4 (uploads)
 ```
 
@@ -252,7 +258,7 @@ Five roles, highest first. **One account per role** (unique key on `adminpanel.r
 | `upload_hero` | Homepage hero video | ✓ | ✓ | ✓ | — |
 | `send_notices` | Email Notices to members | ✓ | ✓ | — | — |
 | `manage_gallery` | Performance Gallery: add, edit, hide, reorder, delete YouTube videos | ✓ | ✓ | ✓ | — |
-| `handover_contacts` | Read and edit the Contacts section of the handover notes (also in search, history and the PDF) | ✓ | ✓ | — | — |
+| `handover_contacts` | Read and edit the Contacts section of the handover notes (also in search, history and the PDF). Only the Super Admin and the Panel Admin can open the notes and both always see Contacts (the Panel Admin's powers are fixed), so in practice this tick no longer changes anything | ✓ | — | — | — |
 | `take_attendance` | Attendance: sessions, marking, QR check-in, reports, Excel; the attendance % on the member pages | ✓ | ✓ | — | — |
 
 The Super Admin has everything. `can($perm)` answers for the signed-in admin; pages use `require_admin(['can' => …])`, actions call `require_can()` again.
@@ -291,7 +297,7 @@ Every admin page and endpoint starts with one call from `backend/includes/auth.p
 | `notices.php` | send_notices |
 | `video_gallery.php` | manage_gallery |
 | `attendance*.php` | take_attendance (`checkin.php` needs no login) |
-| `handover.php`, `handover_print.php` | any admin (Contacts: handover_contacts; role spaces: own role) |
+| `handover.php`, `handover_print.php` | **Super Admin and Panel Admin only** (`HANDOVER_ROLES` / `can_handover()` in roles.php; fixed by role, no permission tick can open them for anyone else). Contacts: handover_contacts; role spaces: own role |
 | `theme.php` | theme |
 
 `index.php` and `signup_handler.php` call `auth_start_session()` so the public flash messages use the same cookie settings.
@@ -485,17 +491,17 @@ Super, Panel and HR by default; MIAP and Secretary Admin see nothing about atten
 - **Excel** (`attendance_export.php`): one session (title, details, totals, then name, student ID, level, status, QR / admin, time) or the members report with the same filters. Text cells are written as text (formula-safe, as in §6.4); counts and percentages are numbers. Logged as `exported_excel`.
 - **Log**: `attendance_session_created` / `_updated` / `_deleted` (with the number of marks deleted), `attendance_changed`, `attendance_checkin_opened` / `_closed` / `_removed`.
 
-### 6.14 Handover notes (`frontend/handover.php`, every admin; `backend/includes/handover.php`)
+### 6.14 Handover notes (`frontend/handover.php`, Super Admin and Panel Admin only; `backend/includes/handover.php`)
 Each tenure has one handover document that the outgoing panel writes for the next one.
 - **Sections** (each with a short guiding prompt): 1 Summary of the year (text) · 2 **Contacts** (table: name, organisation, their role, phone / e-mail, notes on the relationship; searchable) · 3 What worked · 4 What didn't work · 5 **Pending tasks** (table; each row can be ticked done, showing who (role) and when) · 6 Yearly calendar (table: when, what, notes) · 7 **Accounts and access** (table: account, used for, who holds access now, notes) with a red warning "Never write passwords here…" · 8 Useful links (table: title, http(s) link, notes) · 9 **Role-specific notes** (one space per admin role).
-- **Who**: every admin reads every tenure's notes and edits the current tenure's. Contacts need `handover_contacts` (Super, Panel, HR by default; hidden everywhere without it: page, search, history, PDF, "empty sections" list). Each admin edits only their own role's space (the Super Admin can edit all); the Super Admin's space is hidden from everyone else. Authors are shown by **role**, never by name ("Last edited by Secretary Admin (HR) · 20 Oct 2026, 3:12 pm"); the Super Admin shows as "an admin" to others.
+- **Who**: only the **Super Admin and the Panel Admin** (`HANDOVER_ROLES` in roles.php). Every other admin gets "You don't have access to the Handover Notes" on the page and the PDF page, has no menu link and no dashboard card, gets no reminder e-mail, and sees no handover entries or filters in the Activity Log. The two of them read every tenure's notes and edit the current tenure's. Contacts need `handover_contacts` (Super, Panel by default; hidden everywhere without it: page, search, history, PDF, "empty sections" list). Each admin edits only their own role's space (the Super Admin can edit all); the Super Admin's space is hidden from everyone else. Authors are shown by **role**, never by name ("Last edited by Secretary Admin (HR) · 20 Oct 2026, 3:12 pm"); the Super Admin shows as "an admin" to others.
 - **Editing**: one section at a time (Edit → textarea, or a grid of rows with "Add a row"; emptying all boxes of a row removes it). Saving a section that someone else saved meanwhile is refused ("Someone else saved this section while you were editing it…") and the typed text is kept. Passwords are refused anywhere in the notes (text like "password: …", "pwd=…", "pin - …"), and links must be http(s).
 - **Locking**: only the current tenure's document is editable. As soon as another tenure is marked current, the old one is read-only (forged edits refused). The Super Admin can **Unlock for editing** / **Lock again** an old document. Pending tasks can be ticked done on any document (that is the next panel's job).
 - **Kept forever**: the 12-tenure rule and deleting a tenure remove its photos, never its handover notes (the document stays, marked "Tenure removed; notes kept"; a tenure created later with the same label gets it back).
 - **History**: every save is a version (who (role), when, note). History lists them, each viewable, and **Restore this version** saves the old text as a new version (nothing is ever lost).
 - **Search** (box at the top): finds text in every tenure's notes (e.g. a sponsor's name), with the tenure, section and a highlighted snippet; Bangla works.
 - **PDF**: `handover_print.php` is a plain black-on-white print page (only the sections this admin may see) that opens the print dialog; choose "Save as PDF". The browser does this instead of a PHP PDF library because it lays out Bangla correctly and needs no extra library.
-- **End date and reminder**: the Super Admin or the Panel Admin sets "This tenure ends on" on the current document. About **30 days before**, every active admin gets one e-mail (club account, counted in its daily limit) listing the still-empty sections and their own empty role space, with a link. It is sent when any admin opens a dashboard (after the page is delivered) or by `backend/scripts/handover_reminders.php` from a daily cron job; changing the date allows a new reminder.
+- **End date and reminder**: the Super Admin or the Panel Admin sets "This tenure ends on" on the current document. About **30 days before**, the active Super Admin and Panel Admin get one e-mail (club account, counted in its daily limit) listing the still-empty sections and their own empty role space, with a link. It is sent when any admin opens a dashboard (after the page is delivered) or by `backend/scripts/handover_reminders.php` from a daily cron job; changing the date allows a new reminder.
 - **Dashboard**: a card "Handover notes · Tenure 2026-27: N sections are still empty: …" (gold border while any are empty), linking to the notes.
 - **Log**: `handover_edited` (section and size), `handover_restored`, `handover_task_done`, `handover_unlocked`, `handover_locked`, `handover_exported`, `handover_end_date_set`, `handover_reminder_sent`.
 
@@ -553,14 +559,14 @@ Aurora page (sky, gradient title "Performance Gallery", kicker "On screen", "Bac
 
 ## 8. Admin pages
 
-All use the aurora theme (§10.5). Pages without the sidebar have a "Back to Dashboard" link that goes to the right dashboard for the role.
+All use the aurora theme (§10.5). Every admin page except the dashboard starts with a **Menu bar** ("☰ Menu" + "BUCuC Admin"): the button opens a slide-out list of every page the admin may open, the current one highlighted. It is added automatically (`admin_menu_html()`, `backend/includes/admin_menu.php`); the links are the same list as the dashboard sidebar, so a new admin page is added in one place, `admin_menu_sections()`. Pages can leave it out with `define('NO_ADMIN_MENU', true)` (dashboard, handover print page, QR projector screen). The older "Back to Dashboard" links stay. `css/admin-ui.css` (also on every admin page) makes buttons, fields and checkboxes at least 44 px tall on phones and keeps small text at 12 px or more.
 
 | Page | Contents |
 |---|---|
 | `admin-login.php` | Glass card: shield icon, "Admin Login", "Enter your credentials to access the dashboard", e-mail (kept after an error) + password (eye toggle), "Login to Dashboard", key icon "Forgot password?", "Back to Main Site". Behaviour in §6.6 |
 | `forgot-password.php` | Same card: key icon, "Forgot Password", "Enter your admin email and we'll send you a reset link.", e-mail field, "Send reset link" (paper-plane), "Back to login". After submit: green box with the generic message |
 | `reset-password.php` | Same card: lock icon, "New Password", "Choose a new password for {email}.", new + repeat fields (min 8), "Save new password", "Back to login". Bad link: rose box + "Request a new link" |
-| Dashboards (`includes/dashboard_view.php`) | Sidebar: logo + "BUCuC", subtitle = the role label; **Dashboard**: Overview; **Management**: Members (view_members), Applications (+badge), Shortlisted Members, Approved Members (view_members), Website Media (any upload permission), Dashboard Updates (manage_site); **Settings**: Signup Control (manage_site), Homepage Stats (home_stats), Site Colours (theme), Email Notices (send_notices), Performance Gallery (manage_gallery), Attendance (take_attendance), Handover Notes (everyone), My Profile, Admin Management (Super/Panel/HR), Activity Log, Site Lockdown (Super), Logout. Header: title ("Super Admin Dashboard" / "Cultural Club Dashboard"), "Welcome back, {username}!", avatar pill (first letter + first name → Profile). Then 4 stat cards and 2 charts (§6.5). Mobile: the sidebar slides in from the left via a round orange button |
+| Dashboards (`includes/dashboard_view.php`) | Sidebar: logo + "BUCuC", subtitle = the role label; **Dashboard**: Overview; **Management**: Members (view_members), Applications (+badge), Shortlisted Members, Approved Members (view_members), Website Media (any upload permission), Dashboard Updates (manage_site); **Settings**: Signup Control (manage_site), Homepage Stats (home_stats), Site Colours (theme), Email Notices (send_notices), Performance Gallery (manage_gallery), Attendance (take_attendance), Handover Notes (Super, Panel), My Profile, Admin Management (Super/Panel/HR), Activity Log, Site Lockdown (Super), Logout. Header: title ("Super Admin Dashboard" / "Cultural Club Dashboard"), "Welcome back, {username}!", avatar pill (first letter + first name → Profile). Then 4 stat cards and 2 charts (§6.5). Mobile: the sidebar slides in from the left via the round menu button (48 px, above the heading); a tapped link, Escape or a tap outside closes it; while closed it is out of the Tab order, while open Tab stays inside it |
 | `pending_applications.php` | Title "Pending Applications (N pending)"; action strip (dashed red border): **Clear** (manage_site), **Set Venue** (final_approve), **Export Excel**; table: Full Name, University ID, Email, G-Suite Email, Department, Phone, Semester, Gender, Facebook (link), Priorities, Status (yellow "Pending"), Actions (**Shortlist** blue, **Reject** red). Clear-All modal with type-to-confirm |
 | `shortlisted_members.php` | Title "Shortlisted Members", subtitle with count. Strip: Clear List (manage_site), Set Venue (final_approve), Export Excel. Table: Full Name, University ID, Email (G-Suite), Department, Phone, Facebook, Priorities, Status (purple "Shortlisted"), Actions (**Final Approve** green / **Reject** red with final_approve; otherwise "🔒 Needs final-approval permission") |
 | `approved_members.php` | Title "Approved Members", count. "Download Member Information (Excel)". Table: Full Name, University ID, Email, Department, Phone, Priorities, Status (green "Approved Member"), Delete (manage_site; otherwise "🔒 Panel Admin only") |
@@ -710,7 +716,8 @@ Font Awesome 6.5.1 (cdnjs), Ionicons 7.1.0 (`logo-facebook`), Cropper.js 1.6.2 (
 | `js/click-scroll.js` (homepage) | Active nav link by scroll position for the 7 section IDs; smooth scroll with a 90px offset |
 | `js/dashboard-charts.js` | Aurora-coloured line + doughnut charts from `window.dashboardStats`, empty states, sidebar toggle |
 | `includes/member_board.php` inline | board list, update/delete through the proxy |
-| `js/admin-toast.js` | `showNotification(message, type)` pop-ups on admin pages (palette colours, text never parsed as HTML) |
+| `js/admin-toast.js` | `showNotification(message, type)` pop-ups on admin pages (palette colours, text never parsed as HTML). Use it for every message a script shows; no `alert()` |
+| `js/ui.js` (every page, added by `ui_inject()` in auth.php) | **Busy buttons**: a form sent the normal way gets a spinner on its submit button, which is disabled, and a second press sends nothing (opt out: `data-no-busy` on the form; forms sent by `fetch` handle their own button). Excel export links show "Preparing…" for 4 s. **Slide-out menus** (`data-drawer-open` / `data-drawer-close` / `data-drawer`): the admin Menu bar |
 | `past_events.html` inline | AOS init, particles, loading overlay, count-up stats, hash scroll |
 
 ---
@@ -803,13 +810,19 @@ Handover notes per tenure (§6.14): nine sections with prompts, contacts / accou
 ### 13.1l Sponsor banners (20 October 2026)
 Super-Admin-only sponsor banners (§6.15): three homepage spots with switches, crop-tool images (desktop + phone), dates and pausing, rotation, view / click counting without bots, click redirect, stats with date range, per-ad Excel report. Invisible to every other admin (404 on every URL, no menu item, no log entries, nothing in their pages). Tested with browser checks.
 
+### 13.1m UI polish and QA pass (21 October 2026)
+Every public page and every admin page (as each of the five roles) checked at 360, 390, 768 and 1366 px; fixed: Menu bar on every admin page (§8), dashboard and homepage phone menus (focus moves in, Tab stays inside, Escape and a tapped link close, closed menus out of the Tab order, close button in the homepage drawer), crop window keeps Tab inside, 44 px tap targets on phones, Facebook icons only when a link is saved (no more `#` links), custom 404 page (also used by recover.php and the sponsor pages, so they still look like any missing page), favicons for tabs / Apple / Android, one title pattern ("Page | BUCuC", "Page | BUCuC Admin"), busy buttons on every form, the last `alert()` pop-ups replaced by the usual pop-up messages, raw database errors replaced by plain messages (`friendly_error()` in site.php; details go to the error log), empty-list messages, `tests/` blocked from the web, photos compressed (143 MB → 26 MB; originals in `E:/BUCuC_image_originals`). Checks: `node tests/run.js uiqa`.
+
+### 13.1n Super Admin hidden everywhere, handover for two roles (21 October 2026)
+Checked every page every other role (and a visitor) can open after the Super Admin had used every feature: the account's name and e-mail never showed. Removed the last hints: the "Super Admin recovered" filter in the Activity Log, a code comment in the Pending Applications page source, and messages that named the role ("Ask the Super Admin…", "Unlocked by the Super Admin", the server-problem message). Handover Notes are now for the Super Admin and the Panel Admin only (§6.14). Checks: `node tests/run.js superhide handover`.
+
 ### 13.2 Needs you
 The step-by-step list with tests is in `todo.md`; the main ones:
 1. **Back up first (§15), then run `backend/Database/upgrade.sql` in phpMyAdmin on the live database.** Until then, approving applicants who have no date of birth (the 375 restored from the CSV) fails. Step 5 now drops the unused old tables.
 2. **Upload `backend/Database/config.local.php`** with the database password before (or together with) the new `config.php`, or the site shows "Site temporarily unavailable".
 3. **Rotate secrets and clean the git history** (§3.4, §17): change the database password in hPanel and revoke the old HR App Password, then update the `.local.php` files.
-4. The homepage carousel and the Wild Escape event both use `2nd.JPG` (7.5 MB); a smaller copy would load faster.
-5. Current panel Facebook links are placeholders (`http://www.facebook.com/`).
+4. Photos were compressed on 21 Oct 2026 (`2nd.JPG` 7.5 MB → 0.4 MB); the originals are in `E:/BUCuC_image_originals` on the PC until you confirm the new ones look right. Upload the compressed `frontend/images` folder.
+5. Panel members without a Facebook link show no Facebook icon; add their links in Website Media → Panels & Tenures.
 6. `restore.sql` and the `Member_Applications_…csv` in the repo root contain student personal data. They're git-ignored and blocked by `.htaccess`; delete them when no longer needed and don't upload them.
 7. **Forgot-password e-mail**: create the App Password for `club.bucuc@g.bracu.ac.bd` and upload `backend/config/auth_email_config.local.php` (§3.2). Then test it once with your own admin account and check `backend/logs/auth_email.log`.
 8. Admins with passwords shorter than 8 characters should change them in My Profile.
@@ -818,7 +831,7 @@ The step-by-step list with tests is in `todo.md`; the main ones:
 11. **Members**: on a board page press "Import from Google Sheet" once so the existing club members get their levels in the database, then lower the base member count in Dashboard Updates (§6.7 note).
 
 ### 13.3 Known leftovers
-- The footer Terms/Privacy/Feedback links are placeholders; `.signup-particles` has CSS but no JS creates particles.
+- The footer has no Privacy / Terms links yet: they are added with the pages in Phase 5 of the production plan. `.signup-particles` has CSS but no JS creates particles.
 - Each older admin page still has its own inline `<style>` block; merging them into one admin stylesheet is left for the redesign.
 - `bucuc.sql` is a historical dump with real admin hashes; `.htaccess` blocks it, but it's better out of the web root.
 
@@ -843,7 +856,7 @@ The step-by-step list with tests is in `todo.md`; the main ones:
 16. Hardening: `/backend/Api/members.json` and any `.json` / `.log` / `.sql` give 403; `http://` redirects to `https://`; a `.php` file placed in `frontend/images` is refused; with a wrong database password every page shows "Site temporarily unavailable" and no error text; the Super Admin's name shows as "an admin" to other admins; the Apply form refuses a POST without a valid form token but still works after an admin logs in/out in the same browser; `recover.php` is 404 without the token file.
 17. Performance gallery: every link format above is accepted and other sites are refused; a private / embedding-disabled / deleted video shows its error and isn't saved; title and thumbnail come from YouTube; the preview matches the public card; a duplicate asks to confirm; edit, hide/show, delete, drag and position-number reordering work and are logged; the public page loads no YouTube player until play is pressed, plays from youtube-nocookie.com at the saved start time, shows Shorts vertically, filters by category and year/tenure, puts featured first and shows the empty state; only roles with `manage_gallery` can manage it.
 18. Attendance: a session for a group lists exactly that group; Mark all present, then one change, saves; check-ins appear live and count Late after 15 minutes; a second ID from the same phone, an ID not on the list, an expired code (>90 s) and a stale form (>5 min) are refused; a wrong check-in can be removed; after the end every change needs a reason and is logged with who / why / what; the report and member pages give the right % (excused not counted, unmarked = absent) and the under-50 % filter; the GB / ASB / Secretary Panel pages show the % only to admins with the permission; Excel cells can't be formulas; MIAP / Secretary can't open it unless granted.
-19. Handover notes: every admin writes the current tenure's sections (role spaces: own role only); authors show as roles, the Super Admin as "an admin"; Contacts hidden without the permission (page, search, PDF); a password is refused; two people saving the same section don't overwrite each other; every save is in the history and can be restored; search finds a name in every tenure; after the next tenure is current the old notes are read-only (Super Admin can unlock) but pending tasks can still be ticked; deleting a tenure keeps its notes; the reminder goes once to every admin about a month before the end date; the PDF page prints the visible sections; edits, unlocks and exports are logged.
+19. Handover notes: HR, MIAP and Secretary admins can't open them (page, PDF, forged saves, menu, dashboard card, log, reminder); the Super Admin and the Panel Admin write the current tenure's sections (role spaces: own role only); authors show as roles, the Super Admin as "an admin"; Contacts hidden without the permission (page, search, PDF); a password is refused; two people saving the same section don't overwrite each other; every save is in the history and can be restored; search finds a name in every tenure; after the next tenure is current the old notes are read-only (Super Admin can unlock) but pending tasks can still be ticked; deleting a tenure keeps its notes; the reminder goes once to the Super Admin and the Panel Admin about a month before the end date; the PDF page prints the visible sections; edits, unlocks and exports are logged.
 20. Sponsor banners: every other admin (and logged-out visitors) get a plain 404 on `sponsors.php`, and none of their pages, scripts or log mention it; a spot switched off or without a live ad leaves no trace on the page; a banner shows the Sponsored label, opens in a new tab with rel sponsored noopener and loads lazily; live dates, pausing and rotation work; views and clicks are counted once per real visitor (not bots or admins); the click redirect only goes to the stored link; stats and the Excel report match; no banner on the maintenance page.
 
 ---
@@ -916,7 +929,7 @@ Older commits contain the database password (`backend/Database/config.php`), the
 
 ## 18. Testing
 
-All features are covered by browser test suites in `tests/` (about 700 checks). They run against a **throwaway copy**: their own database server, their own made-up data, e-mail written to a file, and fake Google / YouTube services. They never touch the live database, XAMPP's own MySQL (port 3306), real e-mail or the real Google Sheets.
+All features are covered by browser test suites in `tests/` (about 700 checks, plus the page-by-page UI checks of `uiqa`). They run against a **throwaway copy**: their own database server, their own made-up data, e-mail written to a file, and fake Google / YouTube services. They never touch the live database, XAMPP's own MySQL (port 3306), real e-mail or the real Google Sheets.
 
 **Run them**
 ```
@@ -935,3 +948,137 @@ The summary shows each suite as ✓ / ✗ with its checks; failing checks are pr
 - Chrome: `C:/Program Files/Google/Chrome/Application/chrome.exe` (change with `CHROME_PATH`).
 
 **Writing a new check**: add it to the suite of that feature (or a new `tests/e2e/<name>.js` plus a line in `SUITES` in `tests/run.js`). Use `tests/config.js` for paths (`T.BASE`, `T.MYSQL`, `T.DB_NAME`, `T.RUNTIME`…), print `PASS  …` / `FAIL  …` lines and end with `N/M passed`. Never put a real password or real personal data in `tests/`.
+
+---
+
+## 19. Caching, Speed, and Cloudflare Rules (Phase 2)
+
+Phase 2 adds production-ready caching, instant lockdown enforcement, database load reduction, self-hosted vendor assets, and gzip compression.
+
+### 19.1 Never-Cache List (Always Dynamic)
+The following requests MUST NEVER be cached by Cloudflare, reverse proxies, or browsers:
+1. **Admin panel:** All pages under `/frontend/` requiring admin privileges (`admin_management.php`, `approved_members.php`, `attendance*.php`, `dashboard_updates.php`, `gb_members.php`, `handover*.php`, `home_stats.php`, `lockdown.php`, `media.php`, `member_types.php`, `notices.php`, `pending_applications.php`, `profile.php`, `shortlisted_members.php`, `sponsors*.php`, `theme.php`, `video_gallery.php`, `activity_log.php`).
+2. **Auth & recovery flows:** `admin-login.php`, `forgot-password.php`, `reset-password.php`, `admin-signup-control.php`, `recover.php`, `logout.php`.
+3. **Application & Interview tracking:** `handle_application.php`, `set_venue.php`, `checkin.php`.
+4. **Form & CSRF pages:** Any page issuing a form token via `form_token()` or `csrf_token()`.
+5. **Ad click redirects:** `/frontend/go.php` (clicks must be recorded in real-time).
+6. **Active sessions:** Any request with a `PHPSESSID` cookie.
+7. **Site lockdown:** Responses during an active lockdown return HTTP 503 with `private, no-store, no-cache, must-revalidate, max-age=0`.
+
+In PHP, `site_send_never_cache_headers()` is automatically called by `require_admin()`, `form_token()`, and login/reset pages to enforce this across all servers.
+
+### 19.2 Cloudflare Cache Rules (Step-by-Step Setup)
+In the Cloudflare Dashboard for your domain, go to **Caching** → **Cache Rules** → click **Create rule**:
+
+#### Rule 1: Bypass Admin, Forms, and Dynamic Pages (Top Priority)
+* **Rule name:** `BUCuC - Bypass Admin and Forms`
+* **When incoming requests match:** Custom filter expression:
+  ```
+  (http.request.uri.path matches "^/frontend/(admin|activity_log|approved_members|attendance|dashboard|forgot-password|gb_members|go\.php|handover|home_stats|lockdown|logout|media|member_types|notices|pending_applications|profile|recover|reset-password|sb_members|shortlisted_members|sponsors|theme|video_gallery|set_venue|handle_application)") or
+  (http.cookie contains "PHPSESSID") or
+  (http.request.method in {"POST" "PUT" "DELETE"}) or
+  (http.request.uri.path eq "/frontend/go.php")
+  ```
+* **Cache eligibility:** **Bypass cache**
+
+#### Rule 2: Cache Static Assets for 1 Year
+* **Rule name:** `BUCuC - Cache Static Assets`
+* **When incoming requests match:**
+  ```
+  (http.request.uri.path matches "^/frontend/(css|js|images|fonts|webfonts)/") or
+  (http.request.uri.path matches "\.(css|js|woff2?|ttf|otf|eot|svg|png|jpe?g|webp|ico|webmanifest)$")
+  ```
+* **Cache eligibility:** **Eligible for cache**
+* **Edge TTL:** Respect origin (or 1 month)
+* **Browser TTL:** Respect origin (Origin `.htaccess` sends `max-age=31536000, public, immutable`)
+
+#### Rule 3: Revalidate Public HTML (Immediate Lockdown)
+* **Rule name:** `BUCuC - Public HTML Revalidation`
+* **When incoming requests match:**
+  ```
+  (http.request.uri.path in {"/" "/frontend/" "/frontend/index.php" "/frontend/past_events.php" "/frontend/performances.php"})
+  ```
+* **Cache eligibility:** **Eligible for cache**
+* **Edge TTL:** 1 minute (or respect origin)
+* **Browser TTL:** Respect origin (`no-cache, must-revalidate`).
+* **Lockdown behavior through Cloudflare:** When site lockdown is activated, `site_guard_public()` immediately sends HTTP `503 Service Unavailable` with `Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0`. Cloudflare respects `no-store` and never caches 503 error responses at edge. When lockdown is lifted, visitors see the live site immediately without edge cache lag. When turning lockdown on, any HTML cached at edge under Rule 3 (Edge TTL 1 minute) expires in ~60 seconds. A Cloudflare Purge Cache API hook can be added with `CF_ZONE_ID` and `CF_API_TOKEN` in `config.local.php` if worldwide sub-second lockdown activation is desired.
+
+### 19.3 Server-Side Cache (`backend/includes/cache.php`)
+Public queries on the homepage (`frontend/index.php`) are cached in `backend/cache/home_data.json` for 5 minutes.
+* **Automatic Invalidation:** Whenever an admin updates events, tenures, panel members (`media.php`), videos (`video_gallery.php`), sponsor banners (`sponsors.php`), homepage stats (`home_stats.php`), signup status (`admin-signup-control.php`), site colors (`theme.php`), or schedules a lockdown (`lockdown.php`), `site_cache_clear()` is automatically triggered, deleting the cache files immediately.
+* **Directory Security:** `backend/cache/` contains an `.htaccess` file denying all direct HTTP access (`Order Deny,Allow / Deny from all`).
+
+### 19.4 Sponsor Ad Views (Beacon & Batched Writes)
+* Rather than locking the database on every page view, `ad_slot()` queues views in `backend/cache/ad_views_queue.json`.
+* Browsers send a background ping via `navigator.sendBeacon('ad_beacon.php', ...)` or `fetch(..., {keepalive: true})` using an `IntersectionObserver` in `frontend/js/ui.js`.
+* Views are flushed to `ad_stats` in a single transaction when the queue reaches 10 views or on PHP script shutdown (`register_shutdown_function('ad_views_flush')`).
+* Duplicate view counting between initial page load and the background beacon is deduplicated via session timestamps.
+
+### 19.5 Self-Hosted Assets (Zero External CDN Dependencies)
+All third-party fonts, stylesheets, and scripts are stored in the repo:
+* **Google Fonts (WOFF2):** Bricolage Grotesque, Hanken Grotesk, Hind Siliguri, and Outfit in `frontend/fonts/`, referenced by `frontend/css/fonts.css`.
+* **Font Awesome 6.5.1:** Stylesheet in `frontend/css/all.min.css` and webfonts in `frontend/webfonts/`.
+* **Swiper 11.1.14:** `frontend/css/swiper-bundle.min.css` and `frontend/js/swiper-bundle.min.js`.
+* **AOS 2.3.1:** `frontend/css/aos.css` and `frontend/js/aos.js`.
+* **Ionicons 7.1.0:** `frontend/js/ionicons/`.
+* **Chart.js 4.4.1:** `frontend/js/chart.umd.min.js`.
+* **Bootstrap 5.3.0:** `frontend/css/bootstrap.min.css` and `frontend/js/bootstrap.bundle.min.js`.
+
+### 19.6 Compression and Expiry (`.htaccess`)
+* `mod_deflate`: Gzip compression enabled for HTML, text, CSS, JS, JSON, XML, SVG, and web fonts.
+* `mod_expires`: 1-year expiry on static assets; 0 seconds on dynamic HTML.
+
+## 20. Image Optimization and WebP Content Negotiation (Phase 3)
+
+Phase 3 introduces automated image optimization, modern WebP generation with transparent fallbacks, EXIF orientation correction, zero database schema changes, and strict <1MB size enforcement across the website.
+
+### 20.1 Companion WebP Architecture
+* **No Database Changes:** Every image in the database continues pointing to its `.jpg` or `.png` fallback path (e.g. `images/events/show.jpg`).
+* **Companion Files:** Every `.jpg` and `.png` in `frontend/images/` has an identical companion `.webp` file next to it (e.g. `images/events/show.webp`).
+* **Originals Preserved:** Pristine image originals remain backed up outside the web root at `E:\BUCuC_image_originals`. Existing compressed JPEGs/PNGs were not re-compressed.
+* **Hero Video Untouched:** The hero video (`video/bucuc1.mp4`, `video/bucuc1.webm`) was left untouched.
+* **Strict < 1 MB Rule:** No image anywhere in `frontend/images/` exceeds 1 MB (1,048,576 bytes). The large 7.5 MB `2nd.JPG` produced `2nd.webp` at ~169 KB.
+
+### 20.2 Automatic Upload Compression & WebP Generation
+Whenever an admin uploads an image in **Website Media** (`media.php` for panel members, secretary members, and past events) or **Sponsors** (`sponsors.php` for ad banners):
+1. **Server Validation First:** The server strictly checks HTTP upload status, MIME type (JPEG/PNG/WebP), file size (under 8 MB), and aspect ratio tolerance (±2% of the required slot ratio).
+2. **Auto EXIF Rotation:** Images with EXIF orientation metadata (e.g., orientation 6 from mobile camera shots) are rotated right-side up automatically using `imagerotate()`.
+3. **Downscaling:** If dimensions exceed 1920px max dimension, the image is proportionally downscaled.
+4. **Transparency Preserved:** Transparent PNGs retain their alpha channel (`imagealphablending($im, false); imagesavealpha($im, true);`).
+5. **Optimized Fallback & WebP Companion:** The server saves the compressed fallback (JPEG quality 82 or PNG compression 9) and automatically writes the companion `.webp` (quality 82 for photos, 85 for PNGs). If either output exceeds 1 MB, it is re-saved at quality 75.
+6. **Automatic Cleanup on Deletion:** When an admin removes a panel member, deletes an event, deletes a sponsor banner, or deletes an entire tenure, `media_delete_file()` / `sponsor_unlink()` unlinks both the fallback image and its companion `.webp`. If an upload transaction fails, the rollback loop cleans up both files.
+
+### 20.3 Native `<picture>` and CSS `image-set()` Rollout
+Rather than relying on Accept-based server rewrites or `Vary: Accept` headers (which require custom cache keys or paid Cloudflare Polish), the site uses modern semantic `<picture>` tags and CSS `image-set()`:
+* **Distinct URLs:** Every file has its own URL (`images/2nd.webp` returns `image/webp`, `images/2nd.JPG` returns `image/jpeg`). Neither response sends a `Vary: Accept` header.
+* **HTML Templates:** Every user-facing image on `index.php`, `past_events.php`, `checkin.php`, `handover_print.php`, and `dashboard_view.php` is wrapped in a `<picture>` tag:
+  ```html
+  <picture>
+      <source srcset="images/sample.webp" type="image/webp">
+      <img src="images/sample.jpg" alt="..." class="..." loading="...">
+  </picture>
+  ```
+  Helper functions `media_webp_url($path)` and `picture_img($src, $alt, $attrs)` in `backend/includes/site.php` format these automatically.
+* **Preserved Attributes & Layout:** All original classes, IDs, dimensions, and data attributes are preserved on the inner `<img>`. CSS rules specify `picture { display: block; width: 100%; }` to guarantee identical layout across viewports (390px phone, 768px tablet, 1366px desktop). Above-the-fold images (hero branding, hero disc) are never lazy-loaded.
+* **Client-Side JavaScript:** In `frontend/js/site.js`, client-side year switching for presidential panels and secretary swipers generates `<picture>` tags with `.webp` `<source>` and JPEG fallback `<img>`.
+* **CSS Backgrounds:** Background images in `templatemo-festava-live.css` and `admin.css` use CSS `image-set()` with fallback:
+  ```css
+  background-image: url('../images/edward-unsplash-blur.jpg');
+  background-image: image-set(
+      url('../images/edward-unsplash-blur.webp') type('image/webp'),
+      url('../images/edward-unsplash-blur.jpg') type('image/jpeg')
+  );
+  ```
+* **Email & Open Graph Integrity:** Transactional and notification emails (`backend/includes/auth_mail.php`) and Open Graph share image tags strictly use PNG/JPEG, never WebP, to ensure universal email client and social crawler compatibility.
+* **Cloudflare Free Plan Compatibility:** Because WebP and fallback images use distinct URLs, Cloudflare edge caches both formats naturally without custom cache keys, headers, or paid add-ons.
+
+### 20.4 Mandatory Rule for All Future File Upload Handlers
+Every future file upload handler added to the repository (e.g. sponsor logos, sponsor deck PDFs/images, club merchandise, notice attachments) **MUST** use the shared functions in `backend/includes/site.php`:
+1. `media_validate_upload($_FILES['...'], $allowedMimes, $maxBytes, $expectedRatio)`: Performs strict HTTP upload verification, MIME validation, file size limits, and aspect ratio checks within ±2% tolerance.
+2. `media_optimize_and_webp($absPath, $maxDim, $fallbackQuality, $webpQuality)`: Automatically:
+   - Strips all sensitive EXIF metadata (GPS latitude, longitude, altitude, device tags).
+   - Corrects orientation based on EXIF tag 6/8/3 prior to stripping so photos never display sideways.
+   - Preserves 8-bit alpha transparency on PNGs.
+   - Enforces the strict < 1 MB file size limit (downscaling and quality step-down if needed).
+   - Generates the companion `.webp` file alongside the fallback JPEG/PNG.
+3. `media_delete_file($relPath)` / paired delete: When deleting a database record, tenure, or replacing an image, always unlink both the fallback file and its companion `.webp`.

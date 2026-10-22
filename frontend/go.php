@@ -9,7 +9,7 @@ require_once __DIR__ . '/../backend/includes/ads.php';
 auth_start_session();
 
 header('X-Robots-Tag: noindex, nofollow');
-header('Cache-Control: no-store');
+site_send_never_cache_headers();
 try {
     $ad = ad_click(db(), $_GET['id'] ?? 0);
 } catch (\Throwable $e) {

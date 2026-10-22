@@ -35,7 +35,10 @@ foreach (site_events_all() as $i => $e) {
                 </div>
             </div>
 
-            <img src="<?= $h($e['image']) ?>" alt="<?= $h($e['title']) ?>" class="event-image<?= $e['image_class'] ? ' ' . $h($e['image_class']) : '' ?>" loading="<?= $i < 2 ? 'eager' : 'lazy' ?>" onerror="this.onerror=null;this.src='images/placeholder.svg'" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="<?= $delay + 250 ?>">
+            <picture>
+                <source srcset="<?= $h(media_webp_url($e['image'])) ?>" type="image/webp">
+                <img src="<?= $h($e['image']) ?>" alt="<?= $h($e['title']) ?>" class="event-image<?= $e['image_class'] ? ' ' . $h($e['image_class']) : '' ?>" loading="<?= $i < 2 ? 'eager' : 'lazy' ?>" onerror="this.onerror=null;this.src='images/placeholder.svg'" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="<?= $delay + 250 ?>">
+            </picture>
 
             <?php if ($paragraphs): ?>
                 <div class="event-description" data-aos="fade-up" data-aos-duration="800" data-aos-delay="<?= $delay + 300 ?>">

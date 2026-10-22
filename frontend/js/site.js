@@ -14,17 +14,38 @@
     onScroll();
 
     const drawer = $('mobileSidebar'), overlay = $('mobileSidebarOverlay'), menuBtn = $('sidebarToggle');
-    function setDrawer(open) {
+    // Closed drawer is inert (its links can't be reached with Tab); open drawer holds focus until closed.
+    function setDrawer(open, refocus) {
+        const was = drawer.classList.contains('open');
         drawer.classList.toggle('open', open);
         overlay.classList.toggle('open', open);
         menuBtn.classList.toggle('open', open);
         menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        drawer.inert = !open;
+        if (open) { const first = drawer.querySelector('a, button'); if (first) first.focus(); }
+        else if (was && refocus) menuBtn.focus();
     }
     if (drawer && overlay && menuBtn) {
-        menuBtn.addEventListener('click', () => setDrawer(!drawer.classList.contains('open')));
-        overlay.addEventListener('click', () => setDrawer(false));
+        drawer.inert = true;
+        menuBtn.addEventListener('click', () => setDrawer(!drawer.classList.contains('open'), true));
+        overlay.addEventListener('click', () => setDrawer(false, true));
+        const closeBtn = $('drawerClose');
+        if (closeBtn) closeBtn.addEventListener('click', () => setDrawer(false, true));
         drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setDrawer(false)));
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') setDrawer(false); });
+        document.addEventListener('keydown', e => {
+            if (!drawer.classList.contains('open')) return;
+            if (e.key === 'Escape') { setDrawer(false, true); return; }
+            if (e.key === 'Tab') {
+                // keep Tab inside the open drawer
+                const f = [...drawer.querySelectorAll('a, button')];
+                const i = f.indexOf(document.activeElement);
+                if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+                else if (!e.shiftKey && (i === f.length - 1 || i === -1)) { e.preventDefault(); f[0].focus(); }
+            }
+        });
+        // desktop width: the drawer is never shown, keep it out of the Tab order
+        window.addEventListener('resize', () => { if (innerWidth > 991 && drawer.classList.contains('open')) setDrawer(false); });
     }
 
     /* ------------------------------------------------ Vinyl planet: staff ring + orbiting notes */
@@ -149,6 +170,14 @@
 
         // Same rule as panelColumnClass() in PHP: 4 members fill one row, otherwise rows of 3
         const columnClass = count => count === 4 ? 'col-lg-3 col-md-6 col-12 pmc-col' : 'col-lg-4 col-md-6 col-12 pmc-col';
+        const webpOf = url => {
+            if (!url || typeof url !== 'string') return url;
+            const parts = url.split('?');
+            if (/\.(jpe?g|png)$/i.test(parts[0])) {
+                return parts[0].replace(/\.(jpe?g|png)$/i, '.webp') + (parts[1] ? '?' + parts[1] : '');
+            }
+            return url;
+        };
 
         select.addEventListener('change', () => {
             const data = years[select.value];
@@ -158,7 +187,10 @@
                 <div class="${columnClass(data.panel.length)}">
                     <div class="panel-member-card">
                         <div class="pmc-image-wrap">
-                            <img src="${esc(m.src)}" alt="${esc(m.name)}" loading="lazy" onerror="this.onerror=null; this.src='images/placeholder.svg';">
+                            <picture>
+                                <source srcset="${esc(webpOf(m.src))}" type="image/webp">
+                                <img src="${esc(m.src)}" alt="${esc(m.name)}" loading="lazy" onerror="this.onerror=null; var p=this.parentElement; if(p&&p.tagName==='PICTURE'){p.querySelectorAll('source').forEach(function(s){s.remove();});} this.src='images/placeholder.svg';">
+                            </picture>
                             ${m.facebook ? `<div class="pmc-overlay"><a href="${esc(m.facebook)}" target="_blank" rel="noopener" aria-label="Facebook – ${esc(m.name)}"><ion-icon name="logo-facebook"></ion-icon></a></div>` : ''}
                         </div>
                         <div class="pmc-body">
@@ -169,8 +201,11 @@
                 </div>`).join('');
             wrapper.innerHTML = data.secretaries.map(m => `
                 <div class="swiper-slide">
-                    <img src="${esc(m.src)}" alt="${esc(m.name)}" loading="lazy" onerror="this.onerror=null; this.src='images/placeholder.png';" />
-                    <div class="overlay"><a href="${esc(m.facebook || '#')}" target="_blank" rel="noopener" aria-label="Facebook – ${esc(m.name)}"><ion-icon name="logo-facebook"></ion-icon></a></div>
+                    <picture>
+                        <source srcset="${esc(webpOf(m.src))}" type="image/webp">
+                        <img src="${esc(m.src)}" alt="${esc(m.name)}" loading="lazy" onerror="this.onerror=null; var p=this.parentElement; if(p&&p.tagName==='PICTURE'){p.querySelectorAll('source').forEach(function(s){s.remove();});} this.src='images/placeholder.png';" />
+                    </picture>
+                    <div class="overlay">${m.facebook ? `<a href="${esc(m.facebook)}" target="_blank" rel="noopener" aria-label="Facebook – ${esc(m.name)}"><ion-icon name="logo-facebook"></ion-icon></a>` : ''}</div>
                     <div class="member-name"><span class="name">${esc(m.name)}</span><span class="position">${esc(m.position || 'Secretary')}</span></div>
                 </div>`).join('');
             window.initSbSwiper();

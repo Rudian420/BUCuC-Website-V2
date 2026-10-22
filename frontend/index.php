@@ -31,12 +31,12 @@ function oldSelected($key, $value)
 define('IMG_V', filemtime(__FILE__));
 
 // Output-buffer callback: appends ?v=IMG_V to every local <img src="images/…">
-// and CSS url('images/…') in the rendered HTML, so browsers never serve stale images.
+// <source srcset="images/…"> and CSS url('images/…') in the rendered HTML, so browsers never serve stale images.
 function _imgCacheBust(string $html): string {
     $v = IMG_V;
-    // src="images/..." and src='images/...'
+    // src="..." and srcset="..." for local images
     $html = preg_replace(
-        '/\b(src=["\'])(images\/[^"\'?#\s]+)(["\'])/',
+        '/\b((?:src|srcset)=["\'])(images\/[^"\'?#\s]+)(["\'])/',
         '$1$2?v=' . $v . '$3',
         $html
     );
@@ -81,16 +81,30 @@ function panelColumnClass($count)
     return $count === 4 ? 'col-lg-3 col-md-6 col-12 pmc-col' : 'col-lg-4 col-md-6 col-12 pmc-col';
 }
 
-$panelYears = [];
-foreach (tenures_public() as $t) {   // an empty current tenure is skipped: the previous panel stays up
-    $panelYears[] = [
-        'year'        => (int) $t['start_year'] + 1,
-        'label'       => $t['is_current'] ? 'Current Panel (' . $t['label'] . ')' : 'Panel ' . $t['label'],
-        'panel'       => panelPeople($t['panel']),
-        'secretaries' => panelPeople($t['secretaries']),
-    ];
+$homeCache = site_cache_get('home_data');
+if ($homeCache && is_array($homeCache) && !empty($homeCache['panelYears'])) {
+    $panelYears = $homeCache['panelYears'];
+    $currentPanel = $homeCache['currentPanel'] ?? ['year' => 0, 'label' => '', 'panel' => [], 'secretaries' => []];
+    $signupEnabled = $homeCache['signupEnabled'] ?? true;
+} else {
+    $panelYears = [];
+    foreach (tenures_public() as $t) {   // an empty current tenure is skipped: the previous panel stays up
+        $panelYears[] = [
+            'year'        => (int) $t['start_year'] + 1,
+            'label'       => $t['is_current'] ? 'Current Panel (' . $t['label'] . ')' : 'Panel ' . $t['label'],
+            'panel'       => panelPeople($t['panel']),
+            'secretaries' => panelPeople($t['secretaries']),
+        ];
+    }
+    $currentPanel = $panelYears[0] ?? ['year' => 0, 'label' => '', 'panel' => [], 'secretaries' => []];
+    $signupEnabled = getSignupStatus();
+
+    site_cache_set('home_data', [
+        'panelYears'    => $panelYears,
+        'currentPanel'  => $currentPanel,
+        'signupEnabled' => $signupEnabled,
+    ], 300);
 }
-$currentPanel = $panelYears[0] ?? ['year' => 0, 'label' => '', 'panel' => [], 'secretaries' => []];
 
 // Check signup status
 function getSignupStatus()
@@ -151,19 +165,21 @@ $signupEnabled = getSignupStatus();
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#06040f">
     <meta name="description" content="BRAC University Cultural Club (BUCuC): music, dance and cultural storytelling at BRAC University since 2001.">
-    <title>BRAC University Cultural Club</title>
+    <title>BRAC University Cultural Club | BUCuC</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="css/fonts.css">
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.1.14/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="css/aurora.css?v=<?= filemtime(__DIR__ . '/css/aurora.css') ?>">
     <link rel="stylesheet" href="css/site.css?v=<?= filemtime(__DIR__ . '/css/site.css') ?>">
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
 
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="js/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="js/ionicons/ionicons.js"></script>
 </head>
 
 <body class="au au-site">
@@ -173,7 +189,7 @@ $signupEnabled = getSignupStatus();
     <header class="site-nav" id="mainNavbar">
         <div class="wrap">
             <a class="brand" href="index.php">
-                <img src="images/logo.png" alt="">
+                <picture><source srcset="images/logo.webp" type="image/webp"><img src="images/logo.png" alt=""></picture>
                 <span class="au-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
                 BUCuC
             </a>
@@ -207,7 +223,8 @@ $signupEnabled = getSignupStatus();
     <!-- Mobile drawer -->
     <div id="mobileSidebarOverlay" class="drawer-overlay"></div>
     <nav id="mobileSidebar" class="drawer" aria-label="Mobile">
-        <a class="brand" href="index.php"><img src="images/logo.png" alt="">BUCuC</a>
+        <button type="button" class="drawer-close" id="drawerClose" aria-label="Close menu"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+        <a class="brand" href="index.php"><picture><source srcset="images/logo.webp" type="image/webp"><img src="images/logo.png" alt=""></picture>BUCuC</a>
         <a class="drawer-link" href="#section_1"><i class="fa fa-home"></i>Home</a>
         <a class="drawer-link" href="#section_2"><i class="fa fa-info-circle"></i>About</a>
         <a class="drawer-link" href="#advisors_section"><i class="fa fa-user-tie"></i>Advisors</a>
@@ -229,7 +246,7 @@ $signupEnabled = getSignupStatus();
                 <div class="hero-copy">
                     <div class="system" id="system" aria-hidden="true">
                         <div class="vinyl">
-                            <div class="disc"><div class="vlabel"><img src="images/logopng.png" alt=""></div></div>
+                            <div class="disc"><div class="vlabel"><picture><source srcset="images/logopng.webp" type="image/webp"><img src="images/logopng.png" alt=""></picture></div></div>
                             <div class="sheen"></div>
                         </div>
                     </div>
@@ -283,7 +300,7 @@ $signupEnabled = getSignupStatus();
             <div class="wrap about-grid">
                 <div class="about-copy">
                     <div class="paper-brand">
-                        <img src="images/logopng.png" alt="BUCuC logo" class="paper-logo">
+                        <picture><source srcset="images/logopng.webp" type="image/webp"><img src="images/logopng.png" alt="BUCuC logo" class="paper-logo"></picture>
                         <p class="kicker">About us · since 2002</p>
                     </div>
                     <h2 class="sec-title">BRAC University Cultural Club</h2>
@@ -334,9 +351,12 @@ $signupEnabled = getSignupStatus();
                                 ];
                                 foreach ($moments as $i => [$img, $title, $caption]): ?>
                                     <div class="carousel-item<?= $i === 0 ? ' active' : '' ?>">
-                                        <img src="<?= $img ?>" class="moment-img" alt="<?= htmlspecialchars($title) ?>" <?= $i ? 'loading="lazy"' : '' ?>>
+                                        <picture>
+                                            <source srcset="<?= htmlspecialchars(media_webp_url($img)) ?>" type="image/webp">
+                                            <img src="<?= $img ?>" class="moment-img" alt="<?= htmlspecialchars($title) ?>" <?= $i ? 'loading="lazy"' : '' ?>>
+                                        </picture>
                                         <div class="moment-cap">
-                                            <span class="disc-mini"><img src="images/logopng.png" alt=""></span>
+                                            <span class="disc-mini"><picture><source srcset="images/logopng.webp" type="image/webp"><img src="images/logopng.png" alt=""></picture></span>
                                             <div>
                                                 <h4><?= htmlspecialchars($title) ?></h4>
                                                 <p><?= htmlspecialchars($caption) ?></p>
@@ -385,7 +405,12 @@ $signupEnabled = getSignupStatus();
                 </div>
                 <div class="advisors">
                     <article class="person">
-                        <div class="person-img"><img src="images/Advisor/advisor.jpg" alt="Dr. Sharmind Neelotpol" loading="lazy"></div>
+                        <div class="person-img">
+                            <picture>
+                                <source srcset="images/Advisor/advisor.webp" type="image/webp">
+                                <img src="images/Advisor/advisor.jpg" alt="Dr. Sharmind Neelotpol" loading="lazy">
+                            </picture>
+                        </div>
                         <div class="person-body">
                             <h3 class="person-name">Dr. Sharmind Neelotpol</h3>
                             <span class="person-role">Advisor</span>
@@ -393,7 +418,12 @@ $signupEnabled = getSignupStatus();
                         </div>
                     </article>
                     <article class="person">
-                        <div class="person-img"><img src="images/Advisor/co.JPEG.jpg" alt="Dr. Upal Aditya Oikya" loading="lazy"></div>
+                        <div class="person-img">
+                            <picture>
+                                <source srcset="images/Advisor/co.JPEG.webp" type="image/webp">
+                                <img src="images/Advisor/co.JPEG.jpg" alt="Dr. Upal Aditya Oikya" loading="lazy">
+                            </picture>
+                        </div>
                         <div class="person-body">
                             <h3 class="person-name">Dr. Upal Aditya Oikya</h3>
                             <span class="person-role">Co-Advisor</span>
@@ -429,8 +459,11 @@ $signupEnabled = getSignupStatus();
                         <div class="<?= panelColumnClass(count($currentPanel['panel'])) ?>">
                             <div class="panel-member-card">
                                 <div class="pmc-image-wrap">
-                                    <img src="<?= htmlspecialchars($member['src']) ?>" alt="<?= htmlspecialchars($member['name']) ?>"
-                                        loading="lazy" onerror="this.onerror=null; this.src='images/placeholder.svg';">
+                                    <picture>
+                                        <source srcset="<?= htmlspecialchars(media_webp_url($member['src'])) ?>" type="image/webp">
+                                        <img src="<?= htmlspecialchars($member['src']) ?>" alt="<?= htmlspecialchars($member['name']) ?>"
+                                            loading="lazy" onerror="this.onerror=null; this.src='images/placeholder.svg';">
+                                    </picture>
                                     <?php if ($member['facebook']): ?>
                                         <div class="pmc-overlay">
                                             <a href="<?= htmlspecialchars($member['facebook']) ?>" target="_blank" rel="noopener"
@@ -461,12 +494,17 @@ $signupEnabled = getSignupStatus();
                 <div class="swiper-wrapper" id="sbSwiperWrapper">
                     <?php foreach ($currentPanel['secretaries'] as $member): ?>
                         <div class="swiper-slide">
-                            <img src="<?= htmlspecialchars($member['src']) ?>"
-                                alt="<?= htmlspecialchars($member['name'] . ' - ' . $member['position']) ?>"
-                                loading="lazy" onerror="this.onerror=null; this.src='images/placeholder.png';" />
+                            <picture>
+                                <source srcset="<?= htmlspecialchars(media_webp_url($member['src'])) ?>" type="image/webp">
+                                <img src="<?= htmlspecialchars($member['src']) ?>"
+                                    alt="<?= htmlspecialchars($member['name'] . ' - ' . $member['position']) ?>"
+                                    loading="lazy" onerror="this.onerror=null; this.src='images/placeholder.png';" />
+                            </picture>
                             <div class="overlay">
-                                <a href="<?= htmlspecialchars($member['facebook'] ?: '#') ?>" target="_blank" rel="noopener"
-                                    aria-label="Facebook – <?= htmlspecialchars($member['name']) ?>"><ion-icon name="logo-facebook"></ion-icon></a>
+                                <?php if ($member['facebook']): /* no icon without a saved link */ ?>
+                                    <a href="<?= htmlspecialchars($member['facebook']) ?>" target="_blank" rel="noopener"
+                                        aria-label="Facebook – <?= htmlspecialchars($member['name']) ?>"><ion-icon name="logo-facebook"></ion-icon></a>
+                                <?php endif; ?>
                             </div>
                             <div class="member-name">
                                 <span class="name"><?= htmlspecialchars($member['name']) ?></span>
@@ -489,11 +527,14 @@ $signupEnabled = getSignupStatus();
                 </div>
                 <div class="events-grid">
                     <?php
-                    // The 5 newest events (Website Media → Past Events; site_event_cards() in site.php).
-                    // Each card links to its write-up on past_events.php.
-                    foreach (site_event_cards(5) as $ev): ?>
+                    // The 5 newest events
+                    $homeEvents = site_event_cards(5);
+                    if (!$homeEvents): ?>
+                        <p class="events-empty">Event stories are on their way. Follow us on Facebook for the latest shows.</p>
+                    <?php endif;
+                    foreach ($homeEvents as $ev): ?>
                         <a class="event-card" href="past_events.php#<?= htmlspecialchars($ev['anchor']) ?>">
-                            <span class="event-card-bg" style="background-image: url('<?= htmlspecialchars($ev['image']) ?>'), url('images/placeholder.svg');"></span>
+                            <span class="event-card-bg" style="background-image: url('<?= htmlspecialchars($ev['image']) ?>'); background-image: image-set(url('<?= htmlspecialchars(media_webp_url($ev['image'])) ?>') type('image/webp'), url('<?= htmlspecialchars($ev['image']) ?>') type('image/jpeg'));"></span>
                             <span class="event-card-content">
                                 <span class="event-date"><?= date('j F Y', strtotime($ev['date'])) ?></span>
                                 <span class="event-title d-block"><?= htmlspecialchars($ev['title']) ?></span>
@@ -714,7 +755,7 @@ $signupEnabled = getSignupStatus();
         <div class="wrap">
             <div class="foot-grid">
                 <div>
-                    <a class="foot-brand" href="index.php"><img src="images/logopng.png" alt="BUCuC logo"><span>BRAC University<br>Cultural Club</span></a>
+                    <a class="foot-brand" href="index.php"><picture><source srcset="images/logopng.webp" type="image/webp"><img src="images/logopng.png" alt="BUCuC logo"></picture><span>BRAC University<br>Cultural Club</span></a>
                     <p class="foot-tag">Work • Bond • Glow</p>
                     <ul class="socials" style="margin-top: 16px;">
                         <li><a href="https://www.facebook.com/bucuc" target="_blank" rel="noopener" aria-label="Facebook page"><i class="fab fa-facebook-f"></i></a></li>
@@ -757,7 +798,7 @@ $signupEnabled = getSignupStatus();
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/click-scroll.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11.1.14/swiper-bundle.min.js"></script>
+    <script src="js/swiper-bundle.min.js"></script>
     <script>
         // Every panel year (tenure tables), image URLs already encoded by PHP
         window.BUCUC_PANEL_YEARS = <?= json_encode($panelYears, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>;

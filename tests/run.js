@@ -39,6 +39,9 @@ const SUITES = {
     attendance: 'Attendance: sessions, checklist, QR check-in, reports',
     handover: 'Handover notes: sections, versions, locking, reminders',
     ads: 'Sponsor banners (Super Admin only)',
+    superhide: 'The Super Admin is invisible to every other admin and to visitors (names, e-mail, wording, page source)',
+    uiqa: 'Every page, role and width: overflow, tap targets, titles, links, menus, 404, busy buttons, empty lists',
+    webp: 'Phase 3: WebP uploads, content negotiation, fallback, transparency, EXIF orientation, cleanup, <1MB limit',
 };
 const ADMINS = [
     ['Super Tester', 'super@test.local', 'superpass123', 'super_admin'],
@@ -90,9 +93,9 @@ async function startDb() {
     say(`• test database started on port ${T.DB_PORT}`);
 }
 
-async function startPhp(port, args, name) {
+async function startPhp(port, args, name, router = null) {
     if (await portOpen(port)) die(`Port ${port} is already in use (another site or test server?). Stop it first.`);
-    const p = spawn(T.PHP, [...args, '-S', `127.0.0.1:${port}`], { cwd: T.ROOT, stdio: ['ignore', 'ignore', fs.openSync(path.join(LOGS, `${name}.txt`), 'w')] });
+    const p = spawn(T.PHP, [...args, '-S', `127.0.0.1:${port}`, ...(router ? [router] : [])], { cwd: T.ROOT, stdio: ['ignore', 'ignore', fs.openSync(path.join(LOGS, `${name}.txt`), 'w')] });
     children.push(p);
     for (let i = 0; i < 40 && !(await portOpen(port)); i++) await sleep(250);
     if (!(await portOpen(port))) die(`The ${name} server did not start (see ${path.join(LOGS, name + '.txt')}).`);
@@ -104,6 +107,7 @@ function resetDb() {
     mysql([T.DB_NAME], fs.readFileSync(path.join(T.ROOT, 'backend', 'Database', 'schema.sql')));
     mysql([T.DB_NAME], execFileSync(T.PHP, [path.join(T.TESTS, 'seed', 'seed.php')]));
     for (const f of fs.readdirSync(path.join(T.ROOT, 'backend', 'logs'))) if (f.startsWith('.schema_v')) fs.unlinkSync(path.join(T.ROOT, 'backend', 'logs', f));
+    for (const f of fs.existsSync(path.join(T.ROOT, 'backend', 'cache')) ? fs.readdirSync(path.join(T.ROOT, 'backend', 'cache')) : []) if (f.endsWith('.json')) try { fs.unlinkSync(path.join(T.ROOT, 'backend', 'cache', f)); } catch (e) { }
     for (const [name, email, pw, role] of ADMINS) {
         execFileSync(T.PHP, [...PHP_EXT, '-d', `auto_prepend_file=${T.PREPEND}`, path.join(T.ROOT, 'backend', 'scripts', 'create_admin.php'), name, email, pw, role], { stdio: 'ignore' });
     }
@@ -142,10 +146,10 @@ function cleanup() {
         process.on('SIGINT', () => { say('\nStopping…'); cleanup(); process.exit(0); });
         execFileSync(T.PHP, [...PHP_EXT, path.join(T.FIXTURES, 'make_images.php'), T.CROPIMG], { stdio: 'ignore' });
         await startDb();
-        if (args.includes('--fresh') || !mysql(['-N', '-e', `SHOW DATABASES LIKE '${T.DB_NAME}'`])) resetDb();
+        resetDb();
         await startPhp(T.FIXTURE_PORT, ['-t', T.FIXTURES], 'fixtures');
         await startPhp(T.SITE_PORT, [...PHP_EXT, '-d', `auto_prepend_file=${T.PREPEND}`, '-d', `session.save_path=${T.SESSIONS}`,
-            '-d', 'upload_max_filesize=16M', '-d', 'post_max_size=20M', '-d', `error_log=${path.join(LOGS, 'php_server.txt')}`, '-t', T.ROOT], 'site');
+            '-d', 'upload_max_filesize=16M', '-d', 'post_max_size=20M', '-d', `error_log=${path.join(LOGS, 'php_server.txt')}`, '-t', T.ROOT], 'site', path.join(T.TESTS, 'router.php'));
         say(`\nLocal preview running (made-up data, e-mail written to a file, nothing real touched):\n  site   ${T.BASE}index.php\n  admin  ${T.BASE}admin-login.php   super@test.local / superpass123\nPress Ctrl+C to stop.`);
         return;   // the servers keep the process alive
     }
@@ -164,7 +168,7 @@ function cleanup() {
     await startDb();
     await startPhp(T.FIXTURE_PORT, ['-t', T.FIXTURES], 'fixtures');
     await startPhp(T.SITE_PORT, [...PHP_EXT, '-d', `auto_prepend_file=${T.PREPEND}`, '-d', `session.save_path=${T.SESSIONS}`,
-        '-d', 'upload_max_filesize=16M', '-d', 'post_max_size=20M', '-d', `error_log=${path.join(LOGS, 'php_server.txt')}`, '-t', T.ROOT], 'site');
+        '-d', 'upload_max_filesize=16M', '-d', 'post_max_size=20M', '-d', `error_log=${path.join(LOGS, 'php_server.txt')}`, '-t', T.ROOT], 'site', path.join(T.TESTS, 'router.php'));
     say(`• site on ${T.BASE}\n`);
 
     const results = [];
@@ -182,7 +186,16 @@ function cleanup() {
         say(okRun ? `✓ ${m[1]}/${m[2]} (${results.at(-1).secs}s)` : `✗ ${m ? m[1] + '/' + m[2] : 'did not finish'} (${results.at(-1).secs}s)`);
         for (const f of fails.slice(0, 8)) say('      ' + f.slice(0, 200));
         // put things back for the next suite
-        fs.writeFileSync(membersJson, membersBackup);
+        let written = false;
+        for (let i = 0; i < 20 && !written; i++) {
+            try {
+                fs.writeFileSync(membersJson, membersBackup);
+                written = true;
+            } catch (e) {
+                await sleep(100);
+            }
+        }
+        if (!written) fs.writeFileSync(membersJson, membersBackup);
         for (const f of listUploads()) if (!uploadsBefore.has(f)) try { fs.unlinkSync(f); } catch (e) { }
     }
     cleanup();

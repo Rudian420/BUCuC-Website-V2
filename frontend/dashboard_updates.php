@@ -45,7 +45,7 @@ try {
     }
 
 } catch (Exception $e) {
-    $error = "Error fetching current stats: " . $e->getMessage();
+    $error = friendly_error($e, 'Loading the current numbers');
 }
 
 // Handle POST request
@@ -154,10 +154,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Updates - BUCuC</title>
+    <title>Dashboard Updates | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
     <style>
         .updates-container {
@@ -237,7 +237,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: rgb(var(--c-danger-fa5252, 250 82 82));
         }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 
@@ -339,15 +342,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/admin-toast.js"></script>
     <script>
         function removeRow(btn) {
             const container = document.getElementById('growthRowsContainer');
-            // If deleting would leave 0 rows, we might want to prevent or alert, 
-            // but for flexiblity allow clearing. Maybe keep at least 1?
+            // the chart needs at least one point
             if (container.children.length > 1) {
                 btn.closest('.dynamic-row').remove();
             } else {
-                alert("You need at least one data point.");
+                showNotification('The chart needs at least one data point, so the last row stays. Change its values instead.', 'warning');
             }
         }
 

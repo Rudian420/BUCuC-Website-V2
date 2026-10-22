@@ -535,7 +535,25 @@ body {
 
 @media (max-width: 768px) {
   .sidebar-toggle {
-    display: block;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    top: 14px;
+    left: 14px;
+    padding: 0;
+  }
+
+  /* room for the menu button above the page heading (beats the later .main-content padding rule) */
+  .sidebar-toggle ~ .main-content {
+    padding-top: 76px;
+  }
+
+  /* solid panel when it slides over the page */
+  .sidebar {
+    background: rgb(var(--c-surface, 14 9 36) / 0.97);
+    box-shadow: 0 0 40px rgb(var(--c-fixed-000000, 0 0 0) / 0.5);
+    padding-top: 56px;
   }
 }
 

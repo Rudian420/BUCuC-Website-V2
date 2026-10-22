@@ -40,7 +40,7 @@ try {
 } catch (Exception $e) {
     $shortlistedMembers = [];
     $totalShortlisted = 0;
-    $error_message = "Error fetching data: " . $e->getMessage();
+    $error_message = friendly_error($e, 'Loading the list');
 }
 
 // JS-string-safe text for onsubmit="return confirm(...)" attributes
@@ -56,7 +56,7 @@ function confirmText($text)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shortlisted Members - BRAC University Cultural Club</title>
+    <title>Shortlisted Members | BUCuC Admin</title>
 
     <!-- Bootstrap CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -64,10 +64,13 @@ function confirmText($text)
     <link href="css/templatemo-festava-live.css" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
 
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
 
     <style>
         .applications-container {
@@ -425,6 +428,7 @@ function confirmText($text)
 
     <!-- Bootstrap JS -->
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/admin-toast.js"></script>
 
     <script>
         // Show Clear All Modal
@@ -460,7 +464,7 @@ function confirmText($text)
             const confirmationText = document.getElementById('confirmationInput').value.trim();
 
             if (confirmationText !== 'CLEAR ALL SHORTLISTED') {
-                alert('Please type "CLEAR ALL SHORTLISTED" exactly to confirm.');
+                showNotification('Type CLEAR ALL SHORTLISTED exactly (capital letters) to confirm.', 'warning');
                 return;
             }
 
@@ -485,17 +489,16 @@ function confirmText($text)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        location.reload();
+                        showNotification(data.message, 'success');
+                        setTimeout(() => location.reload(), 1200);
                     } else {
-                        alert('Error: ' + data.message);
+                        showNotification(data.message || 'Could not clear the list. Reload the page and try again.', 'error');
                         button.innerHTML = originalContent;
                         button.disabled = false;
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while clearing applications.');
+                    showNotification('Could not reach the server, so nothing was cleared. Check your connection and try again.', 'error');
                     button.innerHTML = originalContent;
                     button.disabled = false;
                 });

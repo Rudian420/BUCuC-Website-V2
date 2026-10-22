@@ -5,6 +5,7 @@
  */
 require_once '../backend/includes/auth.php';
 auth_start_session();
+site_send_never_cache_headers();
 
 if (empty($_SESSION['admin'])) {
     header('Location: index.php');
@@ -30,9 +31,12 @@ $csrf = csrf_token();
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Log out - BUCuC</title>
+    <title>Log Out | BUCuC Admin</title>
     <style>
         body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: rgb(var(--c-bg, 6 4 15)); color: rgb(var(--c-text, 243 240 255)); font: 16px/1.5 system-ui, sans-serif; padding: 24px 16px; box-sizing: border-box; }
         .card { width: 100%; max-width: 360px; text-align: center; background: rgb(var(--c-surface, 14 9 36)); border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / .18); border-radius: 18px; padding: 28px 24px; box-sizing: border-box; }

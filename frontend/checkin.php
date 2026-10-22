@@ -85,8 +85,11 @@ if ($state === 'form' && $ticket === '' && $s) $ticket = (string) ($_POST['ticke
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <meta name="referrer" content="no-referrer">
-    <title>Check in - BUCuC</title>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <title>Check In | BUCuC</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 20px 16px; background: rgb(var(--c-bg, 6 4 15)); color: rgb(var(--c-text, 243 240 255)); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -107,7 +110,7 @@ if ($state === 'form' && $ticket === '' && $s) $ticket = (string) ($_POST['ticke
 
 <body>
     <main class="card">
-        <img src="images/logopng.png" alt="BUCuC logo" class="logo">
+        <picture><source srcset="images/logopng.webp" type="image/webp"><img src="images/logopng.png" alt="BUCuC logo" class="logo"></picture>
         <?php if ($s && $s['qr_enabled']): ?>
             <h1><?= $h($s['title']) ?></h1>
             <p class="sub"><?= $h(att_when($s)) ?></p>

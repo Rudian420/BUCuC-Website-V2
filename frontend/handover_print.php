@@ -5,8 +5,13 @@
  * out Bangla text correctly and no extra library is needed. Only sections this admin may see
  * (Contacts needs handover_contacts). Every export is logged.
  */
+define('NO_ADMIN_MENU', true);   // print page: only the notes
 require_once '../backend/includes/auth.php';
 require_admin();
+if (!can_handover()) {
+    // Handover Notes are for the Super Admin and the Panel Admin only (HANDOVER_ROLES in roles.php)
+    auth_deny(false, 403, "You don't have access to the Handover Notes.", auth_frontend_url(auth_dashboard_page()) . '?error=' . urlencode("You don't have access to the Handover Notes."));
+}
 require_once '../backend/includes/handover.php';
 
 $conn = db();
@@ -24,9 +29,12 @@ log_activity('handover_exported', 'Printed / saved as PDF' . (can('handover_cont
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>BUCuC Handover Notes - Tenure <?= $h($doc['tenure_label']) ?></title>
+    <title>Handover Notes, Tenure <?= $h($doc['tenure_label']) ?> | BUCuC Admin</title>
     <style>
         /* Print document: plain black on white, no site palette */
         body { margin: 0; background: #fff; color: #111; font: 11pt/1.55 "Hind Siliguri", "Noto Sans Bengali", "Segoe UI", Arial, sans-serif; }
@@ -61,7 +69,7 @@ log_activity('handover_exported', 'Printed / saved as PDF' . (can('handover_cont
     <div class="page">
         <div class="bar"><span>Choose <b>Save as PDF</b> as the printer to get a PDF file.</span><button type="button" onclick="window.print()">Print / Save as PDF</button></div>
         <header>
-            <img src="images/logopng.png" alt="">
+            <picture><source srcset="images/logopng.webp" type="image/webp"><img src="images/logopng.png" alt=""></picture>
             <div>
                 <h1>Handover Notes · Tenure <?= $h($doc['tenure_label']) ?></h1>
                 <div class="sub">BRAC University Cultural Club · exported <?= date('j F Y, g:i a') ?> (Dhaka)<?= $doc['ends_on'] ? ' · tenure ends ' . date('j F Y', strtotime($doc['ends_on'])) : '' ?></div>

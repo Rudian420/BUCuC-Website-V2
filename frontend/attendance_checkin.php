@@ -4,6 +4,7 @@
  * The QR code changes every ATT_QR_SECONDS; members scan it, then type their student ID on
  * checkin.php. Names appear here live; a wrong check-in can be removed. Permission take_attendance.
  */
+define('NO_ADMIN_MENU', true);   // projector screen: only the QR code
 require_once '../backend/includes/auth.php';
 $isJson = isset($_GET['action']) || in_array($_POST['action'] ?? '', ['remove'], true);
 require_admin(['can' => 'take_attendance', 'json' => $isJson, 'csrf_redirect' => 'attendance.php']);
@@ -85,9 +86,9 @@ $open = att_checkin_open($s);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-in: <?= $h($s['title']) ?> - BUCuC</title>
+    <title>Check-in: <?= $h($s['title']) ?> | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/attendance.css?v=<?= filemtime(__DIR__ . '/css/attendance.css') ?>">
     <style>
         .ck-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
@@ -106,7 +107,10 @@ $open = att_checkin_open($s);
         @keyframes pop { from { background: rgb(var(--c-accent2, 92 255 176) / 0.25); } to { background: transparent; } }
         .howto { text-align: center; font-size: 1.05rem; margin-top: .8rem; }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 
@@ -154,6 +158,7 @@ $open = att_checkin_open($s);
     </div>
 
     <script src="vendor/qrcode-generator/qrcode.js"></script>
+    <script src="js/admin-toast.js"></script>
     <script>
         (function () {
             const ID = <?= $id ?>;
@@ -213,8 +218,11 @@ $open = att_checkin_open($s);
                 } else if (!confirm(`Remove ${name}'s check-in?`)) return;
                 const fd = new FormData();
                 fd.append('action', 'remove'); fd.append('id', ID); fd.append('member_id', b.dataset.remove); fd.append('reason', reason); fd.append('csrf_token', csrf);
-                const d = await (await fetch('attendance_checkin.php', { method: 'POST', body: fd })).json();
-                if (!d.success) alert(d.error);
+                let d;
+                try { d = await (await fetch('attendance_checkin.php', { method: 'POST', body: fd })).json(); }
+                catch (err) { showNotification('Could not reach the server, so the check-in was not removed. Check your connection and try again.', 'error'); return; }
+                if (!d.success) showNotification(d.error || 'Could not remove the check-in. Reload the page and try again.', 'error');
+                else showNotification(`${name}'s check-in was removed.`, 'success');
                 shown = ''; poll();
             });
             poll();

@@ -70,9 +70,9 @@ foreach ($map['vars'] as $name => $v) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Colours - BUCuC</title>
+    <title>Site Colours | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
     <style>
         /* This page uses fixed colours on purpose (never the chosen palette) */
@@ -132,7 +132,10 @@ foreach ($map['vars'] as $name => $v) {
         .status { display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
         @media (max-width: 960px) { .grid2 { grid-template-columns: 1fr; } .pv-stage { height: 420px; } }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
 </head>
 
 <body class="theme-page">

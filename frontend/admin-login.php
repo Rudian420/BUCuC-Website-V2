@@ -1,6 +1,7 @@
 <?php
 require_once '../backend/includes/auth.php';
 auth_start_session();
+site_send_never_cache_headers();
 
 // Already signed in → straight to the dashboard
 if (!empty($_SESSION['admin']) && !empty($_SESSION['admin_id'])) {
@@ -69,7 +70,7 @@ $csrf = csrf_token();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login - BRAC University Cultural Club</title>
+  <title>Admin Login | BUCuC</title>
 
   <!-- Bootstrap CSS -->
   <link href="css/bootstrap.min.css" rel="stylesheet" />
@@ -77,10 +78,13 @@ $csrf = csrf_token();
   <link href="css/templatemo-festava-live.css" rel="stylesheet" />
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/all.min.css" />
 
   <link rel="stylesheet" href="AdminCss/admin.css">
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 

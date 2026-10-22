@@ -17,7 +17,7 @@ if (($_GET['action'] ?? '') === 'batch') {
         echo json_encode(['success' => true] + notice_send_batch($conn, (int) ($_POST['id'] ?? 0)));
     } catch (\Throwable $e) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => friendly_error($e, 'Sending this batch')]);
     }
     exit();
 }
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         if (!notice_account_ready($acct)) {
-            $error = "The sending account {$acct['email']} has no App Password set up yet, so nothing can be sent. Ask the Super Admin to set it up.";
+            $error = "The sending account {$acct['email']} has no App Password set up yet, so nothing can be sent. Ask whoever looks after the website to set it up.";
         } elseif ($subject === '' || $body === '') {
             $error = 'Write a subject and a message.';
         } elseif (!$picked) {
@@ -112,9 +112,9 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Notices - BUCuC</title>
+    <title>Email Notices | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
     <style>
         .wrapx { padding: 2rem 1rem; color: var(--ink, rgb(var(--c-fixed-ffffff, 255 255 255))); max-width: 1000px; }
@@ -137,6 +137,8 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
         .sender { padding: .8rem 1rem; border-radius: 12px; background: rgb(var(--c-accent, 45 226 230) / 0.1); border: 1px solid rgb(var(--c-accent, 45 226 230) / 0.35); }
         .sender.bad { background: rgb(var(--c-danger-ff4f7b, 255 79 123) / 0.12); border-color: rgb(var(--c-danger-ff4f7b, 255 79 123) / 0.5); color: rgb(var(--c-danger, 255 147 180)); }
         .ph code { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); color: rgb(var(--c-highlight, 255 207 125)); padding: .1rem .4rem; border-radius: 6px; cursor: pointer; }
+        .phbtn, .linkbtn { background: none; border: 0; padding: .35rem .1rem; min-height: 32px; color: inherit; font: inherit; cursor: pointer; }
+        .linkbtn { text-decoration: underline; }
         .progress { height: 14px; background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); border-radius: 999px; }
         .progress-bar { background: linear-gradient(90deg, rgb(var(--c-accent2, 92 255 176)), rgb(var(--c-accent, 45 226 230)), rgb(var(--c-primary, 139 92 255))); }
         .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; margin: 1rem 0; text-align: center; }
@@ -145,9 +147,14 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
         .hist { width: 100%; font-size: .88rem; border-collapse: collapse; }
         .hist td, .hist th { padding: .55rem .4rem; border-bottom: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); vertical-align: top; }
         .hist th { color: var(--mute, rgb(var(--c-muted, 170 163 210))); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-scroll .hist { min-width: 640px; }
         @media (max-width: 600px) { .nums { grid-template-columns: repeat(2, 1fr); } }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 
@@ -217,6 +224,7 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
                                 <?= htmlspecialchars($m['full_name']) ?> <small><?= htmlspecialchars($m['university_id']) ?> · <?= LEVEL_NAMES[$m['position']] ?? '' ?> · <?= count($m['to']) ?> e-mail<?= count($m['to']) === 1 ? '' : 's' ?></small>
                             </label>
                         <?php endforeach; ?>
+                        <?php if (!$reachable): ?><p class="note m-2">No members with an e-mail address yet. Members are added in Admin → Members.</p><?php endif; ?>
                     </div>
                     <span class="note" id="pickCount">0 selected</span>
                 </div>
@@ -226,8 +234,8 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
                     <input type="text" id="subject" name="subject" class="form-control" required maxlength="200" value="<?= htmlspecialchars($_POST['subject'] ?? NOTICE_DEFAULT_SUBJECT) ?>"></div>
                 <div class="mb-2"><label class="form-label" for="body">Message</label>
                     <textarea id="body" name="body" class="form-control" rows="11" required><?= htmlspecialchars($_POST['body'] ?? NOTICE_DEFAULT_BODY) ?></textarea></div>
-                <p class="note ph">Placeholders (click to insert): <?php foreach (NOTICE_PLACEHOLDERS as $ph => $desc): ?><code title="<?= $desc ?>"><?= $ph ?></code> <?php endforeach; ?>
-                    · <a href="#" id="resetTpl" class="note">Restore the default template</a></p>
+                <p class="note ph">Placeholders (click to insert): <?php foreach (NOTICE_PLACEHOLDERS as $ph => $desc): ?><button type="button" class="phbtn" title="<?= $desc ?>"><code><?= $ph ?></code></button> <?php endforeach; ?>
+                    · <button type="button" id="resetTpl" class="linkbtn note">Restore the default template</button></p>
                 <p class="note">Sent in batches of <?= NOTICE_BATCH_SIZE ?>; the daily limit counts e-mails, not members.</p>
                 <button type="submit" class="btn btn-success" <?= notice_account_ready($acct) ? '' : 'disabled' ?>><i class="fas fa-paper-plane me-2"></i>Send notice</button>
             </form>
@@ -236,6 +244,7 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
         <?php if ($history): ?>
             <div class="panel">
                 <h4 class="mb-3">Sent notices</h4>
+                <div class="table-scroll">
                 <table class="hist">
                     <tr><th>When</th><th>Subject</th><th>To</th><th>E-mails sent / failed</th><th>From</th><th>By</th></tr>
                     <?php foreach ($history as $h): ?>
@@ -249,10 +258,14 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
                         </tr>
                     <?php endforeach; ?>
                 </table>
+                </div>
             </div>
+        <?php elseif (!$run): ?>
+            <div class="panel"><h4 class="mb-1">Sent notices</h4><p class="note mb-0">No notices sent yet. Notices you send appear here with how many e-mails went out.</p></div>
         <?php endif; ?>
     </div>
 
+    <script src="js/admin-toast.js"></script>
     <script>
         const tok = () => document.querySelector('meta[name="csrf-token"]').content;
         // Compose form helpers
@@ -271,7 +284,7 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
                 compose.querySelectorAll('.picklist label').forEach(l => l.style.display = !q || l.dataset.q.includes(q) ? '' : 'none');
             });
             const body = document.getElementById('body');
-            document.querySelectorAll('.ph code').forEach(c => c.addEventListener('click', () => {
+            document.querySelectorAll('.ph .phbtn').forEach(c => c.addEventListener('click', () => {
                 const s = body.selectionStart ?? body.value.length;
                 body.value = body.value.slice(0, s) + c.textContent + body.value.slice(body.selectionEnd ?? s);
                 body.focus();
@@ -283,7 +296,7 @@ $fmtCount = fn($c) => $c[0] . ' member' . ($c[0] === 1 ? '' : 's') . ' · ' . $c
             });
             compose.addEventListener('submit', e => {
                 const v = compose.querySelector('input[name=audience]:checked').value;
-                if (v === 'pick' && !compose.querySelector('input[name="member_ids[]"]:checked')) { e.preventDefault(); alert('Pick at least one member.'); return; }
+                if (v === 'pick' && !compose.querySelector('input[name="member_ids[]"]:checked')) { e.preventDefault(); showNotification('Pick at least one member in the list, or choose a different audience.', 'warning'); return; }
                 if (!confirm(<?= json_encode('Send this notice now from ' . $acct['email'] . '?') ?>)) e.preventDefault();
             });
         }

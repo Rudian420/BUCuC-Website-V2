@@ -95,8 +95,12 @@ if ($iAmSuper) {
         'ad_deleted' => 'Sponsor ad deleted', 'ad_spot_on' => 'Sponsor spot switched on', 'ad_spot_off' => 'Sponsor spot switched off', 'ad_report_exported' => 'Sponsor report exported'];
 }
 if (!$iAmSuper) {
-    // Lockdown is the Super Admin's tool; others never see those entries, so don't offer them as filters
-    $actionLabels = array_filter($actionLabels, fn($k) => strpos($k, 'lockdown_') !== 0, ARRAY_FILTER_USE_KEY);
+    // Lockdown and recovery belong to the Super Admin; others never see those entries, so don't offer them as filters
+    // (and the account must not show up anywhere for them)
+    $actionLabels = array_filter($actionLabels, fn($k) => strpos($k, 'lockdown_') !== 0 && $k !== 'super_recovered', ARRAY_FILTER_USE_KEY);
+}
+if (!can_handover()) {
+    $actionLabels = array_filter($actionLabels, fn($k) => strpos($k, 'handover_') !== 0, ARRAY_FILTER_USE_KEY);
 }
 
 // Colour group per action, for the badge
@@ -124,6 +128,10 @@ if (!$iAmSuper) {
     $where[] = "COALESCE(actor_role, '') <> 'super_admin' AND COALESCE(target_role, '') <> 'super_admin'
         AND COALESCE(admin_id, 0) NOT IN (SELECT id FROM adminpanel WHERE role IN ('super_admin', 'main_admin'))
         AND action NOT LIKE 'ad\\_%'";
+}
+if (!can_handover()) {
+    // Handover Notes are for the Super Admin and the Panel Admin only: nobody else sees their entries
+    $where[] = "action NOT LIKE 'handover\\_%'";
 }
 if ($filterAdmin !== '' && ctype_digit($filterAdmin)) {
     $where[] = 'admin_id = ?';
@@ -165,7 +173,8 @@ $admins = $conn->query("SELECT id, username FROM adminpanel" . ($iAmSuper ? '' :
 $summaryWhere = $iAmSuper ? '' : " AND COALESCE(actor_role, '') <> 'super_admin' AND COALESCE(target_role, '') <> 'super_admin'
     AND COALESCE(admin_id, 0) NOT IN (SELECT id FROM adminpanel WHERE role IN ('super_admin', 'main_admin'))
     AND action NOT LIKE 'ad\\_%'";
-$summary = $conn->query("SELECT
+if (!can_handover()) $summaryWhere .= " AND action NOT LIKE 'handover\\_%'";
+$summary =$conn->query("SELECT
     SUM(action = 'login') AS logins,
     SUM(action = 'login_failed') AS failed,
     COUNT(*) AS total
@@ -184,9 +193,9 @@ function pageUrl($p)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity Log - BUCuC</title>
+    <title>Activity Log | BUCuC Admin</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="AdminCss/Dashboard.css">
     <style>
         .log-container { padding: 2rem 1rem; color: var(--ink, rgb(var(--c-fixed-ffffff, 255 255 255))); }
@@ -225,7 +234,10 @@ function pageUrl($p)
             .stat-row .panel { padding: .75rem .4rem; }
         }
     </style>
-    <link rel="icon" type="image/png" href="images/logopng.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="css/aurora.css">
 </head>
 
