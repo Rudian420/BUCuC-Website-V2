@@ -1,0 +1,57 @@
+/* Loaded on every admin page (csrf_autoinject() in backend/includes/auth.php).
+   1. The "Menu" bar + slide-out menu (markup: admin_menu_html() in backend/includes/admin_menu.php, behaviour: js/ui.js).
+   2. Phone sizes: buttons, fields and checkboxes big enough to tap, no text under 12px.
+   Colours follow the Site Colours palette; the values after the commas are the defaults. */
+.am-bar {
+    position: sticky; top: 0; z-index: 1040; display: flex; align-items: center; gap: 12px;
+    padding: 8px max(16px, env(safe-area-inset-left)); min-height: 60px; box-sizing: border-box;
+    background: rgb(var(--c-surface, 14 9 36) / 0.88); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.12);
+}
+.am-btn {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border-radius: 12px; cursor: pointer;
+    font: 600 15px/1 inherit; color: rgb(var(--c-fixed-ffffff, 255 255 255));
+    background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.07); border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.18);
+}
+.am-btn:hover { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.13); }
+.am-burger { display: inline-grid; gap: 4px; width: 18px; }
+.am-burger i { display: block; height: 2px; border-radius: 2px; background: currentColor; }
+.am-home { display: inline-flex; align-items: center; min-height: 44px; font-weight: 800; letter-spacing: .02em; text-decoration: none; color: rgb(var(--c-fixed-ffffff, 255 255 255)) !important; }
+
+.am-overlay { position: fixed; inset: 0; z-index: 1050; background: rgb(var(--c-bg, 6 4 15) / 0.6); }
+.am-drawer {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 1060; width: min(320px, 86vw); box-sizing: border-box;
+    padding: 64px 14px 24px; overflow-y: auto; transform: translateX(-102%); transition: transform .25s ease, visibility .25s; visibility: hidden;
+    background: rgb(var(--c-surface, 14 9 36) / 0.98); border-right: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.15);
+    box-shadow: 0 0 40px rgb(var(--c-fixed-000000, 0 0 0) / 0.5);
+}
+.am-drawer.open { transform: none; visibility: visible; transition: transform .25s ease, visibility 0s; }   /* visible at once, so focus can move in */
+.am-close {
+    position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 12px; cursor: pointer; font-size: 26px; line-height: 1;
+    color: rgb(var(--c-fixed-ffffff, 255 255 255)); background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.07); border: 1px solid rgb(var(--c-fixed-ffffff, 255 255 255) / 0.18);
+}
+.am-section { margin: 18px 10px 6px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--mute, rgb(var(--c-muted, 170 163 210))); }
+.am-section:first-of-type { margin-top: 0; }
+.am-link {
+    display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; text-decoration: none;
+    color: rgb(var(--c-fixed-ffffff, 255 255 255)) !important; font-size: 15px;
+}
+.am-link:hover { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08); }
+.am-link.on { background: rgb(var(--c-accent, 45 226 230) / 0.15); box-shadow: inset 3px 0 0 rgb(var(--c-accent, 45 226 230)); font-weight: 700; }
+.am-btn:focus-visible, .am-home:focus-visible, .am-close:focus-visible, .am-link:focus-visible {
+    outline: 3px solid rgb(var(--c-accent, 45 226 230)); outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) { .am-drawer { transition: none; } }
+@media print { .am-bar, .am-drawer, .am-overlay { display: none !important; } }
+
+/* 2. Phones and touch screens: at least 44px tap targets (WCAG 2.5.5), readable small text */
+@media (max-width: 768px), (pointer: coarse) {
+    body .btn, body .form-control, body .form-select, body select, body input[type=text],
+    body input[type=email], body input[type=password], body input[type=search], body input[type=date],
+    body input[type=time], body input[type=number], body input[type=url], body input[type=tel] { min-height: 44px; }
+    body .btn { display: inline-flex; align-items: center; justify-content: center; }
+    body .btn-sm { min-width: 44px; font-size: max(12px, .8rem) !important; }
+    body input[type=checkbox], body input[type=radio] { width: 22px; height: 22px; }
+    body .btn-close { width: 44px; height: 44px; padding: 0; background-size: 14px; }
+    body table a:not(.btn) { display: inline-block; padding: 10px 0; }
+}

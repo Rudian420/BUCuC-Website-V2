@@ -1,0 +1,106 @@
+# Live server: always HTTPS (session cookies are then always Secure). Local test hosts are skipped.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+
+# Missing pages: the site's own 404 page (logo, link back home)
+ErrorDocument 404 /frontend/404.php
+
+# Gzip compression for text, code, SVG and fonts
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE font/ttf
+    AddOutputFilterByType DEFLATE font/otf
+    AddOutputFilterByType DEFLATE font/woff
+    AddOutputFilterByType DEFLATE font/woff2
+    AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+</IfModule>
+
+# Browser caching and expiry rules
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+
+    # Static assets: long cache (1 year)
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType application/x-javascript "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType application/manifest+json "access plus 1 week"
+
+    # Dynamic pages: never cache (revalidate immediately)
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Security and cache headers
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+
+    # Long-term cache for versioned static assets
+    <FilesMatch "\.(css|js|woff2?|ttf|otf|eot|svg|png|jpe?g|webp|ico)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+
+    # SEO files
+    <Files "sitemap.xml">
+        Header set Content-Type "application/xml; charset=utf-8"
+        Header set Cache-Control "max-age=86400, public"
+    </Files>
+    <Files "robots.txt">
+        Header set Content-Type "text/plain; charset=utf-8"
+        Header set Cache-Control "max-age=86400, public"
+    </Files>
+
+    # Never cache dynamic PHP files by default
+    <FilesMatch "\.php$">
+        Header set Cache-Control "private, no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# Never serve database dumps, logs, exports, data files, docs or tooling files to browsers.
+# .json is included: no JSON file is needed publicly (members.json is read by PHP from disk).
+<FilesMatch "\.(sql|log|csv|xlsx|json|md|lock|phar|bak|ini|sh|py|token)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Hide the git repository and Claude Code settings if the site is deployed with git
+<IfModule mod_alias.c>
+    RedirectMatch 404 /\.(git|claude)
+</IfModule>

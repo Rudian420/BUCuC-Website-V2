@@ -1,0 +1,374 @@
+/* =========================================================================
+   BUCuC "Aurora" theme — shared by every page.
+   Load AFTER the page's other stylesheets, together with js/aurora-sky.js
+   (placed right after <body>). Public pages add css/site.css on top.
+   ========================================================================= */
+@import url("fonts.css");
+
+:root {
+    --void: rgb(var(--c-bg, 6 4 15));
+    --ink: rgb(var(--c-text, 243 240 255));
+    --mute: rgb(var(--c-muted, 170 163 210));
+    --line: rgb(var(--c-primary-cdbeff, 205 190 255) / 0.2);
+    --g: rgb(var(--c-accent2, 92 255 176));           /* green  */
+    --t: rgb(var(--c-accent, 45 226 230));           /* teal   */
+    --v: rgb(var(--c-primary, 139 92 255));           /* violet */
+    --m: rgb(var(--c-accent3, 255 79 216));           /* magenta */
+    --gold: rgb(var(--c-highlight, 255 207 125));        /* warm accent (the old orange/yellow brand lives on here) */
+    --bad: rgb(var(--c-danger, 255 147 180));
+    --aur: linear-gradient(100deg, var(--g), var(--t) 32%, var(--v) 66%, var(--m));
+    --glass: rgb(var(--c-surface-09061c, 9 6 28) / 0.66);
+    --glass-2: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.06);
+    --glass-line: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.09);
+    --display: "Bricolage Grotesque", "Hind Siliguri", system-ui, sans-serif;
+    --body: "Hanken Grotesk", "Hind Siliguri", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    /* Legacy variable names used by the older stylesheets, remapped to the aurora palette */
+    --primary-orange: rgb(var(--c-primary, 139 92 255));
+    --primary-yellow: rgb(var(--c-accent2, 92 255 176));
+    --dark-blue: rgb(var(--c-bg, 6 4 15));
+    --medium-blue: rgb(var(--c-surface-0a0724, 10 7 36));
+    --light-blue: rgb(var(--c-surface-160b3c, 22 11 60));
+    --primary-color: rgb(var(--c-accent, 45 226 230));
+    --secondary-color: rgb(var(--c-primary, 139 92 255));
+    --body-font-family: var(--body);
+}
+
+html { background: var(--void); }
+body.au {
+    background: transparent !important;
+    color: var(--ink);
+    font-family: var(--body);
+}
+body.au h1, body.au h2, body.au h3, body.au h4, body.au h5, body.au h6 {
+    font-family: var(--display);
+    letter-spacing: -0.015em;
+}
+
+/* Sky layers (created by aurora-sky.js) sit behind everything */
+#sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -3; display: block; pointer-events: none; }
+.au-shade {
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+        radial-gradient(120% 80% at 30% 35%, rgb(var(--c-bg, 6 4 15) / 0) 35%, rgb(var(--c-bg, 6 4 15) / 0.5) 100%),
+        linear-gradient(180deg, rgb(var(--c-bg, 6 4 15) / 0.25), rgb(var(--c-bg, 6 4 15) / 0) 25%, rgb(var(--c-bg, 6 4 15) / 0.35));
+}
+.au-grain {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+body.au-admin .au-shade { background: rgb(var(--c-bg, 6 4 15) / 0.45); }
+
+/* ---------- Shared building blocks ---------- */
+.au-glass {
+    position: relative;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px) saturate(130%); backdrop-filter: blur(16px) saturate(130%);
+    border: 1px solid var(--glass-line); border-radius: 22px;
+    box-shadow: 0 30px 80px -30px rgb(var(--c-fixed-000000, 0 0 0) / 0.8), inset 0 1px 0 rgb(var(--c-fixed-ffffff, 255 255 255) / 0.06);
+}
+.au-glass.au-lined::before, .au-lined::before {
+    content: ""; position: absolute; left: 22px; right: 22px; top: -1px; height: 2px; border-radius: 2px;
+    background: var(--aur); box-shadow: 0 0 18px rgb(var(--c-primary, 139 92 255) / 0.8);
+}
+.au-gradient-text {
+    background: linear-gradient(100deg, rgb(var(--c-fixed-ffffff, 255 255 255)) 0%, rgb(var(--c-text-e3f8ff, 227 248 255)) 38%, rgb(var(--c-text-d8caff, 216 202 255)) 72%, rgb(var(--c-text-ffd3f4, 255 211 244)) 100%);
+    background-size: 160% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: au-drift 16s ease-in-out infinite alternate;
+}
+@keyframes au-drift { to { background-position: 100% 0; } }
+
+.au-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font: 700 15px/1 var(--display); letter-spacing: 0.005em; color: rgb(var(--c-surface-0a0620, 10 6 32)) !important;
+    background: var(--aur); background-size: 220% 100%; background-position: 0 0;
+    border: 0; border-radius: 14px; padding: 14px 22px; cursor: pointer; text-decoration: none;
+    box-shadow: 0 12px 40px -12px rgb(var(--c-primary, 139 92 255) / 0.8);
+    transition: background-position 0.7s ease, transform 0.12s, box-shadow 0.3s;
+}
+.au-btn:hover { background-position: 100% 0; box-shadow: 0 14px 50px -10px rgb(var(--c-accent, 45 226 230) / 0.7); color: rgb(var(--c-surface-0a0620, 10 6 32)); }
+.au-btn:active { transform: translateY(1px); }
+.au-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font: 600 15px/1 var(--body); color: var(--ink) !important; background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.04);
+    border: 1px solid var(--line); border-radius: 12px; padding: 13px 18px; cursor: pointer;
+    text-decoration: none; transition: background 0.2s, border-color 0.2s;
+}
+.au-ghost:hover { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.1); border-color: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.35); }
+.au-btn:focus-visible, .au-ghost:focus-visible { outline: 2px solid rgb(var(--c-fixed-ffffff, 255 255 255)); outline-offset: 3px; }
+
+.au-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 16px; }
+.au-eq i { width: 3px; border-radius: 2px; background: var(--aur); background-size: 100% 300%; transform-origin: bottom; animation: au-eq 1.1s ease-in-out infinite alternate; }
+.au-eq i:nth-child(1) { height: 40%; animation-delay: -0.2s; }
+.au-eq i:nth-child(2) { height: 90%; animation-delay: -0.7s; }
+.au-eq i:nth-child(3) { height: 60%; animation-delay: -0.4s; }
+.au-eq i:nth-child(4) { height: 100%; animation-delay: -0.9s; }
+@keyframes au-eq { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
+
+/* Scrollbar */
+body.au::-webkit-scrollbar { width: 10px; }
+body.au::-webkit-scrollbar-track { background: rgb(var(--c-surface-0a0724, 10 7 36)); }
+body.au::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--g), var(--t), var(--v), var(--m)); border-radius: 5px; }
+
+/* =========================================================================
+   ADMIN PAGES (body.au.au-admin)
+   ========================================================================= */
+body.au-admin { color: var(--ink); }
+body.au-admin p, body.au-admin li, body.au-admin label { font-family: var(--body); }
+
+/* Page wrappers that used to paint their own gradient */
+body.au-admin .applications-container,
+body.au-admin .venue-container,
+body.au-admin .member-types-container,
+body.au-admin .updates-container,
+body.au-admin .profile-container,
+body.au-admin .management-container { background: transparent !important; }
+
+/* Glass cards */
+body.au-admin .applications-card,
+body.au-admin .venue-card,
+body.au-admin .member-types-card,
+body.au-admin .form-card,
+body.au-admin .profile-card,
+body.au-admin .form-section,
+body.au-admin .table-section,
+body.au-admin .admin-container,
+body.au-admin .stat-card,
+body.au-admin .chart-card,
+body.au-admin .login-container {
+    position: relative;
+    background: var(--glass) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(130%); backdrop-filter: blur(16px) saturate(130%);
+    border: 1px solid var(--glass-line) !important; border-radius: 22px;
+    box-shadow: 0 30px 80px -30px rgb(var(--c-fixed-000000, 0 0 0) / 0.8), inset 0 1px 0 rgb(var(--c-fixed-ffffff, 255 255 255) / 0.06) !important;
+    color: var(--ink);
+}
+body.au-admin .applications-card::after,
+body.au-admin .venue-card::after,
+body.au-admin .member-types-card::after,
+body.au-admin .form-card::after,
+body.au-admin .profile-card::after,
+body.au-admin .form-section::after,
+body.au-admin .admin-container::after,
+body.au-admin .chart-card::after,
+body.au-admin .login-container::after {
+    content: ""; position: absolute; left: 22px; right: 22px; top: -1px; height: 2px; border-radius: 2px;
+    background: var(--aur); box-shadow: 0 0 18px rgb(var(--c-primary, 139 92 255) / 0.8); pointer-events: none;
+}
+
+/* Titles */
+body.au-admin .applications-title,
+body.au-admin .venue-title,
+body.au-admin .member-types-title,
+body.au-admin .header-left h1,
+body.au-admin .page-header h2,
+body.au-admin .admin-header h1,
+body.au-admin .login-title {
+    font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; text-shadow: none !important;
+    background: linear-gradient(100deg, rgb(var(--c-fixed-ffffff, 255 255 255)) 0%, rgb(var(--c-text-e3f8ff, 227 248 255)) 38%, rgb(var(--c-text-d8caff, 216 202 255)) 72%, rgb(var(--c-text-ffd3f4, 255 211 244)) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent !important;
+    filter: drop-shadow(0 0 22px rgb(var(--c-primary, 139 92 255) / 0.45));
+}
+body.au-admin .applications-title i, body.au-admin .venue-title i, body.au-admin .member-types-title i {
+    -webkit-text-fill-color: var(--t); color: var(--t);
+}
+body.au-admin .applications-subtitle, body.au-admin .venue-subtitle, body.au-admin .member-types-subtitle,
+body.au-admin .header-left p, body.au-admin .admin-header p, body.au-admin .login-subtitle { color: var(--mute) !important; }
+
+/* Back buttons */
+body.au-admin .back-btn-delicate, body.au-admin .back-btn {
+    background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.05) !important; border: 1px solid var(--line) !important;
+    color: var(--ink) !important; border-radius: 12px !important; font-family: var(--body);
+}
+body.au-admin .back-btn-delicate:hover, body.au-admin .back-btn:hover { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.12) !important; }
+
+/* Buttons: green = approve/export, violet = shortlist/neutral, rose = destructive */
+body.au-admin .btn-accept, body.au-admin .btn-export-excel, body.au-admin .btn-set-venue,
+body.au-admin .btn-save-venue, body.au-admin .btn-update, body.au-admin .btn-login,
+body.au-admin .btn-success, body.au-admin .btn-primary {
+    background: var(--aur) !important; background-size: 220% 100% !important; color: rgb(var(--c-surface-0a0620, 10 6 32)) !important;
+    border: 0 !important; font-family: var(--display); font-weight: 700;
+    box-shadow: 0 12px 34px -14px rgb(var(--c-primary, 139 92 255) / 0.9) !important; transition: background-position 0.6s, transform 0.12s !important;
+}
+body.au-admin .btn-accept:hover, body.au-admin .btn-export-excel:hover, body.au-admin .btn-set-venue:hover,
+body.au-admin .btn-save-venue:hover, body.au-admin .btn-update:hover, body.au-admin .btn-login:hover,
+body.au-admin .btn-success:hover, body.au-admin .btn-primary:hover { background-position: 100% 0 !important; color: rgb(var(--c-surface-0a0620, 10 6 32)) !important; }
+body.au-admin .btn-reject, body.au-admin .btn-delete, body.au-admin .btn-clear-all, body.au-admin .btn-danger {
+    background: rgb(var(--c-danger, 255 147 180) / 0.12) !important; color: var(--bad) !important;
+    border: 1px solid rgb(var(--c-danger, 255 147 180) / 0.5) !important; box-shadow: none !important; font-weight: 600;
+}
+body.au-admin .btn-reject:hover, body.au-admin .btn-delete:hover, body.au-admin .btn-clear-all:hover, body.au-admin .btn-danger:hover {
+    background: rgb(var(--c-danger, 255 147 180) / 0.24) !important; color: rgb(var(--c-fixed-ffffff, 255 255 255)) !important;
+}
+body.au-admin .btn-warning { background: rgb(var(--c-highlight, 255 207 125) / 0.18) !important; color: var(--gold) !important; border: 1px solid rgb(var(--c-highlight, 255 207 125) / 0.5) !important; }
+body.au-admin .btn-secondary, body.au-admin .btn-outline-light {
+    background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.05) !important; color: var(--ink) !important; border: 1px solid var(--line) !important;
+}
+/* Shortlist button (inline-styled blue in pending_applications) */
+body.au-admin form input[value="shortlist"] ~ button {
+    background: rgb(var(--c-primary, 139 92 255) / 0.2) !important; color: rgb(var(--c-text-d8caff, 216 202 255)) !important; border: 1px solid rgb(var(--c-primary, 139 92 255) / 0.6) !important;
+}
+body.au-admin form input[value="shortlist"] ~ button:hover { background: rgb(var(--c-primary, 139 92 255) / 0.4) !important; color: rgb(var(--c-fixed-ffffff, 255 255 255)) !important; }
+
+/* Action strips */
+body.au-admin .clear-all-section, body.au-admin .action-section, body.au-admin .stats-row {
+    background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.03) !important; border: 1px dashed var(--line) !important; border-radius: 16px !important;
+}
+body.au-admin .clear-all-warning { color: var(--gold) !important; }
+
+/* Tables */
+body.au-admin .applications-table, body.au-admin .venue-list, body.au-admin .admin-list-container {
+    background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.025) !important; border: 1px solid var(--glass-line) !important; border-radius: 16px !important;
+}
+body.au-admin .table, body.au-admin .table-dark { --bs-table-bg: transparent; --bs-table-color: var(--ink); color: var(--ink); }
+body.au-admin .table thead th, body.au-admin .table-dark thead th, body.au-admin .table-dark th {
+    background: rgb(var(--c-primary, 139 92 255) / 0.12) !important; color: var(--mute) !important;
+    font: 600 12px/1.3 var(--body) !important; text-transform: uppercase; letter-spacing: 0.08em;
+    border-color: var(--line) !important;
+}
+body.au-admin .table td, body.au-admin .table-dark td { color: rgb(var(--c-text, 243 240 255) / 0.85) !important; border-color: rgb(var(--c-primary-cdbeff, 205 190 255) / 0.1) !important; }
+body.au-admin .table-dark tbody tr:hover { background: rgb(var(--c-accent, 45 226 230) / 0.06) !important; transform: none; }
+body.au-admin .table a { color: var(--t); }
+
+/* Status badges */
+body.au-admin .status-badge { border-radius: 999px !important; font-weight: 600; letter-spacing: 0.02em; }
+body.au-admin .status-pending { background: rgb(var(--c-highlight, 255 207 125) / 0.16) !important; color: var(--gold) !important; border: 1px solid rgb(var(--c-highlight, 255 207 125) / 0.5); }
+body.au-admin .status-shortlisted, body.au-admin .status-sb { background: rgb(var(--c-primary, 139 92 255) / 0.2) !important; color: rgb(var(--c-text-d8caff, 216 202 255)) !important; border: 1px solid rgb(var(--c-primary, 139 92 255) / 0.6); }
+body.au-admin .status-accepted, body.au-admin .status-gb { background: rgb(var(--c-accent2, 92 255 176) / 0.14) !important; color: var(--g) !important; border: 1px solid rgb(var(--c-accent2, 92 255 176) / 0.5); }
+body.au-admin .status-asb { background: rgb(var(--c-accent, 45 226 230) / 0.14) !important; color: var(--t) !important; border: 1px solid rgb(var(--c-accent, 45 226 230) / 0.5); }
+body.au-admin .badge.bg-warning { background: var(--gold) !important; color: rgb(var(--c-surface-2a0f3a, 42 15 58)) !important; }
+body.au-admin .badge.bg-danger { background: rgb(var(--c-accent3, 255 79 216) / 0.25) !important; color: rgb(var(--c-text-ffc8f2, 255 200 242)) !important; }
+body.au-admin .badge.bg-primary { background: rgb(var(--c-primary, 139 92 255) / 0.3) !important; color: rgb(var(--c-text-e2d6ff, 226 214 255)) !important; }
+body.au-admin .badge.bg-success { background: rgb(var(--c-accent2, 92 255 176) / 0.2) !important; color: var(--g) !important; }
+
+/* Forms */
+body.au-admin .form-control, body.au-admin .form-select, body.au-admin .custom-select {
+    background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.04) !important; color: var(--ink) !important;
+    border: 1px solid var(--line) !important; border-radius: 12px !important; font-family: var(--body);
+}
+body.au-admin .form-control:focus, body.au-admin .form-select:focus, body.au-admin .custom-select:focus {
+    border-color: var(--t) !important; box-shadow: 0 0 0 3px rgb(var(--c-accent, 45 226 230) / 0.18) !important; background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.07) !important;
+}
+body.au-admin .form-control::placeholder { color: rgb(var(--c-muted-b0a9d8, 176 169 216) / 0.62) !important; }
+body.au-admin .form-select option, body.au-admin .custom-select option { background: rgb(var(--c-surface-120a2c, 18 10 44)); color: var(--ink); }
+body.au-admin .form-label, body.au-admin label { color: var(--mute) !important; font-weight: 600; }
+body.au-admin .text-muted { color: var(--mute) !important; }
+body.au-admin input[type="date"], body.au-admin input[type="time"] { color-scheme: dark; }
+
+/* Modals */
+body.au-admin .modal-content {
+    background: rgb(var(--c-surface-0c0822, 12 8 34) / 0.96) !important; border: 1px solid var(--glass-line) !important; border-radius: 20px !important; color: var(--ink);
+}
+body.au-admin .modal-header, body.au-admin .modal-footer { border-color: var(--line) !important; }
+body.au-admin .modal-body { color: rgb(var(--c-text, 243 240 255) / 0.85) !important; }
+
+/* Alerts (page-level messages): one look on every admin page, tinted to match the dark theme */
+body.au-admin .alert { border-radius: 14px !important; }
+body.au-admin .alert-success { --bs-alert-bg: rgb(var(--c-accent2-28a745, 40 167 69) / 0.2); --bs-alert-border-color: rgb(var(--c-accent2-28a745, 40 167 69) / 0.3); --bs-alert-color: rgb(var(--c-accent2-51cf66, 81 207 102)); }
+body.au-admin .alert-danger { --bs-alert-bg: rgb(var(--c-danger-dc3545, 220 53 69) / 0.2); --bs-alert-border-color: rgb(var(--c-danger-dc3545, 220 53 69) / 0.3); --bs-alert-color: rgb(var(--c-danger-ff6b6b, 255 107 107)); }
+body.au-admin .alert-warning { --bs-alert-bg: rgb(var(--c-highlight-ffc107, 255 193 7) / 0.15); --bs-alert-border-color: rgb(var(--c-highlight-ffc107, 255 193 7) / 0.35); --bs-alert-color: rgb(var(--c-highlight, 255 207 125)); }
+body.au-admin .alert-info { --bs-alert-bg: rgb(var(--c-accent-17a2b8, 23 162 184) / 0.18); --bs-alert-border-color: rgb(var(--c-accent-17a2b8, 23 162 184) / 0.3); --bs-alert-color: rgb(var(--c-accent, 45 226 230)); }
+body.au-admin .alert .alert-link { color: inherit; }
+
+/* ----- Dashboard (Dashboard.css) ----- */
+body.au-admin .sidebar {
+    background: rgb(var(--c-surface-09061c, 9 6 28) / 0.78) !important; border-right: 1px solid var(--glass-line) !important;
+    -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+}
+body.au-admin .sidebar-header { background: transparent !important; border-bottom: 1px solid var(--glass-line) !important; }
+body.au-admin .sidebar-logo h3 { font-family: var(--display); font-weight: 800; color: var(--ink) !important; text-shadow: none !important; }
+body.au-admin .sidebar-subtitle { color: var(--mute) !important; }
+body.au-admin .nav-section-title { color: var(--t) !important; border-bottom-color: rgb(var(--c-accent, 45 226 230) / 0.2) !important; font-family: var(--body); letter-spacing: 0.12em; }
+body.au-admin .sidebar .nav-item { color: rgb(var(--c-text, 243 240 255) / 0.72) !important; font-family: var(--body); border-left: 3px solid transparent; }
+body.au-admin .sidebar .nav-item:hover, body.au-admin .sidebar .nav-item.active {
+    background: linear-gradient(90deg, rgb(var(--c-accent2, 92 255 176) / 0.12), rgb(var(--c-primary, 139 92 255) / 0.12)) !important;
+    color: rgb(var(--c-fixed-ffffff, 255 255 255)) !important; border-left-color: var(--g) !important; box-shadow: none !important;
+}
+body.au-admin .sidebar-toggle { background: var(--aur) !important; color: rgb(var(--c-surface-0a0620, 10 6 32)) !important; }
+body.au-admin .dashboard-header { border-bottom-color: var(--glass-line) !important; }
+body.au-admin .user-profile { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.06) !important; border: 1px solid var(--line); }
+body.au-admin .user-avatar { background: var(--aur) !important; color: rgb(var(--c-surface-0a0620, 10 6 32)) !important; font-family: var(--display); }
+body.au-admin .stat-card::before { background: linear-gradient(90deg, transparent, rgb(var(--c-fixed-ffffff, 255 255 255) / 0.08), transparent) !important; }
+body.au-admin .stat-icon { background: var(--aur); -webkit-background-clip: text; background-clip: text; color: transparent !important; }
+body.au-admin .stat-icon i { -webkit-text-fill-color: transparent; }
+body.au-admin .stat-number { font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; color: var(--ink) !important; }
+body.au-admin .stat-label { color: var(--mute) !important; }
+body.au-admin .stat-change.positive { color: var(--g) !important; }
+body.au-admin .chart-card .chart-header { background: transparent !important; border-bottom: 1px solid var(--glass-line); }
+body.au-admin .chart-title { font-family: var(--display); }
+body.au-admin .chart-empty a { color: var(--t); }
+
+/* ----- Admin login (admin.css) ----- */
+body.au-admin.au-login { background-image: none !important; }
+body.au-admin.au-login::before { display: none !important; }
+body.au-admin .login-container::before { display: none !important; }
+body.au-admin .logo-icon { background: var(--aur) !important; color: rgb(var(--c-surface-0a0620, 10 6 32)) !important; box-shadow: 0 0 40px rgb(var(--c-primary, 139 92 255) / 0.6) !important; }
+body.au-admin .input-icon { color: var(--t) !important; }
+body.au-admin .password-toggle:hover { color: var(--t) !important; }
+body.au-admin .back-link a { color: var(--mute) !important; }
+body.au-admin .back-link a:hover { color: var(--ink) !important; }
+body.au-admin .particle { background: rgb(var(--c-accent2, 92 255 176) / 0.5) !important; }
+
+/* ----- Signup control (was a light page) ----- */
+body.au-admin .status-card { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.04) !important; border-left-color: var(--t) !important; color: var(--ink); }
+body.au-admin .status-card.status-enabled { border-left-color: var(--g) !important; background: rgb(var(--c-accent2, 92 255 176) / 0.07) !important; }
+body.au-admin .status-card.status-disabled { border-left-color: var(--bad) !important; background: rgb(var(--c-danger, 255 147 180) / 0.07) !important; }
+body.au-admin .admin-container h4, body.au-admin .admin-container h6 { color: var(--ink) !important; }
+body.au-admin .admin-container .mt-4.p-3 { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.04) !important; }
+
+/* ----- Profile / member types / dynamic rows ----- */
+body.au-admin .large-avatar { background: var(--aur) !important; color: rgb(var(--c-surface-0a0620, 10 6 32)); font-family: var(--display); }
+body.au-admin .member-type-btn { font-family: var(--display); color: rgb(var(--c-surface-0a0620, 10 6 32)) !important; }
+body.au-admin .member-type-btn.btn-sb { background: linear-gradient(100deg, var(--v), var(--m)) !important; color: rgb(var(--c-fixed-ffffff, 255 255 255)) !important; }
+body.au-admin .member-type-btn.btn-asb { background: linear-gradient(100deg, var(--t), var(--v)) !important; }
+body.au-admin .member-type-btn.btn-gb { background: linear-gradient(100deg, var(--g), var(--t)) !important; }
+body.au-admin .dynamic-row { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.04) !important; border: 1px solid var(--glass-line); }
+body.au-admin .section-title { color: var(--ink) !important; border-bottom-color: var(--line) !important; }
+body.au-admin .member-avatar { color: rgb(var(--c-surface-0a0620, 10 6 32)); }
+body.au-admin .stat-item .stat-number { color: var(--g) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+    .au-eq i, .au-gradient-text { animation: none !important; }
+}
+
+/* =========================================================================
+   PAST EVENTS PAGE (body.au.au-events) — recolours the page's own styles
+   ========================================================================= */
+body.au-events .loading-overlay { background: var(--void) !important; }
+body.au-events .loading-spinner { border-color: rgb(var(--c-accent, 45 226 230) / 0.25) !important; border-top-color: var(--t) !important; }
+body.au-events .particle { background: var(--g) !important; }
+body.au-events .back-btn { background: var(--aur) !important; color: rgb(var(--c-surface-0a0620, 10 6 32)) !important; font-family: var(--display); box-shadow: 0 12px 34px -12px rgb(var(--c-primary, 139 92 255) / 0.9) !important; }
+body.au-events .page-header { background: transparent !important; }
+body.au-events .page-title {
+    font-family: var(--display) !important; letter-spacing: -0.035em; text-shadow: none !important;
+    background: linear-gradient(100deg, rgb(var(--c-fixed-ffffff, 255 255 255)) 0%, rgb(var(--c-text-e3f8ff, 227 248 255)) 38%, rgb(var(--c-text-d8caff, 216 202 255)) 72%, rgb(var(--c-text-ffd3f4, 255 211 244)) 100%) !important;
+    background-size: 160% 100% !important; -webkit-background-clip: text !important; background-clip: text !important;
+    filter: drop-shadow(0 0 26px rgb(var(--c-primary, 139 92 255) / 0.5));
+}
+body.au-events .page-subtitle { color: var(--mute) !important; }
+body.au-events .event-detail-card {
+    background: var(--glass) !important; border: 1px solid var(--glass-line) !important; border-radius: 24px !important;
+    box-shadow: 0 30px 80px -30px rgb(var(--c-fixed-000000, 0 0 0) / 0.85) !important;
+}
+body.au-events .event-detail-card::after {
+    content: ""; position: absolute; left: 24px; right: 24px; top: -1px; height: 2px; border-radius: 2px;
+    background: var(--aur); box-shadow: 0 0 18px rgb(var(--c-primary, 139 92 255) / 0.8);
+}
+body.au-events .event-detail-card:hover { transform: translateY(-6px) !important; box-shadow: 0 36px 90px -30px rgb(var(--c-primary, 139 92 255) / 0.55) !important; }
+body.au-events .event-icon-large { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.05) !important; box-shadow: 0 0 30px rgb(var(--c-primary, 139 92 255) / 0.35) !important; border: 1px solid var(--glass-line); }
+body.au-events .event-icon-large .logo-mask-yellow { background: var(--aur) !important; }
+body.au-events .event-title-large { font-family: var(--display) !important; letter-spacing: -0.02em; }
+body.au-events .event-meta, body.au-events .event-meta i { color: var(--mute) !important; }
+body.au-events .event-meta i { color: var(--t) !important; }
+body.au-events .event-description, body.au-events .event-description p { color: rgb(var(--c-text, 243 240 255) / 0.82) !important; }
+body.au-events .event-highlights { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.04) !important; border: 1px solid var(--glass-line) !important; border-left: 3px solid var(--t) !important; }
+body.au-events .highlights-title { color: var(--ink) !important; text-shadow: none !important; font-family: var(--display); }
+body.au-events .highlights-list li:before { content: "♪" !important; color: var(--t) !important; }
+body.au-events .stat-card { background: rgb(var(--c-fixed-ffffff, 255 255 255) / 0.04) !important; border: 1px solid var(--glass-line) !important; }
+body.au-events .stat-card:hover { border-color: rgb(var(--c-accent, 45 226 230) / 0.5) !important; box-shadow: 0 20px 50px -20px rgb(var(--c-primary, 139 92 255) / 0.6) !important; }
+body.au-events .stat-number {
+    font-family: var(--display); text-shadow: none !important;
+    background: var(--aur); -webkit-background-clip: text; background-clip: text; color: transparent !important;
+}
+body.au-events .stat-label { color: var(--mute) !important; }
+body.au-events .event-image { border: 1px solid var(--glass-line); }

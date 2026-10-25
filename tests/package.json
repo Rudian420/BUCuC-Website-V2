@@ -1,0 +1,11 @@
+{
+  "name": "bucuc-website-tests",
+  "private": true,
+  "description": "Browser test suites for the BUCuC website (see instruction.md, Testing).",
+  "scripts": {
+    "test": "node run.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "23.11.1"
+  }
+}
