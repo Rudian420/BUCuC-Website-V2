@@ -14,4 +14,5 @@ defined('DB_NAME') || define('DB_NAME', 'u106340611_bucuc');
 defined('DB_USER') || define('DB_USER', 'u106340611_bucuc_2026');
 defined('DB_PASS') || define('DB_PASS', '');   // no password here on purpose: see config.local.php
 defined('MEMBER_SHEET_SECRET') || define('MEMBER_SHEET_SECRET', '');
-defined('APP_URL') || define('APP_URL', 'https://bucuc.org');
+defined('APP_URL') || define('APP_URL', 'https://bucuc.online');
+defined('GOATCOUNTER_CODE') || define('GOATCOUNTER_CODE', '');

@@ -5,6 +5,16 @@
     RewriteCond %{HTTP:X-Forwarded-Proto} !=https
     RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Canonical homepage: redirect /frontend/index.php, /frontend/ and /index.php to /
+    RewriteCond %{THE_REQUEST} \s/+frontend/(?:index\.php)?[\s?] [NC]
+    RewriteRule ^frontend/(?:index\.php)?$ / [R=301,L]
+    RewriteCond %{THE_REQUEST} \s/+index\.php[\s?] [NC]
+    RewriteRule ^index\.php$ / [R=301,L]
+
+    # Rewrite static assets requested at root to frontend/
+    RewriteCond %{DOCUMENT_ROOT}/frontend%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ frontend/$1 [L]
 </IfModule>
 
 

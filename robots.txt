@@ -1,11 +1,14 @@
 User-agent: *
 Allow: /
-Allow: /frontend/index.php
 Allow: /frontend/past_events.php
 Allow: /frontend/performances.php
 Allow: /frontend/css/
 Allow: /frontend/js/
 Allow: /frontend/images/
 Allow: /frontend/video/
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /video/
 
-Sitemap: https://bucuc.org/sitemap.xml
+Sitemap: https://bucuc.online/sitemap.xml

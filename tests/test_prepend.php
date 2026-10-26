@@ -31,3 +31,4 @@ define('MEMBER_SHEET_CSV_URL', 'http://127.0.0.1:8098/csv.php?output=csv');
 define('MEMBER_SHEET_GAS_URL', 'http://127.0.0.1:8098/gas.php');
 define('MEMBER_SHEET_SECRET', 'test-shared-webhook-secret-xyz');
 define('GALLERY_OEMBED_URL', 'http://127.0.0.1:8098/oembed.php');
+define('GOATCOUNTER_CODE', 'bucuc');

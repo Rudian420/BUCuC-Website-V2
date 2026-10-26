@@ -29,6 +29,6 @@ defined('AUTH_FROM_EMAIL')    || define('AUTH_FROM_EMAIL', 'club.bucuc@g.bracu.a
 defined('AUTH_FROM_NAME')     || define('AUTH_FROM_NAME', 'BUCuC Admin');
 
 // Public address of the site, used to build reset links (never taken from the request).
-defined('APP_URL')            || define('APP_URL', 'https://bucuc.org');
+defined('APP_URL')            || define('APP_URL', 'https://bucuc.online');
 
 defined('AUTH_EMAIL_LOG_PATH') || define('AUTH_EMAIL_LOG_PATH', __DIR__ . '/../logs/auth_email.log');

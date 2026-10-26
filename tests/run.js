@@ -47,6 +47,7 @@ const SUITES = {
     rejection: 'Phase 5: Applicant data deletion on rejection, tracking link, confirmation, rollback, stats',
     csp: 'Phase 6: Content-Security-Policy-Report-Only verification (YouTube, crop, colors, charts, Swiper, fonts)',
     seo: 'Phase 7: SEO, sitemap.xml, robots.txt, noindex headers, Open Graph, Twitter cards, structured data, canonical URLs',
+    analytics: 'Phase 8: GoatCounter privacy analytics verification (code set/empty, admin suppression, public pages only)',
 };
 const ADMINS = [
     ['Super Tester', 'super@test.local', 'superpass123', 'super_admin'],

@@ -30,14 +30,14 @@ function site_send_noindex_headers(): void
 
 /**
  * Returns the base absolute site URL with trailing slash stripped.
- * Driven by the single config constant APP_URL (default: 'https://bucuc.org').
+ * Driven by the single config constant APP_URL (default: 'https://bucuc.online').
  */
 function site_base_url(): string
 {
     if (defined('APP_URL') && APP_URL !== '') {
         return rtrim(APP_URL, '/');
     }
-    return 'https://bucuc.org';
+    return 'https://bucuc.online';
 }
 
 /**
@@ -65,7 +65,8 @@ function site_absolute_url(string $path = ''): string
  */
 function site_render_seo_tags(array $meta): string
 {
-    $url = site_absolute_url($meta['path'] ?? 'frontend/index.php');
+    $isHome = !empty($meta['is_home']);
+    $url = $isHome ? (site_base_url() . '/') : site_absolute_url($meta['path'] ?? 'frontend/index.php');
     $imagePath = $meta['image_path'] ?? 'frontend/images/og-share.jpg';
     $imageUrl = site_absolute_url($imagePath);
     $imageType = $meta['image_type'] ?? 'image/jpeg';
@@ -118,6 +119,26 @@ function site_render_seo_tags(array $meta): string
     }
 
     return $html;
+}
+
+/**
+ * Renders privacy-friendly, cookie-free GoatCounter analytics tag for public pages.
+ * - Suppressed if GOATCOUNTER_CODE is not defined or empty.
+ * - Suppressed if an admin session is currently active.
+ * - Asynchronous loading, respects browser Do Not Track.
+ */
+function site_render_analytics(): string
+{
+    if (!defined('GOATCOUNTER_CODE') || trim((string) GOATCOUNTER_CODE) === '') {
+        return '';
+    }
+    if (function_exists('auth_is_admin_logged_in') && auth_is_admin_logged_in()) {
+        return '';
+    }
+    $code = htmlspecialchars(trim((string) GOATCOUNTER_CODE), ENT_QUOTES, 'UTF-8');
+    return "\n    <!-- Privacy-friendly analytics (GoatCounter) -->\n"
+        . "    <script data-goatcounter=\"https://{$code}.goatcounter.com/count\"\n"
+        . "            async src=\"https://gc.zgo.at/count.js\"></script>\n";
 }
 
 /** One PDO connection per request. */

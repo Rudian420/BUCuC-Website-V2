@@ -138,6 +138,7 @@ $hasUndated = (bool) array_filter($videos, fn($v) => gallery_when($v) === '');
     </main>
 
     <script src="js/performances.js"></script>
+<?= site_render_analytics() ?>
 </body>
 
 </html>

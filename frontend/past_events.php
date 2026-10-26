@@ -83,5 +83,6 @@ $seoTags = site_render_seo_tags([
     'is_home'     => false,
 ]);
 $html = str_replace('<' . 'title>Past Events | BUCuC</' . 'title>', '<' . "title>Past Events & Stories | BUCuC</title>\n" . $seoTags, $html);
+$html = str_replace('</body>', site_render_analytics() . "</body>", $html);
 
 echo str_replace('<!-- EVENTS: filled by past_events.php from the database (Website Media → Past Events) -->', $cards, $html);

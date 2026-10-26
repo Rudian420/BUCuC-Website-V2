@@ -240,6 +240,7 @@ async function loginAdmin(page, email, password) {
         check('database-wide scan: zero rows anywhere in text/JSON columns contain name, student ID, phone or email',
             totalFound === 0,
             `totalOccurrences=${totalFound}`);
+        check('failed_sheet_deletions table included in database-wide scan', Boolean(tableCols['failed_sheet_deletions']));
 
         // Scan files in backend/cache and backend/logs
         let fileOccurrences = 0;
@@ -335,6 +336,26 @@ async function loginAdmin(page, email, password) {
         const retryCheck = JSON.parse(testRetryResult);
         check('Google Sheet deletion failure records row in failed_sheet_deletions for retry', retryCheck.hasRetry);
         check('Google Sheet deletion success removes row from failed_sheet_deletions', retryCheck.cleanAfterOk);
+
+        // Test failed_sheet_deletions expiration: max 10 attempts or >14 days are purged with PII-free alert
+        runPhp(`
+            require_once 'backend/includes/site.php';
+            $pdo = db();
+            $pdo->exec("DELETE FROM failed_sheet_deletions WHERE student_id IN ('88880001', '88880002')");
+            $pdo->exec("INSERT INTO failed_sheet_deletions (student_id, action, failed_at, last_error, attempts) VALUES ('88880001', 'delete', NOW(), 'Max attempts error', 10)");
+            $pdo->exec("INSERT INTO failed_sheet_deletions (student_id, action, failed_at, last_error, attempts) VALUES ('88880002', 'delete', NOW() - INTERVAL 15 DAY, 'Too old error', 1)");
+        `);
+        execFileSync(T.PHP, ['-d', 'auto_prepend_file=tests/test_prepend.php', 'backend/scripts/cron.php', '--test'], { cwd: T.ROOT });
+        const testPurgeResult = runPhp(`
+            require_once 'backend/includes/site.php';
+            $pdo = db();
+            $left10 = (int) $pdo->query("SELECT COUNT(*) FROM failed_sheet_deletions WHERE student_id = '88880001'")->fetchColumn();
+            $leftOld = (int) $pdo->query("SELECT COUNT(*) FROM failed_sheet_deletions WHERE student_id = '88880002'")->fetchColumn();
+            echo json_encode(['purged10' => ($left10 === 0), 'purgedOld' => ($leftOld === 0)]);
+        `);
+        const sheetPurgeRes = JSON.parse(testPurgeResult);
+        check('failed_sheet_deletions purges entries with >=10 attempts', sheetPurgeRes.purged10);
+        check('failed_sheet_deletions purges entries older than 14 days', sheetPurgeRes.purgedOld);
 
         // Test atomic log scrubbing: failure midway leaves original log intact
         const gsLogPath = path.join(T.ROOT, 'backend', 'logs', 'google_sheets.log');

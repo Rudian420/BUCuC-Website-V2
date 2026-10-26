@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/../backend/includes/auth.php';
 require_once __DIR__ . '/../backend/includes/ads.php';
+
+$reqUri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
+if ($reqUri === '/frontend/index.php' || $reqUri === '/frontend/' || $reqUri === '/frontend') {
+    header('Location: /', true, 301);
+    exit();
+}
 auth_start_session();
 site_guard_public();   // "We'll be back soon" page during a lockdown (the Super Admin still sees the site)
 
@@ -110,7 +116,7 @@ if ($homeCache && is_array($homeCache) && !empty($homeCache['panelYears'])) {
 function getSignupStatus()
 {
     try {
-        require_once '../backend/Database/db.php';
+        require_once __DIR__ . '/../backend/Database/db.php';
         $database = new Database();
         $conn = $database->createConnection();
 
@@ -168,7 +174,7 @@ $signupEnabled = getSignupStatus();
 <?= site_render_seo_tags([
     'title'       => 'BRAC University Cultural Club | BUCuC',
     'description' => 'Official website of the BRAC University Cultural Club (BUCuC). Celebrating culture, music, dance, drama, and creative storytelling across campus since 2001.',
-    'path'        => 'frontend/index.php',
+    'path'        => '',
     'image_path'  => 'frontend/images/og-share.jpg',
     'image_type'  => 'image/jpeg',
     'is_home'     => true,
@@ -806,11 +812,12 @@ $signupEnabled = getSignupStatus();
     <script src="js/bootstrap.min.js"></script>
     <script src="js/click-scroll.js"></script>
     <script src="js/swiper-bundle.min.js"></script>
-    <!-- window.BUCUC_PANEL_YEARS data island for CSP -->
+
     <script type="application/json" id="bucuc-panel-years-data">
         <?= json_encode($panelYears, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>
     </script>
     <script src="js/site.js?v=<?= filemtime(__DIR__ . '/js/site.js') ?>"></script>
+<?= site_render_analytics() ?>
 </body>
 
 </html>

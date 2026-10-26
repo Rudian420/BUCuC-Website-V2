@@ -2,6 +2,7 @@
 // Sitemap, robots.txt, X-Robots-Tag & meta robots on admin/hidden pages,
 // Open Graph & Twitter cards, 1200x630 JPEG/PNG share images, Organization JSON-LD,
 // unique meta descriptions, canonical links, 404 page status and noindex,
+// single homepage address (301 redirects), dynamic APP_URL propagation,
 // and zero hidden paths in any public file.
 const T = require('../config');
 const puppeteer = require('puppeteer-core');
@@ -29,7 +30,7 @@ function getImageInfo(imgPath) {
     const raw = execFileSync(T.PHP, ['-r', `
         $info = @getimagesize('${imgPath.replace(/\\/g, '/')}');
         echo json_encode($info ?: ['error' => 'Not an image']);
-    `]).toString().trim();
+    `], { cwd: T.ROOT }).toString().trim();
     return JSON.parse(raw);
 }
 
@@ -47,7 +48,7 @@ function getImageInfo(imgPath) {
         const sitemapBody = sitemapRes.body;
         const locMatches = [...sitemapBody.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => m[1]);
 
-        ok('sitemap lists index.php', locMatches.some(l => l.endsWith('/frontend/index.php')));
+        ok('sitemap lists single homepage address', locMatches.some(l => l === BASE || l === 'https://bucuc.online/' || l === BASE.replace(/\/$/, '')));
         ok('sitemap lists past_events.php', locMatches.some(l => l.endsWith('/frontend/past_events.php')));
         ok('sitemap lists performances.php', locMatches.some(l => l.endsWith('/frontend/performances.php')));
         ok('sitemap contains exactly the 3 public pages', locMatches.length === 3, `count=${locMatches.length}`);
@@ -55,12 +56,12 @@ function getImageInfo(imgPath) {
         // Verify zero admin or hidden pages in sitemap
         const sitemapHasHidden = locMatches.some(l =>
             /admin|login|recover|sponsors|dashboard|checkin|attendance|handover|notices|theme|video_gallery|activity|member|apply/i.test(l) &&
-            !l.endsWith('/frontend/index.php') && !l.endsWith('/frontend/past_events.php') && !l.endsWith('/frontend/performances.php')
+            !l.endsWith('/frontend/past_events.php') && !l.endsWith('/frontend/performances.php')
         );
         ok('sitemap never includes admin, login, recovery, sponsor admin or any hidden page', !sitemapHasHidden);
 
         // =============================================================
-        // 2. Robots.txt Verification
+        // 2. Robots.txt Verification & Homepage 301 Redirects
         // =============================================================
         const robotsRes = await httpGet(BASE + 'robots.txt');
         ok('robots.txt returns HTTP 200', robotsRes.status === 200);
@@ -71,7 +72,6 @@ function getImageInfo(imgPath) {
         ok('robots.txt specifies User-agent: *', robotsBody.includes('User-agent: *'));
         ok('robots.txt allows public pages',
             robotsBody.includes('Allow: /') &&
-            robotsBody.includes('Allow: /frontend/index.php') &&
             robotsBody.includes('Allow: /frontend/past_events.php') &&
             robotsBody.includes('Allow: /frontend/performances.php'));
         ok('robots.txt points to the sitemap',
@@ -81,6 +81,18 @@ function getImageInfo(imgPath) {
         const forbiddenInRobots = ['admin_dashboard', 'super_admin', 'recover.php', 'sponsors.php', 'attendance_checkin', 'handover', 'video_gallery', 'secret'];
         const foundForbiddenRobots = forbiddenInRobots.filter(p => robotsBody.includes(p));
         ok('robots.txt does NOT list admin or hidden paths', foundForbiddenRobots.length === 0, `found: ${foundForbiddenRobots.join(', ')}`);
+
+        // Homepage address canonical unification & 301 redirects
+        const resFrontendIndex = await httpGet(FRONTEND + 'index.php');
+        ok('/frontend/index.php redirects (301) to canonical homepage',
+            resFrontendIndex.status === 301 && (resFrontendIndex.headers['location'] === '/' || resFrontendIndex.headers['location'] === BASE));
+
+        const resRootIndex = await httpGet(BASE + 'index.php');
+        ok('/index.php redirects (301) to canonical homepage',
+            resRootIndex.status === 301 && (resRootIndex.headers['location'] === '/' || resRootIndex.headers['location'] === BASE));
+
+        const resRoot = await httpGet(BASE);
+        ok('Canonical root homepage (/) returns HTTP 200', resRoot.status === 200);
 
         // =============================================================
         // 3. 404 Page Status & Noindex Verification
@@ -171,16 +183,16 @@ function getImageInfo(imgPath) {
         // 5. Open Graph, Twitter Tags, Canonical & Unique Meta Description
         // =============================================================
         const publicPages = [
-            { file: 'index.php', name: 'Homepage', isHome: true },
-            { file: 'past_events.php', name: 'Past Events', isHome: false },
-            { file: 'performances.php', name: 'Performances', isHome: false },
+            { file: '', url: BASE, name: 'Homepage', isHome: true },
+            { file: 'past_events.php', url: FRONTEND + 'past_events.php', name: 'Past Events', isHome: false },
+            { file: 'performances.php', url: FRONTEND + 'performances.php', name: 'Performances', isHome: false },
         ];
 
         const descriptions = new Set();
         const canonicals = new Set();
 
         for (const p of publicPages) {
-            const res = await httpGet(FRONTEND + p.file);
+            const res = await httpGet(p.url);
             ok(`${p.name} returns HTTP 200`, res.status === 200);
 
             const html = res.body;
@@ -189,9 +201,15 @@ function getImageInfo(imgPath) {
             const canMatch = html.match(/<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']/i);
             ok(`${p.name} has canonical link`, Boolean(canMatch && canMatch[1]));
             if (canMatch) {
-                ok(`${p.name} canonical URL is absolute and matches page`,
-                    canMatch[1].startsWith('http') && canMatch[1].endsWith('/frontend/' + p.file),
-                    canMatch[1]);
+                if (p.isHome) {
+                    ok(`${p.name} canonical URL is absolute and matches homepage`,
+                        canMatch[1] === BASE || canMatch[1] === 'https://bucuc.online/',
+                        canMatch[1]);
+                } else {
+                    ok(`${p.name} canonical URL is absolute and matches page`,
+                        canMatch[1].startsWith('http') && canMatch[1].endsWith('/frontend/' + p.file),
+                        canMatch[1]);
+                }
                 canonicals.add(canMatch[1]);
             }
 
@@ -214,7 +232,11 @@ function getImageInfo(imgPath) {
             ok(`${p.name} has og:type website`, ogType && ogType[1] === 'website');
             ok(`${p.name} has og:title`, Boolean(ogTitle && ogTitle[1]));
             ok(`${p.name} has og:description`, Boolean(ogDesc && ogDesc[1]));
-            ok(`${p.name} has og:url matching page`, Boolean(ogUrl && ogUrl[1].endsWith(p.file)));
+            if (p.isHome) {
+                ok(`${p.name} has og:url matching homepage`, Boolean(ogUrl && (ogUrl[1] === BASE || ogUrl[1] === 'https://bucuc.online/')));
+            } else {
+                ok(`${p.name} has og:url matching page`, Boolean(ogUrl && ogUrl[1].endsWith(p.file)));
+            }
             ok(`${p.name} has og:image with absolute URL`, Boolean(ogImg && ogImg[1].startsWith('http')));
             ok(`${p.name} og:image width is 1200`, ogImgWidth && ogImgWidth[1] === '1200');
             ok(`${p.name} og:image height is 630`, ogImgHeight && ogImgHeight[1] === '630');
@@ -269,9 +291,9 @@ function getImageInfo(imgPath) {
         // =============================================================
         // 6. Organization Structured Data (JSON-LD)
         // =============================================================
-        const homeRes = await httpGet(FRONTEND + 'index.php');
+        const homeRes = await httpGet(BASE);
         const jsonLdMatches = [...homeRes.body.matchAll(/<script\s+type=["']application\/ld\+json["']>([\s\S]*?)<\/script>/gi)];
-        ok('index.php contains JSON-LD structured data', jsonLdMatches.length > 0);
+        ok('Homepage (/) contains JSON-LD structured data', jsonLdMatches.length > 0);
 
         let orgData = null;
         let hasEventData = false;
@@ -300,12 +322,66 @@ function getImageInfo(imgPath) {
         ok('Zero Event structured data (no event calendar)', !hasEventData);
 
         // =============================================================
-        // 7. No Hidden Path Appears in Any Public File
+        // 7. Dynamic APP_URL Propagation Test
+        // =============================================================
+        const testAppUrlScript = `
+            define('APP_URL', 'https://custom-brand-domain.online');
+            require_once 'backend/Database/config.php';
+            require_once 'backend/includes/site.php';
+
+            $homeTags = site_render_seo_tags([
+                'title' => 'Custom Domain Test',
+                'description' => 'Testing central APP_URL propagation',
+                'is_home' => true
+            ]);
+
+            $eventsTags = site_render_seo_tags([
+                'title' => 'Events Test',
+                'description' => 'Testing events canonical',
+                'path' => 'frontend/past_events.php',
+                'image_path' => 'frontend/images/og-events.jpg',
+                'is_home' => false
+            ]);
+
+            $sitemapXml = file_get_contents('sitemap.xml');
+            $sitemapXml = str_replace('https://bucuc.online', rtrim(APP_URL, '/'), $sitemapXml);
+
+            echo json_encode([
+                'homeTags' => $homeTags,
+                'eventsTags' => $eventsTags,
+                'sitemap' => $sitemapXml,
+                'baseUrl' => site_base_url(),
+            ]);
+        `;
+        const appUrlRaw = execFileSync(T.PHP, ['-r', testAppUrlScript], { cwd: T.ROOT }).toString().trim();
+        const appUrlData = JSON.parse(appUrlRaw);
+
+        ok('Changing APP_URL updates site_base_url()',
+            appUrlData.baseUrl === 'https://custom-brand-domain.online');
+        ok('Changing APP_URL updates homepage canonical to https://custom-brand-domain.online/',
+            appUrlData.homeTags.includes('<link rel="canonical" href="https://custom-brand-domain.online/">'));
+        ok('Changing APP_URL updates og:url to https://custom-brand-domain.online/',
+            appUrlData.homeTags.includes('<meta property="og:url" content="https://custom-brand-domain.online/">'));
+        ok('Changing APP_URL updates og:image to https://custom-brand-domain.online/frontend/images/og-share.jpg',
+            appUrlData.homeTags.includes('<meta property="og:image" content="https://custom-brand-domain.online/frontend/images/og-share.jpg">'));
+        ok('Changing APP_URL updates twitter:image to https://custom-brand-domain.online/frontend/images/og-share.jpg',
+            appUrlData.homeTags.includes('<meta name="twitter:image" content="https://custom-brand-domain.online/frontend/images/og-share.jpg">'));
+        ok('Changing APP_URL updates Organization structured data url and logo',
+            appUrlData.homeTags.includes('"url": "https://custom-brand-domain.online/"') &&
+            appUrlData.homeTags.includes('"logo": "https://custom-brand-domain.online/frontend/images/logopng.png"'));
+        ok('Changing APP_URL updates subpage canonical to https://custom-brand-domain.online/frontend/past_events.php',
+            appUrlData.eventsTags.includes('<link rel="canonical" href="https://custom-brand-domain.online/frontend/past_events.php">'));
+        ok('Changing APP_URL updates sitemap.xml loc URLs',
+            appUrlData.sitemap.includes('<loc>https://custom-brand-domain.online/</loc>') &&
+            appUrlData.sitemap.includes('<loc>https://custom-brand-domain.online/frontend/past_events.php</loc>'));
+
+        // =============================================================
+        // 8. No Hidden Path Appears in Any Public File
         // =============================================================
         const publicFiles = [
             { name: 'robots.txt', content: robotsRes.body },
             { name: 'sitemap.xml', content: sitemapRes.body },
-            { name: 'index.php HTML', content: (await httpGet(FRONTEND + 'index.php')).body },
+            { name: 'index.php HTML', content: (await httpGet(BASE)).body },
             { name: 'past_events.php HTML', content: (await httpGet(FRONTEND + 'past_events.php')).body },
             { name: 'performances.php HTML', content: (await httpGet(FRONTEND + 'performances.php')).body },
         ];

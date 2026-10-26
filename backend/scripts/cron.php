@@ -28,6 +28,7 @@ require_once __DIR__ . '/../includes/site.php';
 require_once __DIR__ . '/../includes/backup.php';
 require_once __DIR__ . '/../includes/notices.php';
 require_once __DIR__ . '/../includes/handover.php';
+require_once __DIR__ . '/../includes/applicant_deletion.php';
 require_once __DIR__ . '/../config/backup.php';
 
 $isTest = in_array('--test', $argv ?? [], true);
@@ -336,10 +337,25 @@ try {
     }
 
     // -------------------------------------------------------------
-    // Job 7: Retry Failed Google Sheet Deletions (processes retry queue)
+    // Job 7: Retry & Purge Failed Google Sheet Deletions (processes retry queue)
     // -------------------------------------------------------------
     if (function_exists('db_table_exists') && db_table_exists($pdo, 'failed_sheet_deletions')) {
         try {
+            // Purge items that reached max 10 attempts or are older than 14 days
+            $expiredRows = $pdo->query("SELECT id FROM failed_sheet_deletions WHERE attempts >= 10 OR failed_at < (NOW() - INTERVAL 14 DAY)")->fetchAll(PDO::FETCH_COLUMN);
+            if (!empty($expiredRows)) {
+                $expiredCount = count($expiredRows);
+                $pdo->exec("DELETE FROM failed_sheet_deletions WHERE attempts >= 10 OR failed_at < (NOW() - INTERVAL 14 DAY)");
+                if (function_exists('site_alert_super_admin')) {
+                    site_alert_super_admin(
+                        'Google Sheet Deletion Retry Expired',
+                        "Google Sheet deletion retry queue: {$expiredCount} item(s) reached the retry limit (10 attempts or 14 days) and were purged from the retry queue. No personal applicant data was retained. Please check the member spreadsheet manually."
+                    );
+                }
+                cron_record_job($pdo, 'sheet_deletions_purge', 'warning', "Purged {$expiredCount} expired sheet deletion(s)");
+            }
+
+            // Retry pending deletions with < 10 attempts
             $failedRows = $pdo->query("SELECT student_id FROM failed_sheet_deletions WHERE attempts < 10 ORDER BY failed_at ASC LIMIT 10")->fetchAll(PDO::FETCH_COLUMN);
             if (!empty($failedRows)) {
                 $retriedCount = 0;
@@ -359,6 +375,31 @@ try {
             }
         } catch (\Throwable $e) {
             error_log("Failed sheet deletions retry error: " . $e->getMessage());
+        }
+    }
+
+    // -------------------------------------------------------------
+    // Job 8: Clean Up Expired CSP Rate Limit Files
+    // -------------------------------------------------------------
+    $cspCacheDir = __DIR__ . '/../cache';
+    if (is_dir($cspCacheDir)) {
+        $now = time();
+        $prunedCspFiles = 0;
+        $files = glob($cspCacheDir . '/csp_rate_*.json');
+        if ($files) {
+            foreach ($files as $cf) {
+                $data = @json_decode(@file_get_contents($cf), true);
+                if (!is_array($data) || !isset($data['reset']) || $now >= $data['reset'] || (filemtime($cf) < ($now - 86400))) {
+                    @unlink($cf);
+                    $prunedCspFiles++;
+                }
+            }
+        }
+        if ($prunedCspFiles > 0) {
+            $report['jobs_run']['csp_cache_cleanup'] = [
+                'status' => 'success',
+                'files_pruned' => $prunedCspFiles,
+            ];
         }
     }
 

@@ -81,6 +81,9 @@ function postJson(url, payload, rawString = null) {
         ok('CSP blocks object-src plugin embeds', cspRo.includes("object-src 'none'"));
         ok('CSP enforces frame-ancestors \'self\'', cspRo.includes("frame-ancestors 'self'"));
         ok('CSP enforces form-action \'self\'', cspRo.includes("form-action 'self'"));
+        ok('CSP permits GoatCounter script from https://gc.zgo.at', cspRo.includes("https://gc.zgo.at"));
+        ok('CSP permits GoatCounter analytics reporting in connect-src and img-src',
+            cspRo.includes("connect-src 'self' https://*.goatcounter.com") && cspRo.includes("https://*.goatcounter.com"));
         ok('CSP specifies report-uri /frontend/csp_report.php', cspRo.includes("report-uri /frontend/csp_report.php"));
         ok('HSTS header is omitted on non-HTTPS / local dev environment', !homeRes.headers['strict-transport-security']);
 
@@ -331,6 +334,26 @@ function postJson(url, payload, rawString = null) {
         }
         await closeMonitoredPage(pubPage);
         ok('Crawl of public pages produces 0 CSP violations', crawlViolations.length === 0, crawlViolations.join('; '));
+
+        // System & unauthenticated pages: maintenance (503), check-in, password reset, 404, login
+        const systemPages = [
+            { name: '404 page', url: BASE + '404.php' },
+            { name: '503 maintenance page', url: 'http://127.0.0.1:8099/__test_503' },
+            { name: 'check-in page', url: BASE + 'checkin.php' },
+            { name: 'forgot-password page', url: BASE + 'forgot-password.php' },
+            { name: 'reset-password page', url: BASE + 'reset-password.php' },
+            { name: 'admin-login page', url: BASE + 'admin-login.php' },
+        ];
+        const sysViolations = [];
+        const sysPage = await createMonitoredPage();
+        for (const sp of systemPages) {
+            await sysPage.goto(sp.url, { waitUntil: 'networkidle2' });
+            const v = await sysPage.evaluate(() => window.capturedCspViolations || []);
+            if (v.length > 0) sysViolations.push(`${sp.name}: ${JSON.stringify(v)}`);
+        }
+        await closeMonitoredPage(sysPage);
+        ok('Crawl of system/unauthenticated pages (404, 503, checkin, reset, login) produces 0 CSP violations',
+            sysViolations.length === 0, sysViolations.join('; '));
 
         // Admin roles and their pages
         const rolePages = {

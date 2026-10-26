@@ -11,6 +11,10 @@ $uri = rawurldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '
 $docRoot = realpath(__DIR__ . '/..');
 $filePath = realpath($docRoot . $uri);
 
+if ($uri === '/') {
+    return false;
+}
+
 // Test hook for maintenance page HTTP testing
 if ($uri === '/__test_503') {
     require_once __DIR__ . '/../backend/Database/db.php';
@@ -24,7 +28,7 @@ if ($uri === '/sitemap.xml') {
     if (is_file($sitemapPath)) {
         $content = file_get_contents($sitemapPath);
         $base = defined('APP_URL') ? rtrim(APP_URL, '/') : 'http://127.0.0.1:8099';
-        $content = str_replace('https://bucuc.org', $base, $content);
+        $content = str_replace(['https://bucuc.online', 'https://bucuc.org'], $base, $content);
         header('Content-Type: application/xml; charset=utf-8');
         header('Content-Length: ' . strlen($content));
         echo $content;
@@ -37,7 +41,7 @@ if ($uri === '/robots.txt') {
     if (is_file($robotsPath)) {
         $content = file_get_contents($robotsPath);
         $base = defined('APP_URL') ? rtrim(APP_URL, '/') : 'http://127.0.0.1:8099';
-        $content = str_replace('https://bucuc.org', $base, $content);
+        $content = str_replace(['https://bucuc.online', 'https://bucuc.org'], $base, $content);
         header('Content-Type: text/plain; charset=utf-8');
         header('Content-Length: ' . strlen($content));
         echo $content;
@@ -53,6 +57,11 @@ if (preg_match('#^/backend/(backups|cache|logs|Database|config|vendor)#i', $uri)
     return true;
 }
 
+// Resolve static assets served from /frontend when requested at root
+if ((!$filePath || !is_file($filePath)) && is_file($docRoot . '/frontend' . $uri)) {
+    $filePath = realpath($docRoot . '/frontend' . $uri);
+}
+
 if ($filePath && strpos($filePath, $docRoot) === 0 && is_file($filePath)) {
     if (preg_match('/\.(jpe?g|png)$/i', $filePath, $m)) {
         header('Cache-Control: max-age=31536000, public, immutable');
@@ -65,6 +74,42 @@ if ($filePath && strpos($filePath, $docRoot) === 0 && is_file($filePath)) {
     if (preg_match('/\.webp$/i', $filePath)) {
         header('Cache-Control: max-age=31536000, public, immutable');
         header('Content-Type: image/webp');
+        header('Content-Length: ' . filesize($filePath));
+        readfile($filePath);
+        return true;
+    }
+    if (preg_match('/\.css$/i', $filePath)) {
+        header('Content-Type: text/css; charset=utf-8');
+        header('Content-Length: ' . filesize($filePath));
+        readfile($filePath);
+        return true;
+    }
+    if (preg_match('/\.js$/i', $filePath)) {
+        header('Content-Type: application/javascript; charset=utf-8');
+        header('Content-Length: ' . filesize($filePath));
+        readfile($filePath);
+        return true;
+    }
+    if (preg_match('/\.woff2$/i', $filePath)) {
+        header('Content-Type: font/woff2');
+        header('Content-Length: ' . filesize($filePath));
+        readfile($filePath);
+        return true;
+    }
+    if (preg_match('/\.woff$/i', $filePath)) {
+        header('Content-Type: font/woff');
+        header('Content-Length: ' . filesize($filePath));
+        readfile($filePath);
+        return true;
+    }
+    if (preg_match('/\.svg$/i', $filePath)) {
+        header('Content-Type: image/svg+xml');
+        header('Content-Length: ' . filesize($filePath));
+        readfile($filePath);
+        return true;
+    }
+    if (preg_match('/\.webmanifest$/i', $filePath)) {
+        header('Content-Type: application/manifest+json; charset=utf-8');
         header('Content-Length: ' . filesize($filePath));
         readfile($filePath);
         return true;

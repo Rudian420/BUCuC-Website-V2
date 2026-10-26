@@ -12,7 +12,8 @@ const GAS_LOG = T.GAS_LOG;
 const results = [];
 const ok = (name, cond, extra = '') => results.push(`${cond ? 'PASS' : 'FAIL'}  ${name}${extra ? '  — ' + String(extra).slice(0, 170) : ''}`);
 const ACC = { super: ['super@test.local', 'superpass123'], panel: ['panel@test.local', 'panelpass123'], hr: ['admin@test.local', 'adminpass123'], miap: ['miap@test.local', 'miappass123'], sec: ['sec@test.local', 'secpass1234'] };
-const shown = (html, text) => { const i = html.indexOf(text); return i > -1 && i < html.indexOf('window.BUCUC_PANEL_YEARS'); };   // drawn by the server, not just in the year data
+const shown = (html, text) => { const i = html.indexOf(text); const dj = html.indexOf('id="bucuc-panel-years-data"'); return i > -1 && dj > -1 && i < dj; };   // drawn by the server in initial HTML before the data island
+const getDataIsland = html => { const m = html.match(/<script\s+type=["']application\/json["']\s+id=["']bucuc-panel-years-data["']>([\s\S]*?)<\/script>/); return m ? JSON.parse(m[1]) : null; };
 const exists = rel => fs.existsSync(`${REPO}/frontend/${rel}`);
 const alertText = t => ((t.match(/class="alert alert-(?:success|danger)[^>]*>([\s\S]*?)<\/div>/) || [])[1] || '').replace(/<[^>]+>/g, '').replace(/&#0?39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').trim();
 
@@ -220,6 +221,8 @@ const tid = label => sql(`SELECT id FROM tenures WHERE label='${label}'`);
         home = await (await as(null)).goto(BASE + 'index.php').then(x => x.text());
         ok('marking 2027-28 current: homepage shows it by default', /<option value="0">Current Panel \(2027-28\)/.test(home) && shown(home, 'New President') && shown(home, 'New Secretary'), alertText(r.text));
         ok('older tenures stay available as past panels', home.includes('Panel 2026-27') && home.includes('Panel 2019-20'));
+        const island = getDataIsland(home);
+        ok('homepage renders valid JSON data island #bucuc-panel-years-data', Array.isArray(island) && island.length > 0 && island[0].label === 'Current Panel (2027-28)');
         const mj = JSON.parse(fs.readFileSync(`${REPO}/backend/Api/members.json`, 'utf8'));
         ok('members.json follows the tenures (public API)', mj.years[0].label === 'Current Panel (2027-28)' && mj.years[0].panel_members[0].name === 'New President');
         r = await post(P.miap, 'media.php?tab=tenures', { action: 'tenure_delete', tenure_id: t2728 });

@@ -21,13 +21,13 @@ function site_send_csp_header(): void
     $upgradeInsecure = !$isLocal ? ' upgrade-insecure-requests;' : '';
 
     $csp = "default-src 'self'; "
-        . "script-src 'self'; "
+        . "script-src 'self' https://gc.zgo.at; "
         . "style-src 'self' 'unsafe-inline'; "
-        . "img-src 'self' data: blob: https://i.ytimg.com; "
+        . "img-src 'self' data: blob: https://i.ytimg.com https://*.goatcounter.com; "
         . "font-src 'self' data:; "
         . "media-src 'self'; "
         . "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; "
-        . "connect-src 'self'; "
+        . "connect-src 'self' https://*.goatcounter.com; "
         . "object-src 'none'; "
         . "base-uri 'self'; "
         . "frame-ancestors 'self'; "

@@ -135,6 +135,19 @@ function auth_password_fingerprint($passwordHash)
     return substr(hash('sha256', 'bucuc-session|' . $passwordHash), 0, 32);
 }
 
+/** Returns true if an authenticated admin session is currently active. */
+function auth_is_admin_logged_in(): bool
+{
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        if (!empty($_COOKIE[session_name()])) {
+            @auth_start_session();
+        } else {
+            return false;
+        }
+    }
+    return !empty($_SESSION['admin_id']) || !empty($_SESSION['admin_logged_in']);
+}
+
 function auth_is_super()
 {
     return role_normalize($_SESSION['admin_role'] ?? null) === 'super_admin';
